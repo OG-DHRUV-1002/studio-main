@@ -1,0 +1,169 @@
+'use client';
+
+import { useForm, useFieldArray } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Loader2 } from 'lucide-react';
+import type { TestOrder } from '@/lib/types';
+import { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { updateTestResults } from '@/lib/actions';
+import { useRouter } from 'next/navigation';
+import { Textarea } from '@/components/ui/textarea';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+
+const testResultSchema = z.object({
+  testName: z.string(),
+  resultValue: z.string().min(1, 'Result is required.'),
+  normalRange: z.string().optional(),
+  technicianNotes: z.string().optional(),
+});
+
+const formSchema = z.object({
+  orderId: z.string(),
+  results: z.array(testResultSchema),
+});
+
+type DataEntryFormValues = z.infer<typeof formSchema>;
+
+interface DataEntryFormProps {
+  order: TestOrder;
+}
+
+export function DataEntryForm({ order }: DataEntryFormProps) {
+  const { toast } = useToast();
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const form = useForm<DataEntryFormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      orderId: order.orderId,
+      results: order.tests.map(t => ({
+        testName: t.testName,
+        resultValue: t.resultValue || '',
+        normalRange: t.normalRange || '',
+        technicianNotes: t.technicianNotes || '',
+      })),
+    },
+  });
+
+  const { fields } = useFieldArray({
+    control: form.control,
+    name: 'results',
+  });
+
+  async function onSubmit(values: DataEntryFormValues) {
+    setIsSubmitting(true);
+    const result = await updateTestResults(values);
+    setIsSubmitting(false);
+
+    if (result.success) {
+      toast({
+        title: 'Success!',
+        description: 'Test results have been saved.',
+      });
+      router.push(`/orders/${order.orderId}/report`);
+      router.refresh();
+    } else {
+      toast({
+        title: 'Error saving results',
+        description: result.message || 'An unknown error occurred.',
+        variant: 'destructive',
+      });
+    }
+  }
+  
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Enter Test Results</CardTitle>
+            <CardDescription>
+              Provide the results for order <strong>{order.orderId}</strong> for patient <strong>{order.patient?.fullName}</strong>.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="min-w-[200px]">Test Name</TableHead>
+                    <TableHead className="min-w-[150px]">Result</TableHead>
+                    <TableHead className="min-w-[150px]">Normal Range</TableHead>
+                    <TableHead className="min-w-[250px]">Technician Notes</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {fields.map((field, index) => (
+                    <TableRow key={field.id}>
+                      <TableCell className="font-medium align-top pt-5">
+                        {field.testName}
+                      </TableCell>
+                      <TableCell>
+                        <FormField
+                          control={form.control}
+                          name={`results.${index}.resultValue`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="sr-only">Result</FormLabel>
+                              <FormControl>
+                                <Input placeholder="e.g., 98.6" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </TableCell>
+                       <TableCell>
+                        <FormField
+                          control={form.control}
+                          name={`results.${index}.normalRange`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="sr-only">Normal Range</FormLabel>
+                              <FormControl>
+                                <Input placeholder="e.g., 97-99" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </TableCell>
+                       <TableCell>
+                        <FormField
+                          control={form.control}
+                          name={`results.${index}.technicianNotes`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="sr-only">Technician Notes</FormLabel>
+                              <FormControl>
+                                <Textarea placeholder="Any notes..." {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Save Results
+            </Button>
+          </CardFooter>
+        </Card>
+      </form>
+    </Form>
+  );
+}
