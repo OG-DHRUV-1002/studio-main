@@ -12,6 +12,7 @@ import { exportToCsvAction } from '@/lib/actions';
 import { useToast } from '@/hooks/use-toast';
 import { downloadFile } from '@/lib/utils';
 import Link from 'next/link';
+import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 
 interface DashboardClientProps {
@@ -27,7 +28,7 @@ export function DashboardClient({ inHouseOrders, outsideOrders }: DashboardClien
     setLoadingExport(labType);
     const result = await exportToCsvAction(labType);
     if (result.success && result.data) {
-      downloadFile(result.data, `labwise_export_${labType}_${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
+      downloadFile(`data:text/csv;charset=utf-8,${encodeURIComponent(result.data)}`, `labwise_export_${labType}_${new Date().toISOString().split('T')[0]}.csv`);
       toast({ title: "Export Successful", description: `Data for ${labType} orders has been exported.` });
     } else {
       toast({ title: "Export Failed", description: result.message, variant: 'destructive' });
@@ -55,11 +56,11 @@ export function DashboardClient({ inHouseOrders, outsideOrders }: DashboardClien
               </Link>
             </TableCell>
             <TableCell>{order.patient?.fullName || 'N/A'}</TableCell>
-            <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
+            <TableCell>{format(new Date(order.orderDate), 'dd/MM/yyyy')}</TableCell>
             <TableCell>
-                <Badge variant={order.status === 'Completed' ? 'secondary' : 'default'} className={order.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>
-                    {order.status}
-                </Badge>
+              <Badge variant={order.status === 'Completed' ? 'secondary' : 'default'} className={order.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>
+                {order.status}
+              </Badge>
             </TableCell>
             <TableCell className="text-right">₹{order.finalAmount.toFixed(2)}</TableCell>
           </TableRow>
