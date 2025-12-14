@@ -10,6 +10,7 @@ import type { TestOrder } from "@/lib/types";
 import { generateReportAction } from "@/lib/actions";
 import { useToast } from "@/hooks/use-toast";
 import { downloadFile } from "@/lib/utils";
+import { PROFILE_DEFINITIONS } from "@/lib/profile-definitions";
 
 interface ReportClientProps {
     order: TestOrder;
@@ -28,7 +29,7 @@ export function ReportClient({ order }: ReportClientProps) {
     const handleDownloadDoc = async () => {
         setIsGenerating(true);
         const result = await generateReportAction(order.orderId);
-       
+
         if (result.success) {
             const static_html = `
                 <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
@@ -92,14 +93,43 @@ export function ReportClient({ order }: ReportClientProps) {
                             </tr>
                         </thead>
                         <tbody>
-                            ${order.tests.map(test => `
+                            ${order.tests.map(test => {
+                const profile = PROFILE_DEFINITIONS.find(p => p.profile_name === test.testName);
+                if (profile && test.resultValue && test.resultValue.startsWith('{')) {
+                    try {
+                        const results = JSON.parse(test.resultValue);
+                        const rows = profile.components.map(comp => `
+                                            <tr>
+                                                <td style="border-bottom: 1px solid #eee; padding: 4px; padding-left: 16px;">${comp.label}</td>
+                                                <td style="border-bottom: 1px solid #eee; padding: 4px; text-align: center;">${results[comp.key] || '-'} ${comp.unit}</td>
+                                                <td style="border-bottom: 1px solid #eee; padding: 4px; text-align: center; color: #666; font-size: 9pt;">${comp.validation?.ref_range_text || '-'}</td>
+                                                <td style="border-bottom: 1px solid #eee; padding: 4px;"></td>
+                                            </tr>
+                                        `).join('');
+
+                        return `
+                                            <tr>
+                                                <td colspan="4" style="border: 1px solid #ddd; padding: 0;">
+                                                    <div style="background-color: #f9fafb; border-bottom: 1px solid #ddd; padding: 8px; font-weight: bold;">${test.testName}</div>
+                                                    <table style="width: 100%; border-collapse: collapse;">
+                                                        ${rows}
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        `;
+                    } catch (e) {
+                        // Ignore
+                    }
+                }
+                return `
                                 <tr>
                                     <td style="border: 1px solid #ddd; padding: 8px;">${test.testName}</td>
                                     <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${test.resultValue || 'N/A'}</td>
                                     <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${test.normalRange || 'N/A'}</td>
                                     <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">${test.technicianNotes || 'N/A'}</td>
                                 </tr>
-                            `).join('')}
+                                `;
+            }).join('')}
                         </tbody>
                     </table>
                     <div class="footer" style="text-align: right; margin-top: 120px;">
@@ -166,24 +196,24 @@ export function ReportClient({ order }: ReportClientProps) {
                 </div>
             </CardHeader>
             <CardContent className="space-y-0.5 flex flex-col min-h-[600px]">
-                 <Separator />
+                <Separator />
                 <div className="grid grid-cols-2 gap-x-8 gap-y-0">
                     <div>
                         <span className="font-semibold w-28 inline-block">Patient's Name</span>: {order.patient?.fullName}
                     </div>
                     <div>
-                         <span className="font-semibold w-20 inline-block">Date</span>: {new Date(order.orderDate).toLocaleDateString()}
+                        <span className="font-semibold w-20 inline-block">Date</span>: {new Date(order.orderDate).toLocaleDateString()}
                     </div>
-                     <div>
+                    <div>
                         <span className="font-semibold w-28 inline-block">Referred By</span>: {order.referredBy}
                     </div>
-                     <div>
+                    <div>
                         <span className="font-semibold w-20 inline-block">Lab No</span>: {order.orderId}
                     </div>
                     <div>
                         <span className="font-semibold w-28 inline-block">Specimen</span>: {order.specimen}
                     </div>
-                    {order.patient && 
+                    {order.patient &&
                         <div>
                             <span className="font-semibold w-20 inline-block">Age/Sex</span>: {calculateAge(order.patient.dateOfBirth)} / {order.patient.gender}
                         </div>
@@ -192,23 +222,46 @@ export function ReportClient({ order }: ReportClientProps) {
                 <Separator />
                 <div className="flex-grow">
                     <h3 className="text-lg font-semibold mb-2 text-center underline">REPORT</h3>
-                     <div className="border rounded-lg mt-4">
+                    <div className="border rounded-lg mt-4">
                         <div className="grid grid-cols-4 font-semibold p-2 bg-muted">
                             <div>Test Name</div>
                             <div className="text-center">Result</div>
                             <div className="text-center">Normal Range</div>
                             <div className="text-right">Notes</div>
                         </div>
-                        {order.tests.map((test, index) => (
-                            <div key={index} className="grid grid-cols-4 p-2 border-t">
-                                <div>{test.testName}</div>
-                                <div className="text-center">{test.resultValue || 'N/A'}</div>
-                                <div className="text-center">{test.normalRange || 'N/A'}</div>
-                                <div className="text-right">{test.technicianNotes || 'NA'}</div>
-                            </div>
-                        ))}
+                        {order.tests.map((test, index) => {
+                            const profile = PROFILE_DEFINITIONS.find(p => p.profile_name === test.testName);
+                            if (profile && test.resultValue && test.resultValue.startsWith('{')) {
+                                try {
+                                    const results = JSON.parse(test.resultValue);
+                                    return (
+                                        <div key={index} className="border-t bg-slate-50">
+                                            <div className="p-2 font-bold text-sm bg-slate-100 border-b">{test.testName}</div>
+                                            {profile.components.map(comp => (
+                                                <div key={comp.key} className="grid grid-cols-4 p-2 border-b last:border-0 text-sm">
+                                                    <div className="pl-4">{comp.label}</div>
+                                                    <div className="text-center font-medium">{results[comp.key] || '-'} {comp.unit}</div>
+                                                    <div className="text-center text-muted-foreground text-xs">{comp.validation?.ref_range_text || '-'}</div>
+                                                    <div className="text-right"></div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    );
+                                } catch (e) {
+                                    // Fallback if JSON parse fails
+                                }
+                            }
+                            return (
+                                <div key={index} className="grid grid-cols-4 p-2 border-t">
+                                    <div>{test.testName}</div>
+                                    <div className="text-center">{test.resultValue || 'N/A'}</div>
+                                    <div className="text-center">{test.normalRange || 'N/A'}</div>
+                                    <div className="text-right">{test.technicianNotes || 'NA'}</div>
+                                </div>
+                            );
+                        })}
                     </div>
-                     {!hasResults && (
+                    {!hasResults && (
                         <p className="text-center text-muted-foreground mt-4">
                             Results are not yet available for this order.
                         </p>
@@ -218,7 +271,7 @@ export function ReportClient({ order }: ReportClientProps) {
             <Separator />
             <CardFooter className="justify-between">
                 <div>
-                     <Button onClick={handleDownloadDoc} disabled={isGenerating || !hasResults}>
+                    <Button onClick={handleDownloadDoc} disabled={isGenerating || !hasResults}>
                         {isGenerating ? (
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         ) : (

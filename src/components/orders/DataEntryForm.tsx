@@ -15,6 +15,8 @@ import { updateTestResults } from '@/lib/actions';
 import { useRouter } from 'next/navigation';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { PROFILE_DEFINITIONS } from '@/lib/profile-definitions';
+import { ProfileDataEntry } from './ProfileDataEntry';
 
 const testResultSchema = z.object({
   testName: z.string(),
@@ -77,7 +79,7 @@ export function DataEntryForm({ order }: DataEntryFormProps) {
       });
     }
   }
-  
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -100,58 +102,82 @@ export function DataEntryForm({ order }: DataEntryFormProps) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {fields.map((field, index) => (
-                    <TableRow key={field.id}>
-                      <TableCell className="font-medium align-top pt-5">
-                        {field.testName}
-                      </TableCell>
-                      <TableCell>
-                        <FormField
-                          control={form.control}
-                          name={`results.${index}.resultValue`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="sr-only">Result</FormLabel>
-                              <FormControl>
-                                <Input placeholder="e.g., 98.6" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </TableCell>
-                       <TableCell>
-                        <FormField
-                          control={form.control}
-                          name={`results.${index}.normalRange`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="sr-only">Normal Range</FormLabel>
-                              <FormControl>
-                                <Input placeholder="e.g., 97-99" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </TableCell>
-                       <TableCell>
-                        <FormField
-                          control={form.control}
-                          name={`results.${index}.technicianNotes`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="sr-only">Technician Notes</FormLabel>
-                              <FormControl>
-                                <Textarea placeholder="Any notes..." {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {fields.map((field, index) => {
+                    const profile = PROFILE_DEFINITIONS.find(p => p.profile_name === field.testName);
+
+                    if (profile) {
+                      const initialValues = field.resultValue && field.resultValue.startsWith('{')
+                        ? JSON.parse(field.resultValue)
+                        : {};
+
+                      return (
+                        <TableRow key={field.id}>
+                          <TableCell colSpan={4} className="p-4">
+                            <ProfileDataEntry
+                              profile={profile}
+                              initialValues={initialValues}
+                              onChange={(newValues) => {
+                                form.setValue(`results.${index}.resultValue`, JSON.stringify(newValues));
+                              }}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      );
+                    }
+
+                    return (
+                      <TableRow key={field.id}>
+                        <TableCell className="font-medium align-top pt-5">
+                          {field.testName}
+                        </TableCell>
+                        <TableCell>
+                          <FormField
+                            control={form.control}
+                            name={`results.${index}.resultValue`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="sr-only">Result</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="e.g., 98.6" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <FormField
+                            control={form.control}
+                            name={`results.${index}.normalRange`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="sr-only">Normal Range</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="e.g., 97-99" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <FormField
+                            control={form.control}
+                            name={`results.${index}.technicianNotes`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="sr-only">Technician Notes</FormLabel>
+                                <FormControl>
+                                  <Textarea placeholder="Any notes..." {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
                 </TableBody>
               </Table>
             </div>
