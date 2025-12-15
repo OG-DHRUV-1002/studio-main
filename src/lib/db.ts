@@ -2,16 +2,31 @@ import { db } from './firebase';
 import { ref, get, set, remove, update, query, orderByChild } from 'firebase/database';
 import { Patient, TestOrder } from './types';
 
-const LAB_ID = process.env.NEXT_PUBLIC_LAB_ID || 'default-lab';
 
-function getDbPath(path: string): string {
-    return `laboratories/${LAB_ID}/${path}`;
+
+function getDbPath(labId: string, path: string): string {
+    return `laboratories/${labId}/${path}`;
+}
+
+// --- CONFIG HELPERS ---
+
+export async function getLabConfig(labId: string) {
+    const dbRef = ref(db, getDbPath(labId, 'config'));
+    const snapshot = await get(dbRef);
+    if (!snapshot.exists()) return null;
+    return snapshot.val();
+}
+
+export async function updateLabConfig(labId: string, config: { displayName?: string, theme?: string }) {
+    const dbRef = ref(db, getDbPath(labId, 'config'));
+    await update(dbRef, config);
+    return config;
 }
 
 // --- PATIENT HELPERS ---
 
-export async function getAllPatients(): Promise<Patient[]> {
-    const dbRef = ref(db, getDbPath('patients'));
+export async function getAllPatients(labId: string): Promise<Patient[]> {
+    const dbRef = ref(db, getDbPath(labId, 'patients'));
     const snapshot = await get(dbRef);
 
     if (!snapshot.exists()) {
@@ -29,8 +44,8 @@ export async function getAllPatients(): Promise<Patient[]> {
     })).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 }
 
-export async function getPatient(id: string): Promise<Patient | undefined> {
-    const dbRef = ref(db, getDbPath(`patients/${id}`));
+export async function getPatient(labId: string, id: string): Promise<Patient | undefined> {
+    const dbRef = ref(db, getDbPath(labId, `patients/${id}`));
     const snapshot = await get(dbRef);
 
     if (!snapshot.exists()) {
@@ -45,21 +60,21 @@ export async function getPatient(id: string): Promise<Patient | undefined> {
     };
 }
 
-export async function insertPatient(patient: Patient): Promise<Patient> {
+export async function insertPatient(labId: string, patient: Patient): Promise<Patient> {
     const serializedPatient = {
         ...patient,
         dateOfBirth: patient.dateOfBirth.toISOString(),
         createdAt: patient.createdAt.toISOString()
     };
 
-    const dbRef = ref(db, getDbPath(`patients/${patient.patientId}`));
+    const dbRef = ref(db, getDbPath(labId, `patients/${patient.patientId}`));
     await set(dbRef, serializedPatient);
 
     return patient;
 }
 
-export async function updatePatientRecord(patientId: string, data: Partial<Patient>): Promise<Patient | null> {
-    const current = await getPatient(patientId);
+export async function updatePatientRecord(labId: string, patientId: string, data: Partial<Patient>): Promise<Patient | null> {
+    const current = await getPatient(labId, patientId);
     if (!current) return null;
 
     const updated = { ...current, ...data };
@@ -69,22 +84,22 @@ export async function updatePatientRecord(patientId: string, data: Partial<Patie
     if (data.dateOfBirth) serializedUpdates.dateOfBirth = data.dateOfBirth.toISOString();
     // createdAt shouldn't change, but if it does...
 
-    const dbRef = ref(db, getDbPath(`patients/${patientId}`));
+    const dbRef = ref(db, getDbPath(labId, `patients/${patientId}`));
     await update(dbRef, serializedUpdates);
 
     return updated;
 }
 
-export async function removePatient(patientId: string): Promise<boolean> {
-    const dbRef = ref(db, getDbPath(`patients/${patientId}`));
+export async function removePatient(labId: string, patientId: string): Promise<boolean> {
+    const dbRef = ref(db, getDbPath(labId, `patients/${patientId}`));
     await remove(dbRef);
     return true;
 }
 
 // --- ORDER HELPERS ---
 
-export async function getAllOrders(): Promise<TestOrder[]> {
-    const dbRef = ref(db, getDbPath('orders'));
+export async function getAllOrders(labId: string): Promise<TestOrder[]> {
+    const dbRef = ref(db, getDbPath(labId, 'orders'));
     const snapshot = await get(dbRef);
 
     if (!snapshot.exists()) {
@@ -94,14 +109,12 @@ export async function getAllOrders(): Promise<TestOrder[]> {
     const ordersData = snapshot.val();
     const orders = Object.values(ordersData) as any[];
 
-    // Fetch all patients for joining (Optimization: In a real large app, fetch only needed or store patient name in order)
-    // For MVP, we will fetch individual patient for each order just like before but async
-
+    // Fetch all patients for joining
     const results = await Promise.all(orders.map(async (row) => {
         // If patient fetch fails, we still want the order, maybe with null patient
         let patient: Patient | undefined;
         try {
-            patient = await getPatient(row.patientId);
+            patient = await getPatient(labId, row.patientId);
         } catch (e) {
             console.error(`Failed to fetch patient ${row.patientId} for order ${row.orderId}`);
         }
@@ -110,10 +123,6 @@ export async function getAllOrders(): Promise<TestOrder[]> {
             ...row,
             orderDate: new Date(row.orderDate),
             // tests are stored as object/array in firebase so no JSON.parse needed if inserted correctly.
-            // However, if we serialized with JSON.stringify before, we need to check.
-            // In the insertOrder below, I'm NOT JSON.stringifying 'tests' because Firebase supports arrays/objects native.
-            // But careful: if the previous SQLite code did JSON.stringify, we might change behavior.
-            // I will Store it natively in Firebase.
             tests: row.tests,
             patient
         };
@@ -122,8 +131,8 @@ export async function getAllOrders(): Promise<TestOrder[]> {
     return results.sort((a, b) => b.orderDate.getTime() - a.orderDate.getTime());
 }
 
-export async function getOrder(id: string): Promise<TestOrder | undefined> {
-    const dbRef = ref(db, getDbPath(`orders/${id}`));
+export async function getOrder(labId: string, id: string): Promise<TestOrder | undefined> {
+    const dbRef = ref(db, getDbPath(labId, `orders/${id}`));
     const snapshot = await get(dbRef);
 
     if (!snapshot.exists()) {
@@ -134,7 +143,7 @@ export async function getOrder(id: string): Promise<TestOrder | undefined> {
 
     let patient: Patient | undefined;
     try {
-        patient = await getPatient(row.patientId);
+        patient = await getPatient(labId, row.patientId);
     } catch (e) {
         console.error(`Failed to fetch patient ${row.patientId} for order ${row.orderId}`);
     }
@@ -147,21 +156,21 @@ export async function getOrder(id: string): Promise<TestOrder | undefined> {
     };
 }
 
-export async function insertOrder(order: TestOrder): Promise<TestOrder> {
+export async function insertOrder(labId: string, order: TestOrder): Promise<TestOrder> {
     const serializedOrder = {
         ...order,
         orderDate: order.orderDate.toISOString(),
         // Firebase handles arrays/objects automatically, no need to stringify tests
     };
 
-    const dbRef = ref(db, getDbPath(`orders/${order.orderId}`));
+    const dbRef = ref(db, getDbPath(labId, `orders/${order.orderId}`));
     await set(dbRef, serializedOrder);
 
     return order;
 }
 
-export async function updateOrderRecord(orderId: string, data: Partial<TestOrder>): Promise<TestOrder | null> {
-    const current = await getOrder(orderId);
+export async function updateOrderRecord(labId: string, orderId: string, data: Partial<TestOrder>): Promise<TestOrder | null> {
+    const current = await getOrder(labId, orderId);
     if (!current) return null;
 
     const updated: TestOrder = { ...current, ...data };
@@ -170,7 +179,7 @@ export async function updateOrderRecord(orderId: string, data: Partial<TestOrder
     // No date update in updateOrderRecord usually (status/tests only), but good to be safe
     if (data.orderDate) serializedUpdates.orderDate = data.orderDate.toISOString();
 
-    const dbRef = ref(db, getDbPath(`orders/${orderId}`));
+    const dbRef = ref(db, getDbPath(labId, `orders/${orderId}`));
     await update(dbRef, serializedUpdates);
 
     return updated;

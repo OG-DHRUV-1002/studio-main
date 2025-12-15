@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import * as db from './db';
 import type { Patient, TestOrder } from './types';
 import { UpdatablePatientSchema } from './types';
+import { getCurrentLabId } from './auth-server';
 
 // --- PATIENT ACTIONS ---
 
@@ -17,6 +18,7 @@ const PatientFormSchema = z.object({
 
 export async function createPatient(formData: FormData) {
   try {
+    const labId = await getCurrentLabId();
     const data = Object.fromEntries(formData.entries());
     const parsed = PatientFormSchema.safeParse(data);
 
@@ -24,7 +26,7 @@ export async function createPatient(formData: FormData) {
       return { success: false, message: 'Invalid form data.', errors: parsed.error.flatten().fieldErrors };
     }
 
-    const allPatients = await db.getAllPatients();
+    const allPatients = await db.getAllPatients(labId);
     const nextIdNum = allPatients.length + 1;
     const patientId = `PAT${nextIdNum.toString().padStart(3, '0')}`;
 
@@ -36,7 +38,7 @@ export async function createPatient(formData: FormData) {
       createdAt: new Date(),
     };
 
-    const newPatient = await db.insertPatient(newPatientData);
+    const newPatient = await db.insertPatient(labId, newPatientData);
 
     revalidatePath('/patients');
     revalidatePath('/orders/new');
@@ -51,15 +53,18 @@ export async function createPatient(formData: FormData) {
 }
 
 export async function getPatients(): Promise<Patient[]> {
-  return await db.getAllPatients();
+  const labId = await getCurrentLabId();
+  return await db.getAllPatients(labId);
 }
 
 export async function getPatientById(patientId: string): Promise<Patient | undefined> {
-  return await db.getPatient(patientId);
+  const labId = await getCurrentLabId();
+  return await db.getPatient(labId, patientId);
 }
 
 export async function updatePatient(patientId: string, formData: FormData) {
   try {
+    const labId = await getCurrentLabId();
     const data = Object.fromEntries(formData.entries());
     const parsed = UpdatablePatientSchema.safeParse(data);
 
@@ -72,7 +77,7 @@ export async function updatePatient(patientId: string, formData: FormData) {
       dateOfBirth: new Date(parsed.data.dateOfBirth),
     };
 
-    const updatedPatient = await db.updatePatientRecord(patientId, updatedData);
+    const updatedPatient = await db.updatePatientRecord(labId, patientId, updatedData);
 
     if (!updatedPatient) {
       return { success: false, message: 'Patient not found.' };
@@ -90,7 +95,8 @@ export async function updatePatient(patientId: string, formData: FormData) {
 
 export async function deletePatient(patientId: string) {
   try {
-    const success = await db.removePatient(patientId);
+    const labId = await getCurrentLabId();
+    const success = await db.removePatient(labId, patientId);
     if (!success) {
       return { success: false, message: 'Patient not found.' };
     }
@@ -121,6 +127,7 @@ const OrderSchema = z.object({
 
 export async function createTestOrder(data: unknown) {
   try {
+    const labId = await getCurrentLabId();
     const parsed = OrderSchema.safeParse(data);
     if (!parsed.success) {
       console.error('Validation errors:', parsed.error.flatten().fieldErrors);
@@ -149,7 +156,7 @@ export async function createTestOrder(data: unknown) {
       specimen: specimen || 'N/A',
     };
 
-    await db.insertOrder(newOrder);
+    await db.insertOrder(labId, newOrder);
     revalidatePath('/');
     revalidatePath('/data-entry');
     return { success: true, message: 'Test order created successfully.' };
@@ -160,7 +167,8 @@ export async function createTestOrder(data: unknown) {
 }
 
 export async function getOrders(labType?: 'in-house' | 'outside'): Promise<TestOrder[]> {
-  const allOrders = await db.getAllOrders();
+  const labId = await getCurrentLabId();
+  const allOrders = await db.getAllOrders(labId);
   if (labType) {
     return allOrders.filter(order => order.labType === labType);
   }
@@ -168,7 +176,8 @@ export async function getOrders(labType?: 'in-house' | 'outside'): Promise<TestO
 }
 
 export async function getOrderById(orderId: string): Promise<TestOrder | undefined> {
-  return await db.getOrder(orderId);
+  const labId = await getCurrentLabId();
+  return await db.getOrder(labId, orderId);
 }
 
 const TestResultSchema = z.object({
@@ -186,13 +195,14 @@ const DataEntrySchema = z.object({
 
 export async function updateTestResults(data: unknown) {
   try {
+    const labId = await getCurrentLabId();
     const parsed = DataEntrySchema.safeParse(data);
     if (!parsed.success) {
       return { success: false, message: 'Invalid data.', errors: parsed.error.flatten().fieldErrors };
     }
 
     const { orderId, results } = parsed.data;
-    const order = await db.getOrder(orderId);
+    const order = await db.getOrder(labId, orderId);
     if (!order) {
       return { success: false, message: 'Order not found.' };
     }
@@ -210,7 +220,7 @@ export async function updateTestResults(data: unknown) {
       return test;
     });
 
-    await db.updateOrderRecord(orderId, { tests: updatedTests, status: 'Completed' });
+    await db.updateOrderRecord(labId, orderId, { tests: updatedTests, status: 'Completed' });
 
     revalidatePath(`/orders/${orderId}/report`);
     revalidatePath(`/orders/${orderId}/entry`);
@@ -228,6 +238,7 @@ export async function updateTestResults(data: unknown) {
 
 export async function generateReportAction(orderId: string): Promise<{ success: boolean; message: string }> {
   try {
+    // getOrderById already handles labId
     const order = await getOrderById(orderId);
     if (!order) {
       return { success: false, message: 'Order not found.' };
@@ -243,7 +254,10 @@ export async function generateReportAction(orderId: string): Promise<{ success: 
 
 export async function exportToCsvAction(labType: 'in-house' | 'outside'): Promise<{ success: boolean; data?: string; message: string }> {
   try {
-    const orders = await getOrders(labType);
+    const labId = await getCurrentLabId();
+    const orders = await getOrders(labType); // getOrders calls getCurrentLabId again or we can optimization, but it's fine. 
+    // Wait, getOrders helper above does call getCurrentLabId. But here I want to call db directly or just use helper?
+    // Using helper is cleaner but double cookie read. It's fine.
 
     if (orders.length === 0) {
       return { success: false, message: 'No orders to export.' };
@@ -269,6 +283,28 @@ export async function exportToCsvAction(labType: 'in-house' | 'outside'): Promis
 
   } catch (error) {
     console.error(error);
+
     return { success: false, message: 'Failed to export data.' };
+  }
+}
+
+// --- SETTINGS ACTIONS ---
+
+export async function updateLabSettings(formData: FormData) {
+  try {
+    const labId = await getCurrentLabId();
+    const displayName = formData.get('displayName') as string;
+    const theme = formData.get('theme') as string;
+
+    await db.updateLabConfig(labId, {
+      displayName,
+      theme
+    });
+
+    revalidatePath('/');
+    return { success: true, message: 'Settings updated successfully.' };
+  } catch (error) {
+    console.error('Update Settings Error:', error);
+    return { success: false, message: 'An error occurred while updating settings.' };
   }
 }
