@@ -50,16 +50,7 @@ export function AppSidebar() {
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
-          {user?.access_control.can_edit_branding && (
-            <SidebarMenuItem key="/settings">
-              <SidebarMenuButton asChild isActive={pathname === '/settings'} tooltip="Settings">
-                <Link href="/settings">
-                  <span className="text-xl">⚙️</span>
-                  <span>Settings</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          )}
+
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>

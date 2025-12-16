@@ -1,4 +1,4 @@
-import type {Metadata} from 'next';
+import type { Metadata } from 'next';
 import { Inter, Source_Code_Pro } from 'next/font/google'
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
@@ -16,7 +16,7 @@ const sourceCodePro = Source_Code_Pro({
 });
 
 export const metadata: Metadata = {
-  title: "DR. BHONSLE'S LABORATORY",
+  title: "MSD_LIMS",
   description: 'Laboratory Information Management System',
 };
 

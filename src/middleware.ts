@@ -16,6 +16,8 @@ export function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
+
+
     // Allow API routes to handle their own auth or pass through (we check cookies in actions/routes anyway)
     if (request.nextUrl.pathname.startsWith('/api') || request.nextUrl.pathname.startsWith('/_next') || request.nextUrl.pathname.includes('.')) {
         return NextResponse.next();

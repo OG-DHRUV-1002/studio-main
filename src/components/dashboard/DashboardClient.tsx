@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -22,7 +22,18 @@ interface DashboardClientProps {
 
 export function DashboardClient({ inHouseOrders, outsideOrders }: DashboardClientProps) {
   const [loadingExport, setLoadingExport] = useState<'in-house' | 'outside' | null>(null);
+  const [activeTab, setActiveTab] = useState('in-house');
   const { toast } = useToast();
+
+  useEffect(() => {
+    document.body.classList.remove('theme-outside');
+    if (activeTab === 'outside') {
+      document.body.classList.add('theme-outside');
+    }
+    return () => {
+      document.body.classList.remove('theme-outside');
+    };
+  }, [activeTab]);
 
   const handleExport = async (labType: 'in-house' | 'outside') => {
     setLoadingExport(labType);
@@ -75,7 +86,7 @@ export function DashboardClient({ inHouseOrders, outsideOrders }: DashboardClien
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8">
-      <Tabs defaultValue="in-house">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="flex items-center">
           <TabsList>
             <TabsTrigger value="in-house">In-House</TabsTrigger>
