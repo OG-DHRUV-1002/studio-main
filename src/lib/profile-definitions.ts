@@ -29,7 +29,7 @@ export interface ProfileDefinition {
 export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "LFT_001",
-        profile_name: "HEPATIC / LFT (Liver Function Test)",
+        profile_name: "HEPATIC / LFT",
         components: [
             {
                 label: "Bilirubin Total",
@@ -115,7 +115,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     },
     {
         profile_id: "LIPID_001",
-        profile_name: "LIPID PROFILE",
+        profile_name: "LIPID",
         components: [
             {
                 label: "S. Cholesterol",
@@ -174,7 +174,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     },
     {
         profile_id: "CARDIAC_001",
-        profile_name: "CARDIAC PROFILE",
+        profile_name: "CORONARY / CARDIAC ENZYMES",
         components: [
             { label: "CPK Total", key: "cpk_total", unit: "U/L", input_type: "number", validation: { min: 0, max: 5000, ref_range_text: "25 - 170 U/L" } },
             { label: "CK-MB", key: "ck_mb", unit: "IU/L", input_type: "number", validation: { min: 0, max: 500, ref_range_text: "0 - 25 IU/L" } },
@@ -186,7 +186,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     },
     {
         profile_id: "DIABETIC_001",
-        profile_name: "DIABETIC PROFILE",
+        profile_name: "DIABETIC",
         components: [
             { label: "Blood Sugar Fasting", key: "bs_fasting", unit: "mg/dL", input_type: "number", validation: { min: 20, max: 1000, ref_range_text: "70 - 100 mg/dL" } },
             { label: "Blood Sugar PP", key: "bs_pp", unit: "mg/dL", input_type: "number", validation: { min: 20, max: 1000, ref_range_text: "< 140 mg/dL" } },
@@ -323,7 +323,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     },
     {
         profile_id: "WIDAL_001",
-        profile_name: "WIDAL TEST",
+        profile_name: "WIDAL",
         components: [
             { label: "S. Typhi 'O'", key: "widal_o", unit: "", input_type: "dropdown", options: ["< 1:20", "1:20", "1:40", "1:80", "1:160", "1:320", "> 1:320"], validation: { ref_range_text: "< 1:80" } },
             { label: "S. Typhi 'H'", key: "widal_h", unit: "", input_type: "dropdown", options: ["< 1:20", "1:20", "1:40", "1:80", "1:160", "1:320", "> 1:320"], validation: { ref_range_text: "< 1:80" } },
@@ -381,7 +381,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     },
     {
         profile_id: "ASO_001",
-        profile_name: "ASO TITRE",
+        profile_name: "A S O",
         components: [
             { label: "ASO Titre", key: "aso_result", unit: "IU/mL", input_type: "number", validation: { min: 0, max: 1000, ref_range_text: "< 200 IU/mL" } },
             { label: "Qualitative", key: "aso_qual", unit: "", input_type: "dropdown", options: ["Negative", "Positive"], validation: { ref_range_text: "Negative" } }
@@ -389,7 +389,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     },
     {
         profile_id: "CRP_001",
-        profile_name: "C-REACTIVE PROTEIN (CRP)",
+        profile_name: "CRP",
         components: [
             { label: "CRP", key: "crp_result", unit: "mg/L", input_type: "number", validation: { min: 0, max: 200, ref_range_text: "< 6 mg/L" } },
             { label: "Qualitative", key: "crp_qual", unit: "", input_type: "dropdown", options: ["Negative", "Positive"], validation: { ref_range_text: "Negative" } }
@@ -404,14 +404,14 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     },
     {
         profile_id: "DCT_001",
-        profile_name: "DIRECT COOMBS TEST",
+        profile_name: "DIRECT COOMB’S TEST",
         components: [
             { label: "Result", key: "dct_result", unit: "", input_type: "dropdown", options: ["Negative", "Positive (1+)", "Positive (2+)", "Positive (3+)"], validation: { ref_range_text: "Negative" } }
         ]
     },
     {
         profile_id: "SEMEN_001",
-        profile_name: "SEMEN ANALYSIS",
+        profile_name: "SEMEN",
         components: [
             { label: "Volume", key: "volume", unit: "mL", input_type: "number", validation: { ref_range_text: "1.5 - 5.0 mL" } },
             { label: "Liquefaction Time", key: "liquefaction", unit: "min", input_type: "number", validation: { ref_range_text: "15 - 30 min" } },
@@ -427,7 +427,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     },
     {
         profile_id: "SPUTUM_001",
-        profile_name: "SPUTUM EXAMINATION",
+        profile_name: "SPUTUM",
         components: [
             { label: "AFB (TB)", key: "afb", unit: "", input_type: "dropdown", options: ["Not Seen", "Scanty", "1+", "2+", "3+"], validation: { ref_range_text: "Not Seen" } },
             { label: "Gram Stain", key: "gram_stain", unit: "", input_type: "text", validation: { ref_range_text: "" } }
@@ -438,7 +438,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     },
     {
         profile_id: "MANTOUX_001",
-        profile_name: "MANTOUX TEST",
+        profile_name: "MANTOUX’S TEST",
         components: [
             { label: "Induration", key: "induration", unit: "mm", input_type: "number", validation: { ref_range_text: "< 5mm Negative" } }
         ]
@@ -452,7 +452,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     },
     {
         profile_id: "BS_FASTING_001",
-        profile_name: "BLOOD SUGAR FASTING",
+        profile_name: "BLOOD SUGAR F",
         components: [
             { label: "Blood Sugar Fasting", key: "bs_fasting", unit: "mg/dL", input_type: "number", validation: { min: 20, max: 1000, ref_range_text: "70 - 100 mg/dL" } }
         ]
@@ -466,7 +466,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     },
     {
         profile_id: "BS_RANDOM_001",
-        profile_name: "BLOOD SUGAR RANDOM",
+        profile_name: "BLOOD SUGAR R",
         components: [
             { label: "Blood Sugar Random", key: "bs_random", unit: "mg/dL", input_type: "number", validation: { min: 20, max: 1000, ref_range_text: "70 - 140 mg/dL" } }
         ]
@@ -481,7 +481,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     },
     {
         profile_id: "IRON_001",
-        profile_name: "IRON PROFILE",
+        profile_name: "S. IRON, TIBC, % SAT",
         components: [
             { label: "S. Iron", key: "iron", unit: "mcg/dL", input_type: "number", validation: { min: 0, max: 500, ref_range_text: "60 - 170 mcg/dL" } },
             { label: "TIBC", key: "tibc", unit: "mcg/dL", input_type: "number", validation: { min: 0, max: 800, ref_range_text: "240 - 450 mcg/dL" } },
@@ -505,7 +505,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     },
     {
         profile_id: "ELECTROLYTES_001",
-        profile_name: "ELECTROLYTES",
+        profile_name: "S. ELECTROLYTES",
         components: [
             { label: "Sodium (Na+)", key: "sodium", unit: "mEq/L", input_type: "number", validation: { min: 0, max: 200, ref_range_text: "135 - 145 mEq/L" } },
             { label: "Potassium (K+)", key: "potassium", unit: "mEq/L", input_type: "number", validation: { min: 0, max: 10, ref_range_text: "3.5 - 5.1 mEq/L", panic_high: 6.0 } },
@@ -621,6 +621,420 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
             { label: "Protein", key: "protein", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "" } },
             { label: "Sugar", key: "sugar", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "" } },
             { label: "ADA", key: "ada", unit: "U/L", input_type: "number", validation: { ref_range_text: "< 40 U/L" } }
+        ]
+    },
+    // --- BIOCHEMISTRY START ---
+    {
+        profile_id: "S_BILIRUBIN_001",
+        profile_name: "S. BILIRUBIN",
+        components: [
+            { label: "Bilirubin Total", key: "bil_total", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "0.2 - 1.2 mg/dL" } },
+            { label: "Bilirubin Direct", key: "bil_direct", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 10, ref_range_text: "0.0 - 0.3 mg/dL" } },
+            { label: "Bilirubin Indirect", key: "bil_indirect", unit: "mg/dL", input_type: "calculated", formula: "{bil_total} - {bil_direct}", validation: { ref_range_text: "Calculated" } }
+        ]
+    },
+    {
+        profile_id: "SGOT_001",
+        profile_name: "S. G. O. T",
+        components: [
+            { label: "SGOT / AST", key: "sgot", unit: "U/L", input_type: "number", validation: { min: 0, max: 2000, ref_range_text: "< 40 U/L", panic_high: 500 } }
+        ]
+    },
+    {
+        profile_id: "SGPT_001",
+        profile_name: "S. G. P. T",
+        components: [
+            { label: "SGPT / ALT", key: "sgpt", unit: "U/L", input_type: "number", validation: { min: 0, max: 2000, ref_range_text: "< 40 U/L", panic_high: 500 } }
+        ]
+    },
+    {
+        profile_id: "ALK_PHOS_001",
+        profile_name: "S. ALKALINE PHOSPHATASE",
+        components: [
+            { label: "S. Alkaline Phosphatase", key: "alk_phos", unit: "U/L", input_type: "number", validation: { min: 0, max: 2000, ref_range_text: "80 - 290 U/L" } }
+        ]
+    },
+    {
+        profile_id: "LDH_001",
+        profile_name: "S. LDH",
+        components: [
+            { label: "LDH", key: "ldh", unit: "U/L", input_type: "number", validation: { min: 0, max: 3000, ref_range_text: "140 - 280 U/L" } }
+        ]
+    },
+    {
+        profile_id: "URIC_ACID_001",
+        profile_name: "S. URIC ACID",
+        components: [
+            { label: "S. Uric Acid", key: "uric_acid", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "M: 3.5-7.2, F: 2.6-6.0 mg/dL" } }
+        ]
+    },
+    {
+        profile_id: "TOTAL_PROTEINS_001",
+        profile_name: "S. PROTEINS",
+        components: [
+            { label: "S. Total Proteins", key: "total_protein", unit: "g/dL", input_type: "number", validation: { min: 0, max: 15, ref_range_text: "6.0 - 8.0 g/dL" } },
+            { label: "S. Albumin", key: "albumin", unit: "g/dL", input_type: "number", validation: { min: 0, max: 10, ref_range_text: "3.5 - 5.5 g/dL" } },
+            { label: "S. Globulin", key: "globulin", unit: "g/dL", input_type: "calculated", formula: "{total_protein} - {albumin}", validation: { ref_range_text: "Calculated" } },
+            { label: "A/G Ratio", key: "ag_ratio", unit: "", input_type: "calculated", formula: "{albumin} / {globulin}", validation: { ref_range_text: "Calculated" } }
+        ]
+    },
+    {
+        profile_id: "ACID_PHOS_001",
+        profile_name: "S. ACID PHOSPHATASE",
+        components: [
+            { label: "Acid Phosphatase (Total)", key: "acid_phos_total", unit: "U/L", input_type: "number", validation: { ref_range_text: "0 - 9 U/L" } },
+            { label: "Prostatic Fraction", key: "acid_phos_pros", unit: "U/L", input_type: "number", validation: { ref_range_text: "0 - 3 U/L" } }
+        ]
+    },
+    {
+        profile_id: "CHOLESTEROL_001",
+        profile_name: "S. CHOLESTEROL",
+        components: [
+            { label: "S. Cholesterol", key: "cholesterol", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 800, ref_range_text: "< 200 mg/dL" } }
+        ]
+    },
+    {
+        profile_id: "HDL_001",
+        profile_name: "S. HDL CHOL",
+        components: [
+            { label: "S. HDL Cholesterol", key: "hdl", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 200, ref_range_text: "> 40 mg/dL" } }
+        ]
+    },
+    {
+        profile_id: "LDL_001",
+        profile_name: "S. LDL CHOL",
+        components: [
+            { label: "S. LDL Cholesterol", key: "ldl", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 500, ref_range_text: "< 100 mg/dL" } }
+        ]
+    },
+    {
+        profile_id: "TRIGLYCERIDES_001",
+        profile_name: "S. TRIGLYCERIDES",
+        components: [
+            { label: "S. Triglycerides", key: "triglycerides", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 2000, ref_range_text: "< 150 mg/dL" } }
+        ]
+    },
+    {
+        profile_id: "CPK_TOTAL_001",
+        profile_name: "S. CPK TOTAL",
+        components: [
+            { label: "CPK Total", key: "cpk_total", unit: "U/L", input_type: "number", validation: { min: 0, max: 5000, ref_range_text: "25 - 170 U/L" } }
+        ]
+    },
+    {
+        profile_id: "CK_MB_001",
+        profile_name: "S. CK MB",
+        components: [
+            { label: "CK-MB", key: "ck_mb", unit: "IU/L", input_type: "number", validation: { min: 0, max: 500, ref_range_text: "0 - 25 IU/L" } }
+        ]
+    },
+    {
+        profile_id: "GLYCO_HB_001",
+        profile_name: "GLYCOSYLATED HB",
+        components: [
+            { label: "HbA1c", key: "hba1c", unit: "%", input_type: "number", validation: { min: 3, max: 20, ref_range_text: "< 5.7% Non-Diabetic" } },
+            { label: "Mean Est. Glucose", key: "eag", unit: "mg/dL", input_type: "calculated", formula: "(28.7 * {hba1c}) - 46.7", validation: { ref_range_text: "Calculated" } }
+        ]
+    },
+    {
+        profile_id: "BICARB_001",
+        profile_name: "S. BICARBONATE",
+        components: [
+            { label: "Bicarbonate", key: "bicarb", unit: "mEq/L", input_type: "number", validation: { min: 0, max: 100, ref_range_text: "22 - 29 mEq/L" } }
+        ]
+    },
+    {
+        profile_id: "AMMONIA_001",
+        profile_name: "PLASMA AMMONIA",
+        components: [
+            { label: "Plasma Ammonia", key: "ammonia", unit: "mcg/dL", input_type: "number", validation: { min: 0, max: 500, ref_range_text: "15 - 45 mcg/dL" } }
+        ]
+    },
+    {
+        profile_id: "CALCIUM_SINGLE_001",
+        profile_name: "CALCIUM", // Matches tests.ts Name
+        components: [
+            { label: "S. Calcium", key: "calcium", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "8.5 - 10.5 mg/dL" } }
+        ]
+    },
+    {
+        profile_id: "BLOOD_UREA_001",
+        profile_name: "BLOOD UREA",
+        components: [
+            { label: "Blood Urea", key: "blood_urea", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 300, ref_range_text: "15 - 40 mg/dL" } }
+        ]
+    },
+    // --- SEROLOGY START ---
+    {
+        profile_id: "GROUP_001",
+        profile_name: "GROUP", // Matches tests.ts "GROUP"
+        components: [
+            { label: "ABO Group", key: "abo_group", unit: "", input_type: "dropdown", options: ["A", "B", "AB", "O", "Oh (Bombay)"], validation: { ref_range_text: "" } },
+            { label: "Rh Factor", key: "rh_factor", unit: "", input_type: "dropdown", options: ["Positive", "Negative"], validation: { ref_range_text: "" } }
+        ]
+    },
+    {
+        profile_id: "PROTHROMBIN_001",
+        profile_name: "PROTHROMBIN TIME",
+        components: [
+            { label: "PT (Test Value)", key: "pt_test", unit: "Sec", input_type: "number", validation: { ref_range_text: "11-13.5 Sec" } },
+            { label: "PT (Control Value)", key: "pt_control", unit: "Sec", input_type: "number", validation: { ref_range_text: "11-13.5 Sec" } },
+            { label: "INR", key: "inr", unit: "", input_type: "calculated", formula: "{pt_test} / {pt_control}", validation: { ref_range_text: "0.8 - 1.1" } }
+        ]
+    },
+    {
+        profile_id: "RA_TEST_001",
+        profile_name: "R A TEST",
+        components: [
+            { label: "RA Factor", key: "ra_result", unit: "IU/mL", input_type: "number", validation: { min: 0, max: 200, ref_range_text: "< 20 IU/mL" } },
+            { label: "Qualitative", key: "ra_qual", unit: "", input_type: "dropdown", options: ["Negative", "Positive"], validation: { ref_range_text: "Negative" } }
+        ]
+    },
+    {
+        profile_id: "ASO_TEST_001",
+        profile_name: "A S O",
+        components: [
+            { label: "ASO Titre", key: "aso_result", unit: "IU/mL", input_type: "number", validation: { min: 0, max: 1000, ref_range_text: "< 200 IU/mL" } },
+            { label: "Qualitative", key: "aso_qual", unit: "", input_type: "dropdown", options: ["Negative", "Positive"], validation: { ref_range_text: "Negative" } }
+        ]
+    },
+    {
+        profile_id: "AUSTRALIA_AG_001",
+        profile_name: "AUSTRALIA ANTIGEN",
+        components: [
+            { label: "HBsAg Result", key: "hbsag_result", unit: "", input_type: "dropdown", options: ["Non-Reactive", "Reactive", "Borderline"], validation: { ref_range_text: "Non-Reactive" } }
+        ],
+        ui_actions: [
+            { trigger: "if {hbsag_result} == 'Reactive'", action: "toast_alert", message: "CRITICAL ALERT: Reactive!" }
+        ]
+    },
+    {
+        profile_id: "VDRL_TEST_001",
+        profile_name: "VDRL",
+        components: [
+            { label: "VDRL Result", key: "vdrl_result", unit: "", input_type: "dropdown", options: ["Non-Reactive", "Reactive", "Borderline"], validation: { ref_range_text: "Non-Reactive" } }
+        ]
+    },
+    {
+        profile_id: "HIV_TEST_001",
+        profile_name: "HIV",
+        components: [
+            { label: "HIV Result", key: "hiv_result", unit: "", input_type: "dropdown", options: ["Non-Reactive", "Reactive", "Borderline"], validation: { ref_range_text: "Non-Reactive" } }
+        ]
+    },
+    // --- BACTERIOLOGY START ---
+    {
+        profile_id: "CUL_THROAT_001",
+        profile_name: "CUL. THROAT SWAB",
+        components: [
+            { label: "Culture Status", key: "culture_status", unit: "", input_type: "dropdown", options: ["Sterile / No Growth", "Growth Detected", "Contaminated"], validation: { ref_range_text: "Sterile" } },
+            { label: "Organism Name", key: "organism_name", unit: "", input_type: "text", validation: { ref_range_text: "" } }
+        ]
+    },
+    {
+        profile_id: "CUL_BLOOD_001",
+        profile_name: "CULTURE BLOOD",
+        components: [
+            { label: "Culture Status", key: "culture_status", unit: "", input_type: "dropdown", options: ["Sterile / No Growth", "Growth Detected", "Contaminated"], validation: { ref_range_text: "Sterile" } },
+            { label: "Organism Name", key: "organism_name", unit: "", input_type: "text", validation: { ref_range_text: "" } }
+        ]
+    },
+    {
+        profile_id: "CUL_CSF_001",
+        profile_name: "CULTURE CSF",
+        components: [
+            { label: "Culture Status", key: "culture_status", unit: "", input_type: "dropdown", options: ["Sterile / No Growth", "Growth Detected", "Contaminated"], validation: { ref_range_text: "Sterile" } },
+            { label: "Organism Name", key: "organism_name", unit: "", input_type: "text", validation: { ref_range_text: "" } }
+        ]
+    },
+    {
+        profile_id: "CSF_PERI_001",
+        profile_name: "CSF/PERICARDIAL FL",
+        components: [
+            { label: "Fluid Type", key: "fluid_type", unit: "", input_type: "dropdown", options: ["CSF", "Pericardial Fluid"], validation: { ref_range_text: "" } },
+            { label: "Appearance", key: "appearance", unit: "", input_type: "text", validation: { ref_range_text: "Clear" } },
+            { label: "Total Cell Count", key: "cell_count", unit: "/cmm", input_type: "number", validation: { ref_range_text: "" } },
+            { label: "Protein", key: "protein", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "" } },
+            { label: "Sugar", key: "sugar", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "" } }
+        ]
+    },
+    {
+        profile_id: "ASCITIC_PLEURAL_001",
+        profile_name: "ASCITIC /PLEURAL FL",
+        components: [
+            { label: "Fluid Type", key: "fluid_type", unit: "", input_type: "dropdown", options: ["Ascitic Fluid", "Pleural Fluid"], validation: { ref_range_text: "" } },
+            { label: "Appearance", key: "appearance", unit: "", input_type: "text", validation: { ref_range_text: "Clear" } },
+            { label: "Total Cell Count", key: "cell_count", unit: "/cmm", input_type: "number", validation: { ref_range_text: "" } },
+            { label: "Protein", key: "protein", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "" } },
+            { label: "Sugar", key: "sugar", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "" } }
+        ]
+    },
+    {
+        profile_id: "THYROID_TESTS_001",
+        profile_name: "T3 T4 TSH",
+        components: [
+            { label: "T3", key: "t3", unit: "ng/mL", input_type: "number", validation: { min: 0, max: 10, ref_range_text: "0.60 - 1.81 ng/mL" } },
+            { label: "T4", key: "t4", unit: "ug/dL", input_type: "number", validation: { min: 0, max: 30, ref_range_text: "5.01 - 12.45 ug/dL" } },
+            { label: "TSH", key: "tsh", unit: "uIU/mL", input_type: "number", validation: { min: 0, max: 100, ref_range_text: "0.35 - 5.50 uIU/mL" } }
+        ]
+    },
+    {
+        profile_id: "LH_FSH_001",
+        profile_name: "LH FSH",
+        components: [
+            { label: "LH", key: "lh", unit: "mIU/mL", input_type: "number", validation: { ref_range_text: "Cycle Dependent" } },
+            { label: "FSH", key: "fsh", unit: "mIU/mL", input_type: "number", validation: { ref_range_text: "Cycle Dependent" } }
+        ]
+    },
+    {
+        profile_id: "PROLACTIN_001",
+        profile_name: "PROLACTIN",
+        components: [
+            { label: "Prolactin", key: "prolactin", unit: "ng/mL", input_type: "number", validation: { ref_range_text: "4.8 - 23.3 ng/mL" } }
+        ]
+    },
+    {
+        profile_id: "BETA_HCG_001",
+        profile_name: "BETA HCG",
+        components: [
+            { label: "Beta HCG", key: "beta_hcg", unit: "mIU/mL", input_type: "number", validation: { ref_range_text: "< 5.0 mIU/mL (Non-pregnant)" } }
+        ]
+    },
+    {
+        profile_id: "TORCH_PANEL_001",
+        profile_name: "TORCH",
+        components: [
+            { label: "Toxo IgG", key: "toxo_igg", unit: "IU/mL", input_type: "number", validation: { ref_range_text: "Negative" } },
+            { label: "Toxo IgM", key: "toxo_igm", unit: "Index", input_type: "number", validation: { ref_range_text: "Negative" } },
+            { label: "Rubella IgG", key: "rubella_igg", unit: "IU/mL", input_type: "number", validation: { ref_range_text: "Negative" } },
+            { label: "Rubella IgM", key: "rubella_igm", unit: "Index", input_type: "number", validation: { ref_range_text: "Negative" } },
+            { label: "CMV IgG", key: "cmv_igg", unit: "IU/mL", input_type: "number", validation: { ref_range_text: "Negative" } },
+            { label: "CMV IgM", key: "cmv_igm", unit: "Index", input_type: "number", validation: { ref_range_text: "Negative" } },
+            { label: "HSV 1&2 IgG", key: "hsv_igg", unit: "Index", input_type: "number", validation: { ref_range_text: "Negative" } },
+            { label: "HSV 1&2 IgM", key: "hsv_igm", unit: "Index", input_type: "number", validation: { ref_range_text: "Negative" } }
+        ]
+    },
+    {
+        profile_id: "CYTOLOGY_001",
+        profile_name: "CYTOLOGY",
+        components: [
+            { label: "Site", key: "site", unit: "", input_type: "text", validation: { ref_range_text: "" } },
+            { label: "Microscopy", key: "microscopy", unit: "", input_type: "text_area", validation: { ref_range_text: "" } },
+            { label: "Impression", key: "impression", unit: "", input_type: "text_area", validation: { ref_range_text: "" } }
+        ]
+    },
+    {
+        profile_id: "HISTOPATHOLOGY_001",
+        profile_name: "HISTOPATHOLOGY",
+        components: [
+            { label: "Specimen", key: "specimen", unit: "", input_type: "text", validation: { ref_range_text: "" } },
+            { label: "Gross Appearance", key: "gross", unit: "", input_type: "text_area", validation: { ref_range_text: "" } },
+            { label: "Microscopy", key: "microscopy", unit: "", input_type: "text_area", validation: { ref_range_text: "" } },
+            { label: "Impression", key: "impression", unit: "", input_type: "text_area", validation: { ref_range_text: "" } }
+        ]
+    },
+    {
+        profile_id: "WESTERN_BLOT_001",
+        profile_name: "WESTERN BLOT TEST",
+        components: [
+            { label: "gp160", key: "gp160", unit: "", input_type: "dropdown", options: ["Absent", "Present"], validation: { ref_range_text: "Absent" } },
+            { label: "gp120", key: "gp120", unit: "", input_type: "dropdown", options: ["Absent", "Present"], validation: { ref_range_text: "Absent" } },
+            { label: "p66", key: "p66", unit: "", input_type: "dropdown", options: ["Absent", "Present"], validation: { ref_range_text: "Absent" } },
+            { label: "p55", key: "p55", unit: "", input_type: "dropdown", options: ["Absent", "Present"], validation: { ref_range_text: "Absent" } },
+            { label: "p51", key: "p51", unit: "", input_type: "dropdown", options: ["Absent", "Present"], validation: { ref_range_text: "Absent" } },
+            { label: "gp41", key: "gp41", unit: "", input_type: "dropdown", options: ["Absent", "Present"], validation: { ref_range_text: "Absent" } },
+            { label: "p31", key: "p31", unit: "", input_type: "dropdown", options: ["Absent", "Present"], validation: { ref_range_text: "Absent" } },
+            { label: "p24", key: "p24", unit: "", input_type: "dropdown", options: ["Absent", "Present"], validation: { ref_range_text: "Absent" } },
+            { label: "p17", key: "p17", unit: "", input_type: "dropdown", options: ["Absent", "Present"], validation: { ref_range_text: "Absent" } },
+            { label: "Conclusion", key: "conclusion", unit: "", input_type: "dropdown", options: ["Negative", "Indeterminate", "Positive"], validation: { ref_range_text: "Negative" } }
+        ]
+    },
+    {
+        profile_id: "ANY_OTHER_001",
+        profile_name: "ANY OTHER TEST",
+        components: [
+            { label: "Test Parameter", key: "parameter", unit: "", input_type: "text", validation: { ref_range_text: "" } },
+            { label: "Result", key: "result", unit: "", input_type: "text", validation: { ref_range_text: "" } },
+            { label: "Remark", key: "remark", unit: "", input_type: "text_area", validation: { ref_range_text: "" } }
+        ]
+    }
+    ,
+    // --- MASTER CHECKUP PROFILES START ---
+    {
+        profile_id: "SMA_12_001",
+        profile_name: "SMA – 12",
+        components: [
+            { label: "S. Albumin", key: "albumin", unit: "g/dL", input_type: "number", validation: { ref_range_text: "3.5 - 5.5 g/dL" } },
+            { label: "S. Alkaline Phosphatase", key: "alk_phos", unit: "U/L", input_type: "number", validation: { ref_range_text: "80 - 290 U/L" } },
+            { label: "SGOT / AST", key: "sgot", unit: "U/L", input_type: "number", validation: { ref_range_text: "< 40 U/L" } },
+            { label: "SGPT / ALT", key: "sgpt", unit: "U/L", input_type: "number", validation: { ref_range_text: "< 40 U/L" } },
+            { label: "Bilirubin Total", key: "bil_total", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "0.2 - 1.2 mg/dL" } },
+            { label: "Blood Urea", key: "blood_urea", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "15 - 40 mg/dL" } },
+            { label: "S. Calcium", key: "calcium", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "8.5 - 10.5 mg/dL" } },
+            { label: "S. Cholesterol", key: "cholesterol", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "< 200 mg/dL" } },
+            { label: "Blood Sugar Fasting", key: "bs_fasting", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "70 - 100 mg/dL" } },
+            { label: "LDH", key: "ldh", unit: "U/L", input_type: "number", validation: { ref_range_text: "140 - 280 U/L" } },
+            { label: "S. Phosphorus", key: "phosphorus", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "2.5 - 4.5 mg/dL" } },
+            { label: "S. Total Proteins", key: "total_protein", unit: "g/dL", input_type: "number", validation: { ref_range_text: "6.0 - 8.0 g/dL" } }
+        ]
+    },
+    {
+        profile_id: "TOTAL_BODY_001",
+        profile_name: "TOTAL BODY",
+        components: [
+            // CBC
+            { label: "Haemoglobin (Hb)", key: "hb", unit: "g/dL", input_type: "number", validation: { ref_range_text: "M: 13-17, F: 12-15" } },
+            { label: "Total WBC Count", key: "wbc", unit: "/cmm", input_type: "number", validation: { ref_range_text: "4,000 - 11,000" } },
+            { label: "DC - Neutrophils", key: "neutrophils", unit: "%", input_type: "number", validation: { ref_range_text: "40-75 %" } },
+            { label: "DC - Lymphocytes", key: "lymphocytes", unit: "%", input_type: "number", validation: { ref_range_text: "20-45 %" } },
+            { label: "ESR", key: "esr", unit: "mm", input_type: "number", validation: { ref_range_text: "M: 0-15, F: 0-20" } },
+            // SUGAR
+            { label: "Blood Sugar Fasting", key: "bs_fasting", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "70 - 100" } },
+            { label: "Blood Sugar PP", key: "bs_pp", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "< 140" } },
+            // LIPID
+            { label: "S. Cholesterol", key: "cholesterol", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "< 200" } },
+            { label: "S. Triglycerides", key: "triglycerides", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "< 150" } },
+            { label: "S. HDL", key: "hdl", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "> 40" } },
+            { label: "S. LDL", key: "ldh", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "< 100" } },
+            // LFT
+            { label: "Bilirubin Total", key: "bil_total", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "0.2 - 1.2" } },
+            { label: "SGOT", key: "sgot", unit: "U/L", input_type: "number", validation: { ref_range_text: "< 40" } },
+            { label: "SGPT", key: "sgpt", unit: "U/L", input_type: "number", validation: { ref_range_text: "< 40" } },
+            { label: "Alk. Phosphatase", key: "alk_phos", unit: "U/L", input_type: "number", validation: { ref_range_text: "80 - 290" } },
+            // KFT
+            { label: "Blood Urea", key: "blood_urea", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "15 - 40" } },
+            { label: "S. Creatinine", key: "creatinine", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "0.7 - 1.3" } },
+            { label: "S. Uric Acid", key: "uric_acid", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "3.5 - 7.2" } }
+        ]
+    },
+    {
+        profile_id: "HYPERTENSION_001",
+        profile_name: "HYPERTENSION",
+        components: [
+            // LIPID
+            { label: "S. Cholesterol", key: "cholesterol", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "< 200" } },
+            { label: "S. Triglycerides", key: "triglycerides", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "< 150" } },
+            { label: "S. HDL", key: "hdl", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "> 40" } },
+            { label: "S. LDL", key: "ldh", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "< 100" } },
+            // KIDNEY + ELECTROLYTES
+            { label: "Blood Urea", key: "blood_urea", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "15 - 40" } },
+            { label: "S. Creatinine", key: "creatinine", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "0.7 - 1.3" } },
+            { label: "Sodium (Na+)", key: "sodium", unit: "mEq/L", input_type: "number", validation: { ref_range_text: "135 - 145" } },
+            { label: "Potassium (K+)", key: "potassium", unit: "mEq/L", input_type: "number", validation: { ref_range_text: "3.5 - 5.1" } },
+            { label: "Chloride (Cl-)", key: "chloride", unit: "mEq/L", input_type: "number", validation: { ref_range_text: "96 - 106" } }
+        ]
+    },
+    {
+        profile_id: "CARDIAC_CHECKUP_001",
+        profile_name: "CARDIAC", // Distinct from ENZYMES
+        components: [
+            { label: "ECG Findings", key: "ecg_findings", unit: "", input_type: "text_area", validation: { ref_range_text: "Normal Sinus Rhythm" } },
+            { label: "S. Cholesterol", key: "cholesterol", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "< 200" } },
+            { label: "S. Triglycerides", key: "triglycerides", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "< 150" } },
+            { label: "S. HDL", key: "hdl", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "> 40" } },
+            { label: "S. LDL", key: "ldh", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "< 100" } },
+            { label: "Blood Sugar Fasting", key: "bs_fasting", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "70 - 100" } },
+            { label: "S. Creatinine", key: "creatinine", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "0.7 - 1.3" } }
         ]
     }
 ];

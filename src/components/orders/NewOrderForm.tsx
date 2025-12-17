@@ -75,23 +75,23 @@ const TestCombobox = ({ value, onSelect, onPriceChange }: { value: string, onSel
           <CommandList>
             <CommandEmpty>No test found.</CommandEmpty>
             {Object.entries(testProfiles).map(([category, tests]) => (
-                <CommandGroup key={category} heading={category}>
-                    {tests.map((test) => (
-                        <CommandItem
-                            key={test.name}
-                            value={test.name}
-                            onSelect={() => handleSelect(test.name)}
-                        >
-                            <Check
-                                className={cn(
-                                    'mr-2 h-4 w-4',
-                                    value === test.name ? 'opacity-100' : 'opacity-0'
-                                )}
-                            />
-                            {test.name}
-                        </CommandItem>
-                    ))}
-                </CommandGroup>
+              <CommandGroup key={category} heading={category}>
+                {tests.map((test) => (
+                  <CommandItem
+                    key={test.name}
+                    value={test.name}
+                    onSelect={() => handleSelect(test.name)}
+                  >
+                    <Check
+                      className={cn(
+                        'mr-2 h-4 w-4',
+                        value === test.name ? 'opacity-100' : 'opacity-0'
+                      )}
+                    />
+                    {test.name}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
             ))}
           </CommandList>
         </Command>
@@ -118,7 +118,7 @@ export function NewOrderForm({ patients }: NewOrderFormProps) {
       specimen: '',
     },
   });
-  
+
   const labType = form.watch('labType');
   const tests = form.watch('tests');
 
@@ -141,10 +141,10 @@ export function NewOrderForm({ patients }: NewOrderFormProps) {
     const subscription = form.watch((value, { name, type }) => {
       if (type === 'change' && name?.startsWith('tests') && name.endsWith('testName')) {
         const index = parseInt(name.split('.')[1]);
-        const testName = value.tests?.[index].testName;
+        const testName = value.tests?.[index]?.testName;
         const test = allTests.find(t => t.name === testName);
         if (test) {
-            form.setValue(`tests.${index}.testPrice`, test.price, { shouldValidate: true });
+          form.setValue(`tests.${index}.testPrice`, test.price, { shouldValidate: true });
         }
       }
     });
@@ -179,87 +179,100 @@ export function NewOrderForm({ patients }: NewOrderFormProps) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <Card>
-           <CardHeader>
+          <CardHeader>
             <CardTitle>Patient &amp; Order Details</CardTitle>
             <CardDescription>Select a patient and specify the order type.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-                 <FormField
-                  control={form.control}
-                  name="orderId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Lab No.</FormLabel>
-                      <FormControl>
-                         <Input placeholder="e.g., A123-B" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="patientId"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Patient</FormLabel>
-                       <PatientCombobox
-                        patients={patients}
-                        value={field.value}
-                        onChange={field.onChange}
+            <FormField
+              control={form.control}
+              name="orderId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Lab No.</FormLabel>
+                  <FormControl>
+                    <div className="flex rounded-md border border-input shadow-sm focus-within:ring-1 focus-within:ring-ring">
+                      <div className="flex h-9 items-center rounded-l-md border-r bg-muted px-3 text-sm text-muted-foreground">
+                        {new Date().toLocaleString('default', { month: 'long' }).slice(0, 4) + '_'}
+                      </div>
+                      <Input
+                        placeholder="1234"
+                        className="flex-1 border-0 focus-visible:ring-0 rounded-l-none"
+                        value={field.value ? field.value.split('_')[1] || '' : ''}
+                        onChange={(e) => {
+                          const prefix = new Date().toLocaleString('default', { month: 'long' }).slice(0, 4) + '_';
+                          field.onChange(prefix + e.target.value);
+                        }}
                       />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="labType"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                      <div className="space-y-0.5">
-                        <FormLabel>Lab Type</FormLabel>
-                        <FormMessage />
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <span className={cn('transition-colors', field.value === 'in-house' ? 'font-semibold text-primary' : '')}>In-House</span>
-                        <FormControl>
-                          <Switch
-                            checked={field.value === 'outside'}
-                            onCheckedChange={(checked) => field.onChange(checked ? 'outside' : 'in-house')}
-                          />
-                        </FormControl>
-                        <span className={cn('transition-colors', field.value === 'outside' ? 'font-semibold text-primary' : '')}>Outside</span>
-                      </div>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="referredBy"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Referred By</FormLabel>
-                      <FormControl>
-                         <Input placeholder="e.g., Dr. Smith" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="specimen"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Specimen</FormLabel>
-                      <FormControl>
-                         <Input placeholder="e.g., Blood, Urine" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="patientId"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Patient</FormLabel>
+                  <PatientCombobox
+                    patients={patients}
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="labType"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                  <div className="space-y-0.5">
+                    <FormLabel>Lab Type</FormLabel>
+                    <FormMessage />
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className={cn('transition-colors', field.value === 'in-house' ? 'font-semibold text-primary' : '')}>In-House</span>
+                    <FormControl>
+                      <Switch
+                        checked={field.value === 'outside'}
+                        onCheckedChange={(checked) => field.onChange(checked ? 'outside' : 'in-house')}
+                      />
+                    </FormControl>
+                    <span className={cn('transition-colors', field.value === 'outside' ? 'font-semibold text-primary' : '')}>Outside</span>
+                  </div>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="referredBy"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Referred By</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., Dr. Smith" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="specimen"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Specimen</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., Blood, Urine" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </CardContent>
         </Card>
 
@@ -271,21 +284,21 @@ export function NewOrderForm({ patients }: NewOrderFormProps) {
           <CardContent className="space-y-4">
             {fields.map((field, index) => (
               <div key={field.id} className="flex items-start gap-4">
-                 <FormField
+                <FormField
                   control={form.control}
                   name={`tests.${index}.testName`}
                   render={({ field: formField }) => (
                     <FormItem className="flex-1">
                       <FormLabel className={cn(index !== 0 && "sr-only")}>Test Name</FormLabel>
-                       <TestCombobox
-                          value={formField.value}
-                          onSelect={(value) => {
-                            form.setValue(`tests.${index}.testName`, value, { shouldValidate: true });
-                          }}
-                          onPriceChange={(price) => {
-                             form.setValue(`tests.${index}.testPrice`, price, { shouldValidate: true });
-                          }}
-                        />
+                      <TestCombobox
+                        value={formField.value}
+                        onSelect={(value) => {
+                          form.setValue(`tests.${index}.testName`, value, { shouldValidate: true });
+                        }}
+                        onPriceChange={(price) => {
+                          form.setValue(`tests.${index}.testPrice`, price, { shouldValidate: true });
+                        }}
+                      />
                       <FormMessage />
                     </FormItem>
                   )}
@@ -298,8 +311,8 @@ export function NewOrderForm({ patients }: NewOrderFormProps) {
                       <FormLabel className={cn(index !== 0 && "sr-only")}>Price</FormLabel>
                       <FormControl>
                         <div className="relative">
-                            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">₹</span>
-                            <Input type="number" placeholder="0.00" className="pl-7" {...field} />
+                          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">₹</span>
+                          <Input type="number" placeholder="0.00" className="pl-7" {...field} />
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -370,20 +383,20 @@ export function NewOrderForm({ patients }: NewOrderFormProps) {
           </Card>
         )}
 
-         {labType === 'outside' && (
-             <Card>
-                <CardHeader>
-                    <CardTitle>Finalize Order</CardTitle>
-                    <CardDescription>Review and create the test order.</CardDescription>
-                </CardHeader>
-                <CardFooter>
-                    <Button type="submit" className="w-full md:w-auto" disabled={isSubmitting}>
-                        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Create Test Order
-                    </Button>
-                </CardFooter>
-             </Card>
-         )}
+        {labType === 'outside' && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Finalize Order</CardTitle>
+              <CardDescription>Review and create the test order.</CardDescription>
+            </CardHeader>
+            <CardFooter>
+              <Button type="submit" className="w-full md:w-auto" disabled={isSubmitting}>
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Create Test Order
+              </Button>
+            </CardFooter>
+          </Card>
+        )}
       </form>
     </Form>
   );

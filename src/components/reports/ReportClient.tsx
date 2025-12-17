@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Download, Loader2 } from "lucide-react";
 import type { TestOrder } from "@/lib/types";
+import { format } from "date-fns";
+
 import { generateReportAction } from "@/lib/actions";
 import { useToast } from "@/hooks/use-toast";
 import { downloadFile } from "@/lib/utils";
@@ -15,6 +17,8 @@ import { PROFILE_DEFINITIONS } from "@/lib/profile-definitions";
 interface ReportClientProps {
     order: TestOrder;
 }
+
+// ... (imports remain)
 
 export function ReportClient({ order }: ReportClientProps) {
     const [isGenerating, setIsGenerating] = useState(false);
@@ -31,65 +35,63 @@ export function ReportClient({ order }: ReportClientProps) {
         const result = await generateReportAction(order.orderId);
 
         if (result.success) {
+            // Updated HTML for Clean, Pre-printed Stationery Format
             const static_html = `
                 <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
                 <head><meta charset='utf-8'><title>Report</title>
                 <style>
-                    body { font-family: Arial, sans-serif; font-size: 11pt; }
-                    table { border-collapse: collapse; width: 100%; }
-                    th, td { padding: 4px; }
-                    .header-table td { vertical-align: top; }
+                    body { font-family: 'Calibri', sans-serif; font-size: 11pt; line-height: 1.2; }
+                    table { border-collapse: collapse; width: 100%; border: none; }
+                    th, td { padding: 4px; border: none; } 
+                    .header-spacer { height: 100px; } /* Approx 5 lines space */
+                    .footer-spacer { height: 80px; } /* Approx 4 lines space */
                     @page {
-                        mso-footer: f1;
-                        margin-bottom: 1.25in;
-                    }
-                    div.footer {
-                        position: fixed;
-                        bottom: 0;
-                        right: 0;
-                        width: 100%;
+                        margin-top: 2.0in; /* Leave space for pre-printed header */
+                        margin-bottom: 1.0in;
                     }
                 </style>
                 </head>
                 <body>
-                    <table class="header-table" style="width: 100%;">
+                    <!-- 5 Lines Empty Space for Header -->
+                    <p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>
+
+                    <table style="width: 100%; margin-bottom: 20px;">
                         <tr>
-                            <td style="width: 33%; text-align: left;">
-                                <h2 style="font-size: 24px; font-weight: bold; margin: 0;">DR. BHONSLE'S LABORATORY</h2>
+                            <td style="text-align: left; width: 50%;">
+                                Patient Name : <strong>${order.patient?.fullName}</strong>
                             </td>
-                            <td style="width: 34%; text-align: center; font-size: 10pt;">
-                                27, SHANTI CENTRE,<br />3RD FLOOR, SEC-17, VASHI,<br />NAVI MUMBAI - 400 705.<br />TIME: 8.00 AM. TO 9.00 PM.<br />PH.: 7977173732 / 8779508920<br />EMAIL.:drbhonsleslab@gmail.com
-                            </td>
-                            <td style="width: 33%; text-align: right;">
-                                <h3 style="font-size: 18px; font-weight: bold; margin: 0;">DR. S. T. BHONSLE</h3>
-                                <p style="margin: 0;">M.D., D.P.B. | CONSULTING PATHOLOGIST</p>
+                            <td style="text-align: right; width: 50%;">
+                                Lab No: <strong>${order.orderId}</strong>
                             </td>
                         </tr>
+                        <tr>
+                            <td style="text-align: left;">
+                                Referred by : ${order.referredBy || 'Self'}
+                            </td>
+                            <td style="text-align: right;">
+                                Date : ${format(new Date(order.orderDate), "dd/MM/yyyy")}
+                            </td>
+                        </tr>
+                        ${order.patient ? `
+                        <tr>
+                            <td style="text-align: left;">
+                                Age/Sex : ${calculateAge(order.patient.dateOfBirth)} / ${order.patient.gender}
+                            </td>
+                             <td style="text-align: right;"></td>
+                        </tr>
+                        ` : ''}
                     </table>
-                    <hr />
-                     <table style="width: 100%; margin-top: 2px; margin-bottom: 2px; font-size: 11pt; line-height: 1;">
-                        <tr>
-                            <td><strong>Patient's Name</strong>: ${order.patient?.fullName}</td>
-                            <td><strong>Date</strong>: ${new Date(order.orderDate).toLocaleDateString()}</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Referred By</strong>: ${order.referredBy}</td>
-                            <td><strong>Lab No</strong>: ${order.orderId}</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Specimen</strong>: ${order.specimen}</td>
-                             ${order.patient ? `<td><strong>Age/Sex</strong>: ${calculateAge(order.patient.dateOfBirth)} / ${order.patient.gender}</td>` : ''}
-                        </tr>
-                    </table>
-                    <hr />
-                    <h3 style="text-align: center; text-decoration: underline; margin-top: 20px; font-size: 14pt;">REPORT</h3>
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11pt;">
+
+                    <br />
+
+                    <h3 style="text-align: center; text-transform: uppercase;">LABORATORY REPORT</h3>
+
+                    <table style="width: 100%; margin-top: 10px;">
                         <thead>
-                            <tr style="background-color: #f2f2f2;">
-                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Test Name</th>
-                                <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Result</th>
-                                <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Normal Range</th>
-                                <th style="border: 1px solid #ddd; padding: 8px; text-align: right;">Notes</th>
+                            <tr style="border-bottom: 1px solid #000;"> <!-- Minimal separator like the image -->
+                                <th style="text-align: left; width: 40%;">TEST</th>
+                                <th style="text-align: left; width: 30%;">RESULT</th>
+                                <th style="text-align: left; width: 30%;">REFERENCE RANGE</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -100,45 +102,36 @@ export function ReportClient({ order }: ReportClientProps) {
                         const results = JSON.parse(test.resultValue);
                         const rows = profile.components.map(comp => `
                                             <tr>
-                                                <td style="border-bottom: 1px solid #eee; padding: 4px; padding-left: 16px;">${comp.label}</td>
-                                                <td style="border-bottom: 1px solid #eee; padding: 4px; text-align: center;">${results[comp.key] || '-'} ${comp.unit}</td>
-                                                <td style="border-bottom: 1px solid #eee; padding: 4px; text-align: center; color: #666; font-size: 9pt;">${comp.validation?.ref_range_text || '-'}</td>
-                                                <td style="border-bottom: 1px solid #eee; padding: 4px;"></td>
+                                                <td style="padding-left: 0;">${comp.label}</td>
+                                                <td>${results[comp.key] || '-'} ${comp.unit}</td>
+                                                <td>${comp.validation?.ref_range_text || ''}</td>
                                             </tr>
                                         `).join('');
 
                         return `
                                             <tr>
-                                                <td colspan="4" style="border: 1px solid #ddd; padding: 0;">
-                                                    <div style="background-color: #f9fafb; border-bottom: 1px solid #ddd; padding: 8px; font-weight: bold;">${test.testName}</div>
-                                                    <table style="width: 100%; border-collapse: collapse;">
-                                                        ${rows}
-                                                    </table>
+                                                <td colspan="3" style="padding-top: 10px;">
+                                                    <div style="font-weight: bold; text-decoration: underline;">${test.testName}</div>
                                                 </td>
                                             </tr>
+                                            ${rows}
                                         `;
-                    } catch (e) {
-                        // Ignore
-                    }
+                    } catch (e) { }
                 }
                 return `
-                                <tr>
-                                    <td style="border: 1px solid #ddd; padding: 8px;">${test.testName}</td>
-                                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${test.resultValue || 'N/A'}</td>
-                                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${test.normalRange || 'N/A'}</td>
-                                    <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">${test.technicianNotes || 'N/A'}</td>
-                                </tr>
+                                    <tr>
+                                        <td>${test.testName}</td>
+                                        <td>${test.resultValue || '-'}</td>
+                                        <td>${test.normalRange || '-'}</td>
+                                    </tr>
                                 `;
             }).join('')}
                         </tbody>
                     </table>
-                    <div class="footer" style="text-align: right; margin-top: 120px;">
-                         <div style="mso-element:footer" id="f1">
-                             <p style="margin-bottom: 0px;">&nbsp;</p>
-                             <p style="margin-top: 40px; margin-bottom: 0;"><strong>Dr. S.T. Bhonsle</strong></p>
-                             <p style="margin: 0;">MD, DPB</p>
-                        </div>
-                    </div>
+
+                     <!-- 4 Lines Empty Space for Footer -->
+                    <br /><br /><br /><br />
+                     <p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>
                 </body>
                 </html>
             `;
@@ -151,12 +144,12 @@ export function ReportClient({ order }: ReportClientProps) {
 
             toast({
                 title: "Report Downloaded",
-                description: "The Word document report has been downloaded successfully.",
+                description: "Clean format report downloaded.",
             });
         } else {
             toast({
-                title: "Error Generating Report",
-                description: result.message || "An unknown error occurred.",
+                title: "Error",
+                description: result.message,
                 variant: "destructive",
             });
         }
@@ -166,124 +159,78 @@ export function ReportClient({ order }: ReportClientProps) {
     const hasResults = order.tests.some(t => t.resultValue);
 
     return (
-        <Card className="max-w-4xl mx-auto">
-            <CardHeader>
-                <div className="flex justify-between items-start text-sm">
-                    <div className="text-left flex-1">
-                        <h2 className="text-2xl font-bold">DR. BHONSLE'S LABORATORY</h2>
-                    </div>
-                    <div className="text-center text-muted-foreground whitespace-pre-line flex-1 text-[10px] leading-tight">
-                        <p>
-                            27, SHANTI CENTRE,
-                            <br />
-                            3RD FLOOR, SEC-17, VASHI,
-                            <br />
-                            NAVI MUMBAI - 400 705.
-                            <br />
-                            TIME: 8.00 AM. TO 9.00 PM.
-                            <br />
-                            PH.: 7977173732 / 8779508920
-                            <br />
-                            EMAIL.:drbhonsleslab@gmail.com
-                        </p>
-                    </div>
-                    <div className="text-right flex-1">
-                        <h3 className="text-lg font-bold">DR. S. T. BHONSLE</h3>
-                        <p className="text-muted-foreground">
-                            M.D., D.P.B. | CONSULTING PATHOLOGIST
-                        </p>
-                    </div>
+        <Card className="max-w-4xl mx-auto border-0 shadow-none"> {/* Clean Preview */}
+            <CardContent className="space-y-6 p-8 font-calibri text-lg"> {/* Preview mimicking the doc */}
+
+                {/* Header Spacer Simulation */}
+                <div className="h-24 bg-slate-50 border border-dashed border-slate-200 flex items-center justify-center text-muted-foreground text-sm mb-8">
+                    (Space for Pre-printed Header)
                 </div>
-            </CardHeader>
-            <CardContent className="space-y-0.5 flex flex-col min-h-[600px]">
-                <Separator />
-                <div className="grid grid-cols-2 gap-x-8 gap-y-0">
-                    <div>
-                        <span className="font-semibold w-28 inline-block">Patient's Name</span>: {order.patient?.fullName}
-                    </div>
-                    <div>
-                        <span className="font-semibold w-20 inline-block">Date</span>: {new Date(order.orderDate).toLocaleDateString()}
-                    </div>
-                    <div>
-                        <span className="font-semibold w-28 inline-block">Referred By</span>: {order.referredBy}
-                    </div>
-                    <div>
-                        <span className="font-semibold w-20 inline-block">Lab No</span>: {order.orderId}
-                    </div>
-                    <div>
-                        <span className="font-semibold w-28 inline-block">Specimen</span>: {order.specimen}
-                    </div>
-                    {order.patient &&
-                        <div>
-                            <span className="font-semibold w-20 inline-block">Age/Sex</span>: {calculateAge(order.patient.dateOfBirth)} / {order.patient.gender}
-                        </div>
-                    }
-                </div>
-                <Separator />
-                <div className="flex-grow">
-                    <h3 className="text-lg font-semibold mb-2 text-center underline">REPORT</h3>
-                    <div className="border rounded-lg mt-4">
-                        <div className="grid grid-cols-4 font-semibold p-2 bg-muted">
-                            <div>Test Name</div>
-                            <div className="text-center">Result</div>
-                            <div className="text-center">Normal Range</div>
-                            <div className="text-right">Notes</div>
-                        </div>
-                        {order.tests.map((test, index) => {
-                            const profile = PROFILE_DEFINITIONS.find(p => p.profile_name === test.testName);
-                            if (profile && test.resultValue && test.resultValue.startsWith('{')) {
-                                try {
-                                    const results = JSON.parse(test.resultValue);
-                                    return (
-                                        <div key={index} className="border-t bg-slate-50">
-                                            <div className="p-2 font-bold text-sm bg-slate-100 border-b">{test.testName}</div>
-                                            {profile.components.map(comp => (
-                                                <div key={comp.key} className="grid grid-cols-4 p-2 border-b last:border-0 text-sm">
-                                                    <div className="pl-4">{comp.label}</div>
-                                                    <div className="text-center font-medium">{results[comp.key] || '-'} {comp.unit}</div>
-                                                    <div className="text-center text-muted-foreground text-xs">{comp.validation?.ref_range_text || '-'}</div>
-                                                    <div className="text-right"></div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    );
-                                } catch (e) {
-                                    // Fallback if JSON parse fails
-                                }
-                            }
-                            return (
-                                <div key={index} className="grid grid-cols-4 p-2 border-t">
-                                    <div>{test.testName}</div>
-                                    <div className="text-center">{test.resultValue || 'N/A'}</div>
-                                    <div className="text-center">{test.normalRange || 'N/A'}</div>
-                                    <div className="text-right">{test.technicianNotes || 'NA'}</div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                    {!hasResults && (
-                        <p className="text-center text-muted-foreground mt-4">
-                            Results are not yet available for this order.
-                        </p>
+
+                <div className="grid grid-cols-2 gap-y-2">
+                    <div>Patient Name : <span className="font-bold">{order.patient?.fullName}</span></div>
+                    <div className="text-right">Lab No: <span className="font-bold">{order.orderId}</span></div>
+
+                    <div>Referred by : {order.referredBy || 'Self'}</div>
+                    <div className="text-right">Date : {format(new Date(order.orderDate), "dd/MM/yyyy")}</div>
+
+                    {order.patient && (
+                        <div>Age/Sex : {calculateAge(order.patient.dateOfBirth)} / {order.patient.gender}</div>
                     )}
                 </div>
+
+                <div className="text-center font-bold text-xl uppercase mt-8 mb-4">
+                    LABORATORY REPORT
+                </div>
+
+                <div className="space-y-4">
+                    {/* Table Header */}
+                    <div className="grid grid-cols-3 font-bold border-b border-black pb-2">
+                        <div>TEST</div>
+                        <div>RESULT</div>
+                        <div>REFERENCE RANGE</div>
+                    </div>
+
+                    {order.tests.map((test, index) => {
+                        const profile = PROFILE_DEFINITIONS.find(p => p.profile_name === test.testName);
+                        if (profile && test.resultValue && test.resultValue.startsWith('{')) {
+                            try {
+                                const results = JSON.parse(test.resultValue);
+                                return (
+                                    <div key={index} className="space-y-1 mt-4">
+                                        <div className="font-bold underline">{test.testName}</div>
+                                        {profile.components.map(comp => (
+                                            <div key={comp.key} className="grid grid-cols-3">
+                                                <div>{comp.label}</div>
+                                                <div>{results[comp.key] || '-'} {comp.unit}</div>
+                                                <div>{comp.validation?.ref_range_text || ''}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                );
+                            } catch (e) { }
+                        }
+                        return (
+                            <div key={index} className="grid grid-cols-3 mt-2">
+                                <div>{test.testName}</div>
+                                <div>{test.resultValue || '-'}</div>
+                                <div>{test.normalRange || '-'}</div>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {/* Footer Spacer Simulation */}
+                <div className="h-24 bg-slate-50 border border-dashed border-slate-200 flex items-center justify-center text-muted-foreground text-sm mt-12">
+                    (Space for Pre-printed Footer)
+                </div>
+
             </CardContent>
-            <Separator />
-            <CardFooter className="justify-between">
-                <div>
-                    <Button onClick={handleDownloadDoc} disabled={isGenerating || !hasResults}>
-                        {isGenerating ? (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        ) : (
-                            <Download className="mr-2 h-4 w-4" />
-                        )}
-                        Download Report
-                    </Button>
-                </div>
-                <div className="text-right">
-                    <p className="font-semibold">Dr. S.T. Bhonsle</p>
-                    <p>MD, DPB</p>
-                </div>
+            <CardFooter className="justify-center">
+                <Button onClick={handleDownloadDoc} disabled={isGenerating || !hasResults}>
+                    {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
+                    Download Word Document
+                </Button>
             </CardFooter>
         </Card>
     );
