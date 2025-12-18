@@ -28,7 +28,8 @@ export async function createPatient(formData: FormData) {
 
     const allPatients = await db.getAllPatients(labId);
     const nextIdNum = allPatients.length + 1;
-    const patientId = `PAT${nextIdNum.toString().padStart(3, '0')}`;
+    const prefix = new Date().toLocaleString('default', { month: 'long' }).slice(0, 4) + '_';
+    const patientId = `${prefix}${nextIdNum}`;
 
     const newPatientData: Patient = {
       patientId,
@@ -220,7 +221,7 @@ export async function updateTestResults(data: unknown) {
       return test;
     });
 
-    await db.updateOrderRecord(labId, orderId, { tests: updatedTests, status: 'Completed' });
+    await db.updateOrderRecord(labId, orderId, { tests: updatedTests, status: 'Payment Pending' });
 
     revalidatePath(`/orders/${orderId}/report`);
     revalidatePath(`/orders/${orderId}/entry`);
@@ -230,6 +231,20 @@ export async function updateTestResults(data: unknown) {
   } catch (error) {
     console.error(error);
     return { success: false, message: 'An error occurred while updating results.' };
+  }
+}
+
+
+export async function markOrderAsPaid(orderId: string) {
+  try {
+    const labId = await getCurrentLabId();
+    await db.updateOrderRecord(labId, orderId, { status: 'Completed' });
+    revalidatePath('/');
+    revalidatePath('/orders');
+    return { success: true, message: 'Payment received. Order completed.' };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: 'Failed to update order status.' };
   }
 }
 

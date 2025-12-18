@@ -12,7 +12,7 @@ export const PatientSchema = z.object({
 export type Patient = z.infer<typeof PatientSchema>;
 
 export const UpdatablePatientSchema = PatientSchema.omit({ createdAt: true, patientId: true }).extend({
-    dateOfBirth: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Invalid date format."}),
+  dateOfBirth: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Invalid date format." }),
 });
 
 
@@ -31,7 +31,7 @@ export const TestOrderSchema = z.object({
   patientId: z.string(),
   patient: PatientSchema.optional(),
   orderDate: z.date(),
-  status: z.enum(['Pending', 'Completed']),
+  status: z.enum(['Pending', 'Payment Pending', 'Completed']),
   totalAmount: z.number(),
   discountApplied: z.number(),
   finalAmount: z.number(),
@@ -41,3 +41,31 @@ export const TestOrderSchema = z.object({
   specimen: z.string().optional(),
 });
 export type TestOrder = z.infer<typeof TestOrderSchema>;
+
+export type TransactionStatus = 'PENDING' | 'SUCCESS' | 'FAILED';
+
+export interface InvoiceItem {
+  test_name: string;
+  price: number;
+  discount?: number;
+  hsn_code?: string;
+}
+
+export interface Transaction {
+  invoice_id: string;
+  patient_id: string;
+  patient_name: string;
+  age: number;
+  gender: string;
+  mobile?: string;
+  ref_doctor?: string;
+  ref_id?: string;
+  lab_id: string;
+  amount: number;
+  payment_mode: 'CASH' | 'online';
+  status: TransactionStatus;
+  timestamp: string;
+  items: InvoiceItem[];
+  qr_string?: string;
+  payment_link?: string;
+}

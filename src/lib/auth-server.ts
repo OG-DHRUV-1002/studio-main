@@ -3,7 +3,7 @@
 import { cookies } from 'next/headers';
 import { getUserContext } from '@/lib/admin-config';
 
-const AUTH_COOKIE = 'simulated_user_uid';
+import { AUTH_COOKIE } from '@/lib/constants';
 
 export async function getCurrentLabId(): Promise<string> {
     const cookieStore = await cookies();

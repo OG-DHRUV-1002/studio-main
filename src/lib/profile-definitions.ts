@@ -3,7 +3,7 @@ export interface ProfileComponent {
     label: string;
     key: string;
     unit: string;
-    input_type: 'number' | 'dropdown' | 'calculated' | 'text' | 'text_area' | 'dynamic_grid';
+    input_type: 'number' | 'dropdown' | 'calculated' | 'text' | 'text_area' | 'dynamic_grid' | 'header';
     options?: string[];
     formula?: string; // e.g. "{alb} / {glob}"
     validation?: {
@@ -132,22 +132,22 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
                 validation: { min: 0, max: 2000, ref_range_text: "< 150 mg/dL", panic_high: 500 }
             },
             {
-                label: "S. HDL Cholesterol",
+                label: "HDL Cholesterol",
                 key: "hdl",
                 unit: "mg/dL",
                 input_type: "number",
                 validation: { min: 0, max: 200, ref_range_text: "> 40 mg/dL" }
             },
             {
-                label: "S. LDL Cholesterol",
+                label: "LDL Cholesterol",
                 key: "ldl",
                 unit: "mg/dL",
                 input_type: "calculated",
-                formula: "({cholesterol} - {hdl}) - ({triglycerides} / 5)", // Basic calculation, real app might use conditional Friedewald
+                formula: "({cholesterol} - {hdl}) - ({triglycerides} / 5)",
                 validation: { ref_range_text: "< 100 mg/dL" }
             },
             {
-                label: "S. VLDL Cholesterol",
+                label: "S. VLDL",
                 key: "vldl",
                 unit: "mg/dL",
                 input_type: "calculated",
@@ -155,7 +155,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
                 validation: { ref_range_text: "10 - 50 mg/dL" }
             },
             {
-                label: "Chol/HDL Ratio",
+                label: "S Chol / HDL Chol",
                 key: "chol_hdl_ratio",
                 unit: "",
                 input_type: "calculated",
@@ -169,6 +169,20 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
                 input_type: "calculated",
                 formula: "{ldl} / {hdl}",
                 validation: { ref_range_text: "< 3.0" }
+            },
+            {
+                label: "Appearance of serum",
+                key: "lipid_appearance",
+                unit: "",
+                input_type: "text",
+                validation: { ref_range_text: "Clear" }
+            },
+            {
+                label: "Sample collection after",
+                key: "sample_collection",
+                unit: "Hours",
+                input_type: "text",
+                validation: { ref_range_text: "12-14 Hours Fasting" }
             }
         ]
     },
@@ -200,21 +214,24 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
         profile_id: "CBC_001",
         profile_name: "CBC/HAEMOGRAM",
         components: [
-            { label: "Haemoglobin (Hb)", key: "hb", unit: "g/dL", input_type: "number", validation: { min: 0, max: 25, ref_range_text: "M: 13-17, F: 12-15 g/dL", panic_low: 7.0 } },
+            { label: "Red Blood Cells", key: "rbc", unit: "Million/cmm", input_type: "number", validation: { min: 0, max: 10, ref_range_text: "4.5 - 5.5 Million/cmm" } },
+            { label: "Haemoglobin", key: "hb", unit: "g/dL", input_type: "number", validation: { min: 0, max: 25, ref_range_text: "M: 13-17, F: 12-15 g/dL", panic_low: 7.0 } },
+            { label: "PCV", key: "pcv", unit: "%", input_type: "number", validation: { min: 0, max: 100, ref_range_text: "M: 40-50, F: 36-46 %" } },
+            { label: "MCV", key: "mcv", unit: "fL", input_type: "number", validation: { min: 0, max: 200, ref_range_text: "80-100 fL" } },
+            { label: "MCH", key: "mch", unit: "pg", input_type: "number", validation: { min: 0, max: 100, ref_range_text: "27-32 pg" } },
+            { label: "MCHC", key: "mchc", unit: "g/dL", input_type: "number", validation: { min: 0, max: 100, ref_range_text: "32-36 g/dL" } },
+            { label: "Platelet Count", key: "platelet", unit: "Lakh/cmm", input_type: "number", validation: { min: 0, max: 10, ref_range_text: "1.5 - 4.5 Lakh/cmm", panic_low: 1.0 } },
             { label: "Total WBC Count", key: "wbc", unit: "/cmm", input_type: "number", validation: { min: 0, max: 50000, ref_range_text: "4,000 - 11,000 /cmm" } },
             { label: "Neutrophils", key: "neutrophils", unit: "%", input_type: "number", validation: { min: 0, max: 100, ref_range_text: "40-75 %" } },
             { label: "Lymphocytes", key: "lymphocytes", unit: "%", input_type: "number", validation: { min: 0, max: 100, ref_range_text: "20-45 %" } },
             { label: "Eosinophils", key: "eosinophils", unit: "%", input_type: "number", validation: { min: 0, max: 100, ref_range_text: "1-6 %" } },
             { label: "Monocytes", key: "monocytes", unit: "%", input_type: "number", validation: { min: 0, max: 100, ref_range_text: "2-10 %" } },
             { label: "Basophils", key: "basophils", unit: "%", input_type: "number", validation: { min: 0, max: 100, ref_range_text: "0-1 %" } },
-            { label: "Platelet Count", key: "platelet", unit: "Lakh/cmm", input_type: "number", validation: { min: 0, max: 10, ref_range_text: "1.5 - 4.5 Lakh/cmm", panic_low: 1.0 } },
-            { label: "RBC Count", key: "rbc", unit: "Million/cmm", input_type: "number", validation: { min: 0, max: 10, ref_range_text: "4.5 - 5.5 Million/cmm" } },
-            { label: "PCV", key: "pcv", unit: "%", input_type: "number", validation: { min: 0, max: 100, ref_range_text: "M: 40-50, F: 36-46 %" } },
-            { label: "MCV", key: "mcv", unit: "fL", input_type: "number", validation: { min: 0, max: 200, ref_range_text: "80-100 fL" } },
-            { label: "MCH", key: "mch", unit: "pg", input_type: "number", validation: { min: 0, max: 100, ref_range_text: "27-32 pg" } },
-            { label: "MCHC", key: "mchc", unit: "g/dL", input_type: "number", validation: { min: 0, max: 100, ref_range_text: "32-36 g/dL" } },
-            { label: "RDW", key: "rdw", unit: "%", input_type: "number", validation: { min: 0, max: 100, ref_range_text: "11-14 %" } },
-            { label: "Peripheral Smear", key: "smear", unit: "", input_type: "text", validation: { ref_range_text: "Normocytic Normochromic" } }
+            { label: "ESR (Westergren's Method)", key: "esr", unit: "mm/1st hr", input_type: "number", validation: { min: 0, max: 150, ref_range_text: "M: 0-15, F: 0-20 mm" } },
+            { label: "Abnormalities of RBCs", key: "abnormal_rbc", unit: "", input_type: "text", validation: { ref_range_text: "Nil" } },
+            { label: "Abnormalities of WBCs", key: "abnormal_wbc", unit: "", input_type: "text", validation: { ref_range_text: "Nil" } },
+            { label: "Platelets on smear study", key: "platelet_smear", unit: "", input_type: "text", validation: { ref_range_text: "Adequate" } },
+            { label: "Parasites", key: "parasites", unit: "", input_type: "text", validation: { ref_range_text: "Not Seen" } }
         ] as any[], // Casting to allow 'text' input type if distinct from 'string' or logic handling textual inputs
         ui_actions: [
             { trigger: "if {hb} < 7.0", action: "toast_alert", message: "CRITICAL ALERT: Low Hemoglobin!" },
@@ -286,31 +303,54 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
         profile_id: "URINE_001",
         profile_name: "URINE",
         components: [
-            { label: "Color", key: "color", unit: "", input_type: "dropdown", options: ["Pale Yellow", "Dark Yellow", "Red", "Tea Colored"], validation: { ref_range_text: "Pale Yellow" } },
-            { label: "Transparency", key: "transparency", unit: "", input_type: "dropdown", options: ["Clear", "Turbid"], validation: { ref_range_text: "Clear" } },
-            { label: "pH", key: "ph", unit: "", input_type: "number", validation: { min: 4, max: 9, ref_range_text: "5.0 - 8.0" } },
+            { label: "PHYSICAL EXAMINATION", key: "header_phys", unit: "", input_type: "header", validation: { ref_range_text: "" } },
+            { label: "Quantity", key: "quantity", unit: "mL", input_type: "text", validation: { ref_range_text: "" } },
+            { label: "Colour", key: "color", unit: "", input_type: "dropdown", options: ["Pale Yellow", "Dark Yellow", "Red", "Tea Colored"], validation: { ref_range_text: "Pale Yellow" } },
+            { label: "Appearance", key: "appearance", unit: "", input_type: "dropdown", options: ["Clear", "Turbid"], validation: { ref_range_text: "Clear" } },
+            { label: "Reaction", key: "reaction", unit: "", input_type: "text", validation: { ref_range_text: "Acidic" } },
             { label: "Specific Gravity", key: "sp_gravity", unit: "", input_type: "number", validation: { min: 1.000, max: 1.050, ref_range_text: "1.010 - 1.030" } },
-            { label: "Sugar", key: "urine_sugar", unit: "", input_type: "dropdown", options: ["Nil", "Trace", "+", "++", "+++", "++++"], validation: { ref_range_text: "Nil" } },
-            { label: "Protein/Albumin", key: "urine_protein", unit: "", input_type: "dropdown", options: ["Nil", "Trace", "+", "++", "+++", "++++"], validation: { ref_range_text: "Nil" } },
-            { label: "Pus Cells", key: "pus_cells", unit: "/hpf", input_type: "number", validation: { ref_range_text: "0-5 /hpf" } },
-            { label: "RBCs", key: "rbcs", unit: "/hpf", input_type: "number", validation: { ref_range_text: "Nil" } },
-            { label: "Epithelial Cells", key: "ep_cells", unit: "/hpf", input_type: "number", validation: { ref_range_text: "0-2 /hpf" } },
+
+            { label: "CHEMICAL EXAMINATION", key: "header_chem", unit: "", input_type: "header", validation: { ref_range_text: "" } },
+            { label: "Protein", key: "urine_protein", unit: "", input_type: "dropdown", options: ["Nil", "Trace", "+", "++", "+++", "++++"], validation: { ref_range_text: "Nil" } },
+            { label: "Glucose", key: "urine_sugar", unit: "", input_type: "dropdown", options: ["Nil", "Trace", "+", "++", "+++", "++++"], validation: { ref_range_text: "Nil" } },
+            { label: "Ketone Bodies", key: "ketones", unit: "", input_type: "dropdown", options: ["Nil", "Trace", "+", "++", "+++"], validation: { ref_range_text: "Nil" } },
+            { label: "Bile Pigments", key: "bile_pigments", unit: "", input_type: "dropdown", options: ["Negative", "Positive"], validation: { ref_range_text: "Negative" } },
+            { label: "Bile Salts", key: "bile_salts", unit: "", input_type: "dropdown", options: ["Negative", "Positive"], validation: { ref_range_text: "Negative" } },
+            { label: "Occult Blood", key: "occult_blood", unit: "", input_type: "dropdown", options: ["Negative", "Positive"], validation: { ref_range_text: "Negative" } },
+
+            { label: "MICROSCOPIC EXAMINATION", key: "header_micro", unit: "", input_type: "header", validation: { ref_range_text: "" } },
+            { label: "Epithelial Cells", key: "ep_cells", unit: "/hpf", input_type: "text", validation: { ref_range_text: "0-2 /hpf" } },
+            { label: "Leucocytes/Pus cells", key: "pus_cells", unit: "/hpf", input_type: "text", validation: { ref_range_text: "0-5 /hpf" } },
+            { label: "Red Blood Cells", key: "rbcs", unit: "/hpf", input_type: "number", validation: { ref_range_text: "Nil" } },
             { label: "Casts", key: "casts", unit: "", input_type: "dropdown", options: ["Nil", "Hyaline", "Granular", "Cellular"], validation: { ref_range_text: "Nil" } },
-            { label: "Crystals", key: "crystals", unit: "", input_type: "dropdown", options: ["Nil", "Ca Oxalate", "Uric Acid", "Triple Phosphate"], validation: { ref_range_text: "Nil" } }
+            { label: "Crystals", key: "crystals", unit: "", input_type: "dropdown", options: ["Nil", "Ca Oxalate", "Uric Acid", "Triple Phosphate"], validation: { ref_range_text: "Nil" } },
+            { label: "Other Findings", key: "other_findings", unit: "", input_type: "text", validation: { ref_range_text: "" } }
         ]
     },
     {
         profile_id: "STOOL_001",
         profile_name: "STOOL",
         components: [
-            { label: "Color", key: "stool_color", unit: "", input_type: "dropdown", options: ["Brown", "Black", "Clay Colored", "Red"], validation: { ref_range_text: "Brown" } },
+            { label: "PHYSICAL EXAMINATION:", key: "header_phys", unit: "", input_type: "header", validation: { ref_range_text: "" } },
+            { label: "Colour", key: "stool_color", unit: "", input_type: "dropdown", options: ["Brown", "Black", "Clay Colored", "Red"], validation: { ref_range_text: "Brown" } },
             { label: "Consistency", key: "consistency", unit: "", input_type: "dropdown", options: ["Solid", "Semi-solid", "Loose", "Watery"], validation: { ref_range_text: "Semi-solid" } },
+            { label: "Mucus", key: "mucus", unit: "", input_type: "dropdown", options: ["Absent", "Present"], validation: { ref_range_text: "Absent" } },
+            { label: "Frank Blood", key: "frank_blood", unit: "", input_type: "dropdown", options: ["Absent", "Present"], validation: { ref_range_text: "Absent" } },
+            { label: "Adult Worms / Segments", key: "parasite_segments", unit: "", input_type: "dropdown", options: ["Nil", "Present"], validation: { ref_range_text: "Nil" } },
+
+            { label: "CHEMICAL EXAMINATION:", key: "header_chem", unit: "", input_type: "header", validation: { ref_range_text: "" } },
+            { label: "Reaction", key: "reaction", unit: "", input_type: "text", validation: { ref_range_text: "Acidic" } },
             { label: "Occult Blood", key: "occult_blood", unit: "", input_type: "dropdown", options: ["Negative", "Positive"], validation: { ref_range_text: "Negative" } },
-            { label: "Reducing Sugar", key: "red_sugar", unit: "", input_type: "dropdown", options: ["Negative", "Positive"], validation: { ref_range_text: "Negative" } },
+
+            { label: "MICROSCOPIC EXAMINATION:", key: "header_micro", unit: "", input_type: "header", validation: { ref_range_text: "" } },
             { label: "Ova", key: "ova", unit: "", input_type: "dropdown", options: ["Nil", "Roundworm", "Hookworm"], validation: { ref_range_text: "Nil" } },
-            { label: "Cyst", key: "cyst", unit: "", input_type: "dropdown", options: ["Nil", "Giardia", "E.histolytica"], validation: { ref_range_text: "Nil" } },
-            { label: "Pus Cells", key: "pus_cells_stool", unit: "/hpf", input_type: "number", validation: { ref_range_text: "Nil" } },
-            { label: "RBCs", key: "rbcs_stool", unit: "/hpf", input_type: "number", validation: { ref_range_text: "Nil" } }
+            { label: "Cysts", key: "cyst", unit: "", input_type: "dropdown", options: ["Nil", "Giardia", "E.histolytica"], validation: { ref_range_text: "Nil" } },
+            { label: "Vegetative Forms", key: "veg_forms", unit: "", input_type: "text", validation: { ref_range_text: "Nil" } },
+            { label: "Macrophages", key: "macrophages", unit: "", input_type: "text", validation: { ref_range_text: "Nil" } },
+            { label: "Leucocytes", key: "leucocytes", unit: "/hpf", input_type: "text", validation: { ref_range_text: "Occasional" } },
+            { label: "Epithelial Cells", key: "ep_cells", unit: "/hpf", input_type: "text", validation: { ref_range_text: "Occasional" } },
+            { label: "Red Blood Cells", key: "rbcs_stool", unit: "/hpf", input_type: "text", validation: { ref_range_text: "Nil" } },
+            { label: "Other Findings", key: "other_findings", unit: "", input_type: "text", validation: { ref_range_text: "" } }
         ]
     },
     {
@@ -325,10 +365,12 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
         profile_id: "WIDAL_001",
         profile_name: "WIDAL",
         components: [
-            { label: "S. Typhi 'O'", key: "widal_o", unit: "", input_type: "dropdown", options: ["< 1:20", "1:20", "1:40", "1:80", "1:160", "1:320", "> 1:320"], validation: { ref_range_text: "< 1:80" } },
-            { label: "S. Typhi 'H'", key: "widal_h", unit: "", input_type: "dropdown", options: ["< 1:20", "1:20", "1:40", "1:80", "1:160", "1:320", "> 1:320"], validation: { ref_range_text: "< 1:80" } },
-            { label: "S. Paratyphi 'AH'", key: "widal_ah", unit: "", input_type: "dropdown", options: ["< 1:20", "1:20", "1:40", "1:80", "1:160", "1:320", "> 1:320"], validation: { ref_range_text: "< 1:80" } },
-            { label: "S. Paratyphi 'BH'", key: "widal_bh", unit: "", input_type: "dropdown", options: ["< 1:20", "1:20", "1:40", "1:80", "1:160", "1:320", "> 1:320"], validation: { ref_range_text: "< 1:80" } }
+            { label: "'O' Antigen", key: "widal_o", unit: "", input_type: "dropdown", options: ["< 1:20", "1:20", "1:40", "1:80", "1:160", "1:320", "> 1:320"], validation: { ref_range_text: "< 1:80" } },
+            { label: "'H' Antigen", key: "widal_h", unit: "", input_type: "dropdown", options: ["< 1:20", "1:20", "1:40", "1:80", "1:160", "1:320", "> 1:320"], validation: { ref_range_text: "< 1:80" } },
+            { label: "'AH' Antigen", key: "widal_ah", unit: "", input_type: "dropdown", options: ["< 1:20", "1:20", "1:40", "1:80", "1:160", "1:320", "> 1:320"], validation: { ref_range_text: "< 1:80" } },
+            { label: "'BH' Antigen", key: "widal_bh", unit: "", input_type: "dropdown", options: ["< 1:20", "1:20", "1:40", "1:80", "1:160", "1:320", "> 1:320"], validation: { ref_range_text: "< 1:80" } },
+            { label: "Result", key: "widal_result", unit: "", input_type: "text_area", validation: { ref_range_text: "Negative" } },
+            { label: "Method", key: "method", unit: "", input_type: "text", validation: { ref_range_text: "Slide Agglutination" } }
         ]
     },
     {
@@ -365,7 +407,8 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
         profile_id: "VDRL_001",
         profile_name: "VDRL / RPR",
         components: [
-            { label: "VDRL Result", key: "vdrl_result", unit: "", input_type: "dropdown", options: ["Non-Reactive", "Reactive", "Borderline"], validation: { ref_range_text: "Non-Reactive" } }
+            { label: "VDLR Test", key: "vdrl_result", unit: "", input_type: "dropdown", options: ["Non-Reactive", "Reactive", "Borderline"], validation: { ref_range_text: "Non-Reactive" } },
+            { label: "Method", key: "method", unit: "", input_type: "text", validation: { ref_range_text: "Slide Flocculation" } }
         ],
         ui_actions: [
             { trigger: "if {vdrl_result} == 'Reactive'", action: "toast_alert", message: "CRITICAL ALERT: Reactive! Suggest confirmatory test." }
@@ -389,17 +432,19 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     },
     {
         profile_id: "CRP_001",
-        profile_name: "CRP",
+        profile_name: "C-REACTIVE PROTEIN (CRP)",
         components: [
-            { label: "CRP", key: "crp_result", unit: "mg/L", input_type: "number", validation: { min: 0, max: 200, ref_range_text: "< 6 mg/L" } },
-            { label: "Qualitative", key: "crp_qual", unit: "", input_type: "dropdown", options: ["Negative", "Positive"], validation: { ref_range_text: "Negative" } }
+            { label: "Result", key: "crp_result", unit: "mg/L", input_type: "number", validation: { min: 0, max: 200, ref_range_text: "< 6 mg/L" } },
+            { label: "Qualitative", key: "crp_qual", unit: "", input_type: "dropdown", options: ["Negative", "Positive"], validation: { ref_range_text: "Negative" } },
+            { label: "Method", key: "method", unit: "", input_type: "text", validation: { ref_range_text: "Immunoturbidimetry" } }
         ]
     },
     {
         profile_id: "UPT_001",
         profile_name: "URINE PREGNANCY TEST",
         components: [
-            { label: "Result", key: "upt_result", unit: "", input_type: "dropdown", options: ["Negative", "Positive", "Invalid"], validation: { ref_range_text: "Negative" } }
+            { label: "Test", key: "upt_result", unit: "", input_type: "dropdown", options: ["Negative", "Positive", "Invalid"], validation: { ref_range_text: "Negative" } },
+            { label: "Method", key: "method", unit: "", input_type: "text", validation: { ref_range_text: "Immuno-Chromatography" } }
         ]
     },
     {
@@ -413,24 +458,63 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
         profile_id: "SEMEN_001",
         profile_name: "SEMEN",
         components: [
-            { label: "Volume", key: "volume", unit: "mL", input_type: "number", validation: { ref_range_text: "1.5 - 5.0 mL" } },
+            { label: "PHYSICAL EXAMINATION:", key: "header_phys", unit: "", input_type: "header", validation: { ref_range_text: "" } },
+            { label: "Volume", key: "volume", unit: "mL", input_type: "number", validation: { ref_range_text: "2.0 - 5.0 mL" } },
+            { label: "Appearance", key: "appearance", unit: "", input_type: "text", validation: { ref_range_text: "Greyish White" } },
             { label: "Liquefaction Time", key: "liquefaction", unit: "min", input_type: "number", validation: { ref_range_text: "15 - 30 min" } },
-            { label: "Viscosity", key: "viscosity", unit: "", input_type: "dropdown", options: ["Normal", "Thick", "Thin"], validation: { ref_range_text: "Normal" } },
-            { label: "pH", key: "ph", unit: "", input_type: "number", validation: { min: 6, max: 9, ref_range_text: "7.2 - 8.0" } },
-            { label: "Total Sperm Count", key: "sperm_count", unit: "million/mL", input_type: "number", validation: { ref_range_text: "> 15 million/mL" } },
-            { label: "Motility (Active)", key: "motility_active", unit: "%", input_type: "number", validation: { ref_range_text: "> 32 %" } },
-            { label: "Motility (Sluggish)", key: "motility_sluggish", unit: "%", input_type: "number", validation: { ref_range_text: "" } },
-            { label: "Motility (Non-Motile)", key: "motility_non", unit: "%", input_type: "number", validation: { ref_range_text: "" } },
-            { label: "Normal Morphology", key: "morph_normal", unit: "%", input_type: "number", validation: { ref_range_text: "> 4 %" } },
-            { label: "Abnormal Morphology", key: "morph_abnormal", unit: "%", input_type: "number", validation: { ref_range_text: "" } }
+            { label: "Deposits", key: "deposits", unit: "", input_type: "text", validation: { ref_range_text: "Nil" } },
+            { label: "Transparency", key: "transparency", unit: "", input_type: "text", validation: { ref_range_text: "Opaque" } },
+            { label: "Odour", key: "odour", unit: "", input_type: "text", validation: { ref_range_text: "Fishy" } },
+            { label: "Viscosity", key: "viscosity", unit: "", input_type: "text", validation: { ref_range_text: "Normal" } },
+
+            { label: "CHEMICAL EXAMINATION:", key: "header_chem", unit: "", input_type: "header", validation: { ref_range_text: "" } },
+            { label: "pH", key: "ph", unit: "", input_type: "number", validation: { ref_range_text: "7.2 - 8.0" } },
+            { label: "Fructose", key: "fructose", unit: "", input_type: "dropdown", options: ["Positive", "Negative"], validation: { ref_range_text: "Positive" } },
+
+            { label: "MICROSCOPIC EXAMINATION:", key: "header_micro", unit: "", input_type: "header", validation: { ref_range_text: "" } },
+            { label: "Sperm Count", key: "sperm_count", unit: "millions/mL", input_type: "number", validation: { ref_range_text: "60 - 150 millions/mL" } },
+            { label: "Viability", key: "viability", unit: "%", input_type: "number", validation: { ref_range_text: "> 50 %" } },
+            { label: "Mobility on liquefaction", key: "motility", unit: "%", input_type: "number", validation: { ref_range_text: "> 50 % Active" } },
+            { label: "Abnormal Forms", key: "abnormal_forms", unit: "%", input_type: "number", validation: { ref_range_text: "< 20 %" } },
+            { label: "Other Findings", key: "other_findings", unit: "", input_type: "text_area", validation: { ref_range_text: "" } },
+            { label: "Spermatogenic Cells", key: "spermatogenic_cells", unit: "", input_type: "text", validation: { ref_range_text: "Nil" } },
+            { label: "Sperm entangling", key: "entangling", unit: "", input_type: "dropdown", options: ["Nil", "Present"], validation: { ref_range_text: "Nil" } },
+            { label: "Leucocytes", key: "leucocytes", unit: "/hpf", input_type: "number", validation: { ref_range_text: "0-2 /hpf" } },
+
+            { label: "BACTERIOLOGICAL EXAMINATION:", key: "header_bacterio", unit: "", input_type: "header", validation: { ref_range_text: "" } },
+            { label: "Gram's Stain", key: "gram_stain", unit: "", input_type: "text", validation: { ref_range_text: "No Organisms Seen" } },
+            { label: "ZN Stain", key: "zn_stain", unit: "", input_type: "text", validation: { ref_range_text: "No AFB Seen" } }
         ]
     },
     {
         profile_id: "SPUTUM_001",
         profile_name: "SPUTUM",
         components: [
-            { label: "AFB (TB)", key: "afb", unit: "", input_type: "dropdown", options: ["Not Seen", "Scanty", "1+", "2+", "3+"], validation: { ref_range_text: "Not Seen" } },
-            { label: "Gram Stain", key: "gram_stain", unit: "", input_type: "text", validation: { ref_range_text: "" } }
+            { label: "PHYSICAL EXAMINATION:", key: "header_phys", unit: "", input_type: "header", validation: { ref_range_text: "" } },
+            { label: "Quantity", key: "quantity", unit: "mL", input_type: "text", validation: { ref_range_text: "" } },
+            { label: "Colour", key: "color", unit: "", input_type: "text", validation: { ref_range_text: "Whitish" } },
+            { label: "Consistency", key: "consistency", unit: "", input_type: "text", validation: { ref_range_text: "Mucoid" } },
+            { label: "Frank Blood", key: "frank_blood", unit: "", input_type: "dropdown", options: ["Absent", "Present"], validation: { ref_range_text: "Absent" } },
+            { label: "Layering", key: "layering", unit: "", input_type: "dropdown", options: ["Absent", "Present"], validation: { ref_range_text: "Absent" } },
+            { label: "Foul Smell", key: "foul_smell", unit: "", input_type: "dropdown", options: ["Absent", "Present"], validation: { ref_range_text: "Absent" } },
+
+            { label: "CHEMICAL EXAMINATION:", key: "header_chem", unit: "", input_type: "header", validation: { ref_range_text: "" } },
+            { label: "Occult Blood", key: "occult_blood", unit: "", input_type: "dropdown", options: ["Negative", "Positive"], validation: { ref_range_text: "Negative" } },
+            { label: "Reaction", key: "reaction", unit: "", input_type: "text", validation: { ref_range_text: "Alkaline" } },
+
+            { label: "MICROSCOPIC EXAMINATION:", key: "header_micro", unit: "", input_type: "header", validation: { ref_range_text: "" } },
+            { label: "Pus Cells", key: "pus_cells", unit: "/hpf", input_type: "text", validation: { ref_range_text: "Occasional" } },
+            { label: "Epithelial Cells", key: "ep_cells", unit: "/hpf", input_type: "text", validation: { ref_range_text: "Occasional" } },
+            { label: "Red Blood Cells", key: "rbcs", unit: "/hpf", input_type: "text", validation: { ref_range_text: "Nil" } },
+            { label: "C L Crystals", key: "crystals", unit: "", input_type: "text", validation: { ref_range_text: "Nil" } },
+            { label: "Curshmann's Spirals", key: "spirals", unit: "", input_type: "text", validation: { ref_range_text: "Nil" } },
+            { label: "Asbestos Bodies", key: "asbestos", unit: "", input_type: "text", validation: { ref_range_text: "Nil" } },
+            { label: "Yeast Cells", key: "yeast", unit: "", input_type: "text", validation: { ref_range_text: "Nil" } },
+            { label: "Parasites", key: "parasites", unit: "", input_type: "text", validation: { ref_range_text: "Nil" } },
+            { label: "Fungus", key: "fungus", unit: "", input_type: "text", validation: { ref_range_text: "Nil" } },
+            { label: "Other Findings", key: "other_findings", unit: "", input_type: "text", validation: { ref_range_text: "" } },
+            { label: "Gram's Stain", key: "gram_stain", unit: "", input_type: "text", validation: { ref_range_text: "No Organisms Seen" } },
+            { label: "Ziehl-Neelsen Stain", key: "zn_stain", unit: "", input_type: "text", validation: { ref_range_text: "No AFB Seen" } }
         ],
         ui_actions: [
             { trigger: "if {afb} != 'Not Seen'", action: "toast_alert", message: "CRITICAL ALERT: AFB Positive!" }
@@ -438,9 +522,12 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     },
     {
         profile_id: "MANTOUX_001",
-        profile_name: "MANTOUX’S TEST",
+        profile_name: "MANTOUX TEST",
         components: [
-            { label: "Induration", key: "induration", unit: "mm", input_type: "number", validation: { ref_range_text: "< 5mm Negative" } }
+            { label: "Date of Inoculation", key: "date_given", unit: "", input_type: "text", validation: { ref_range_text: "" } },
+            { label: "Date of Reporting", key: "date_read", unit: "", input_type: "text", validation: { ref_range_text: "" } },
+            { label: "Result (Induration)", key: "induration", unit: "mm", input_type: "number", validation: { ref_range_text: "< 10mm Negative" } },
+            { label: "Impression", key: "impression", unit: "", input_type: "text", validation: { ref_range_text: "Negative" } }
         ]
     },
     {
@@ -454,14 +541,18 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
         profile_id: "BS_FASTING_001",
         profile_name: "BLOOD SUGAR F",
         components: [
-            { label: "Blood Sugar Fasting", key: "bs_fasting", unit: "mg/dL", input_type: "number", validation: { min: 20, max: 1000, ref_range_text: "70 - 100 mg/dL" } }
+            { label: "Fasting Blood Sugar(Glucose)", key: "bs_fasting", unit: "mg/dL", input_type: "number", validation: { min: 20, max: 1000, ref_range_text: "70 - 100 mg/dL" } },
+            { label: "Urine Sugar Fasting", key: "urine_sugar_f", unit: "", input_type: "dropdown", options: ["Nil", "Trace", "+", "++", "+++", "++++"], validation: { ref_range_text: "Nil" } },
+            { label: "Urine Ketone Bodies", key: "urine_ketone_f", unit: "", input_type: "dropdown", options: ["Nil", "Trace", "+", "++", "+++"], validation: { ref_range_text: "Nil" } }
         ]
     },
     {
         profile_id: "BS_PP_001",
         profile_name: "BLOOD SUGAR PP",
         components: [
-            { label: "Blood Sugar PP", key: "bs_pp", unit: "mg/dL", input_type: "number", validation: { min: 20, max: 1000, ref_range_text: "< 140 mg/dL" } }
+            { label: "PP/PG/R Blood Sugar", key: "bs_pp", unit: "mg/dL", input_type: "number", validation: { min: 20, max: 1000, ref_range_text: "< 140 mg/dL" } },
+            { label: "Urine Sugar PP/PG/R", key: "urine_sugar_pp", unit: "", input_type: "dropdown", options: ["Nil", "Trace", "+", "++", "+++", "++++"], validation: { ref_range_text: "Nil" } },
+            { label: "Urine Ketone Bodies", key: "urine_ketone_pp", unit: "", input_type: "dropdown", options: ["Nil", "Trace", "+", "++", "+++"], validation: { ref_range_text: "Nil" } }
         ]
     },
     {
@@ -475,8 +566,13 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
         profile_id: "HBA1C_001",
         profile_name: "HBA1C",
         components: [
-            { label: "HbA1c", key: "hba1c", unit: "%", input_type: "number", validation: { min: 3, max: 20, ref_range_text: "< 5.7% Non-Diabetic" } },
-            { label: "Mean Est. Glucose", key: "eag", unit: "mg/dL", input_type: "calculated", formula: "(28.7 * {hba1c}) - 46.7", validation: { ref_range_text: "Calculated" } }
+            { label: "GLYCOSYLATED HAEMOGLOBIN (HbA1c)", key: "hda1c_header", unit: "", input_type: "header", validation: { ref_range_text: "" } },
+            { label: "HbA1c Value", key: "hba1c", unit: "%", input_type: "number", validation: { min: 3, max: 20, ref_range_text: "< 5.7% Non-Diabetic" } },
+            { label: "NORMAL RANGE IN NON-DIABETICS", key: "info_normal", unit: "", input_type: "header", validation: { ref_range_text: "4.0 - 6.0 %" } },
+            { label: "GOOD CONTROL", key: "info_good", unit: "", input_type: "header", validation: { ref_range_text: "6.0 - 7.0 %" } },
+            { label: "FAIR CONTROL", key: "info_fair", unit: "", input_type: "header", validation: { ref_range_text: "7.0 - 8.0 %" } },
+            { label: "POOR CONTROL", key: "info_poor", unit: "", input_type: "header", validation: { ref_range_text: "> 8.0 %" } },
+            { label: "METHOD USED", key: "method", unit: "", input_type: "text", validation: { ref_range_text: "Ion Exchange Resin" } }
         ]
     },
     {
@@ -492,12 +588,20 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
         profile_id: "KIDNEY_001",
         profile_name: "KIDNEY FUNCTION TEST (KFT)",
         components: [
-            { label: "Blood Urea", key: "blood_urea", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 300, ref_range_text: "15 - 40 mg/dL" } },
-            { label: "S. Creatinine", key: "creatinine", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "M: 0.7-1.3, F: 0.6-1.1 mg/dL" } },
-            { label: "S. Uric Acid", key: "uric_acid", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "M: 3.5-7.2, F: 2.6-6.0 mg/dL" } },
-            { label: "Sodium (Na+)", key: "sodium", unit: "mEq/L", input_type: "number", validation: { min: 0, max: 200, ref_range_text: "135 - 145 mEq/L" } },
-            { label: "Potassium (K+)", key: "potassium", unit: "mEq/L", input_type: "number", validation: { min: 0, max: 10, ref_range_text: "3.5 - 5.1 mEq/L", panic_high: 6.0 } },
-            { label: "Chloride (Cl-)", key: "chloride", unit: "mEq/L", input_type: "number", validation: { min: 0, max: 200, ref_range_text: "96 - 106 mEq/L" } }
+            { label: "Blood Urea Nitrogen", key: "bun", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 100, ref_range_text: "7 - 20 mg/dL" } },
+            { label: "Creatinine", key: "creatinine", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "0.6 - 1.2 mg/dL" } },
+            { label: "Uric Acid", key: "uric_acid", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "3.5 - 7.2 mg/dL" } },
+            { label: "Calcium", key: "calcium", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "8.5 - 10.5 mg/dL" } },
+            { label: "Phosphorous", key: "phosphorus", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "2.5 - 4.5 mg/dL" } },
+            { label: "Total Proteins", key: "total_protein", unit: "g/dL", input_type: "number", validation: { min: 0, max: 15, ref_range_text: "6.0 - 8.0 g/dL" } },
+            { label: "Albumin", key: "albumin", unit: "g/dL", input_type: "number", validation: { min: 0, max: 10, ref_range_text: "3.5 - 5.5 g/dL" } },
+            { label: "Globulin", key: "globulin", unit: "g/dL", input_type: "calculated", formula: "{total_protein} - {albumin}", validation: { ref_range_text: "Calculated" } },
+            { label: "A/G", key: "ag_ratio", unit: "", input_type: "calculated", formula: "{albumin} / {globulin}", validation: { ref_range_text: "Calculated" } },
+            { label: "Cholesterol", key: "cholesterol", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 800, ref_range_text: "< 200 mg/dL" } },
+            { label: "S. ELECTROLYTES", key: "header_lytes", unit: "", input_type: "header", validation: { ref_range_text: "" } },
+            { label: "Sodium", key: "sodium", unit: "mEq/L", input_type: "number", validation: { min: 0, max: 200, ref_range_text: "135 - 145 mEq/L" } },
+            { label: "Potassium", key: "potassium", unit: "mEq/L", input_type: "number", validation: { min: 0, max: 10, ref_range_text: "3.5 - 5.1 mEq/L" } },
+            { label: "Chlorides", key: "chloride", unit: "mEq/L", input_type: "number", validation: { min: 0, max: 200, ref_range_text: "96 - 106 mEq/L" } }
         ],
         ui_actions: [
             { trigger: "if {potassium} > 6.0", action: "toast_alert", message: "CRITICAL ALERT: High Potassium!" }
@@ -775,11 +879,14 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     },
     {
         profile_id: "PROTHROMBIN_001",
-        profile_name: "PROTHROMBIN TIME",
+        profile_name: "PROTHROMBIN TIME (PT)",
         components: [
-            { label: "PT (Test Value)", key: "pt_test", unit: "Sec", input_type: "number", validation: { ref_range_text: "11-13.5 Sec" } },
-            { label: "PT (Control Value)", key: "pt_control", unit: "Sec", input_type: "number", validation: { ref_range_text: "11-13.5 Sec" } },
-            { label: "INR", key: "inr", unit: "", input_type: "calculated", formula: "{pt_test} / {pt_control}", validation: { ref_range_text: "0.8 - 1.1" } }
+            { label: "Patient Time", key: "pt_patient", unit: "Sec", input_type: "number", validation: { ref_range_text: "11-13.5 Sec" } },
+            { label: "Control Time", key: "pt_control", unit: "Sec", input_type: "number", validation: { ref_range_text: "11-13.5 Sec" } },
+            { label: "Index", key: "pt_index", unit: "", input_type: "number", validation: { ref_range_text: "0.8 - 1.2" } },
+            { label: "Ratio", key: "pt_ratio", unit: "", input_type: "number", validation: { ref_range_text: "" } },
+            { label: "INR", key: "inr", unit: "", input_type: "number", validation: { ref_range_text: "0.8 - 1.2" } },
+            { label: "ISI", key: "isi", unit: "", input_type: "number", validation: { ref_range_text: "" } }
         ]
     },
     {
@@ -1035,6 +1142,98 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
             { label: "S. LDL", key: "ldh", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "< 100" } },
             { label: "Blood Sugar Fasting", key: "bs_fasting", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "70 - 100" } },
             { label: "S. Creatinine", key: "creatinine", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "0.7 - 1.3" } }
+        ]
+    },
+    // --- CULTURE PROFILES START ---
+    {
+        profile_id: "CULTURE_URINE_001",
+        profile_name: "CULTURE URINE",
+        components: [
+            { label: "Microscopy", key: "microscopy", unit: "", input_type: "text_area", validation: { ref_range_text: "Pus Cells: 0-2 /hpf, RBCs: Nil, Epith: Nil" } },
+            { label: "Organism Isolated", key: "organism", unit: "", input_type: "text", validation: { ref_range_text: "Sterile / No Growth" } },
+            { label: "Colony Count", key: "colony_count", unit: "CFU/mL", input_type: "text", validation: { ref_range_text: "< 10^3 CFU/mL" } },
+            { label: "Antibiotic Sensitivity", key: "sensitivity", unit: "", input_type: "text_area", validation: { ref_range_text: "" } }
+        ]
+    },
+    {
+        profile_id: "CULTURE_STOOL_001",
+        profile_name: "CULTURE STOOL",
+        components: [
+            { label: "Consistency", key: "consistency", unit: "", input_type: "dropdown", options: ["Solid", "Semi-Solid", "Soft", "Loose", "Watery"], validation: { ref_range_text: "Semi-Solid" } },
+            { label: "Color", key: "color", unit: "", input_type: "text", validation: { ref_range_text: "Brown" } },
+            { label: "Mucus", key: "mucus", unit: "", input_type: "dropdown", options: ["Absent", "Present"], validation: { ref_range_text: "Absent" } },
+            { label: "Blood", key: "blood", unit: "", input_type: "dropdown", options: ["Absent", "Present"], validation: { ref_range_text: "Absent" } },
+            { label: "Parasites (Ova/Cyst)", key: "parasites", unit: "", input_type: "text_area", validation: { ref_range_text: "None Seen" } },
+            { label: "Organism Isolated", key: "organism", unit: "", input_type: "text", validation: { ref_range_text: "Normal Flora" } },
+            { label: "Antibiotic Sensitivity", key: "sensitivity", unit: "", input_type: "text_area", validation: { ref_range_text: "" } }
+        ]
+    },
+    {
+        profile_id: "CULTURE_PUS_001",
+        profile_name: "CULTURE PUS",
+        components: [
+            { label: "Specimen Source", key: "source", unit: "", input_type: "text", validation: { ref_range_text: "" } },
+            { label: "Gram Stain", key: "gram_stain", unit: "", input_type: "text_area", validation: { ref_range_text: "No Organisms Seen" } },
+            { label: "Organism Isolated", key: "organism", unit: "", input_type: "text", validation: { ref_range_text: "Sterile / No Growth" } },
+            { label: "Antibiotic Sensitivity", key: "sensitivity", unit: "", input_type: "text_area", validation: { ref_range_text: "" } }
+        ]
+    },
+    {
+        profile_id: "COAG_001",
+        profile_name: "COAGULATION PROFILE",
+        components: [
+            { label: "Bleeding Time (BT)", key: "bt", unit: "min", input_type: "text", validation: { ref_range_text: "1-5 min" } },
+            { label: "Clotting Time (CT)", key: "ct", unit: "min", input_type: "text", validation: { ref_range_text: "5-10 min" } },
+            { label: "PROTHROMBIN TIME (PT)", key: "header_pt", unit: "", input_type: "header", validation: { ref_range_text: "" } },
+            { label: "Patient Time", key: "pt_patient", unit: "sec", input_type: "number", validation: { ref_range_text: "11-16 sec" } },
+            { label: "Control Time", key: "pt_control", unit: "sec", input_type: "number", validation: { ref_range_text: "" } },
+            { label: "Index", key: "pt_index", unit: "", input_type: "number", validation: { ref_range_text: "0.8 - 1.2" } },
+            { label: "Ratio", key: "pt_ratio", unit: "", input_type: "number", validation: { ref_range_text: "" } },
+            { label: "INR", key: "pt_inr", unit: "", input_type: "number", validation: { ref_range_text: "0.9 - 1.2" } },
+            { label: "ISI", key: "pt_isi", unit: "", input_type: "number", validation: { ref_range_text: "" } },
+            { label: "APTT / PTT", key: "header_ptt", unit: "", input_type: "header", validation: { ref_range_text: "" } },
+            { label: "Patient Time", key: "ptt_patient", unit: "sec", input_type: "number", validation: { ref_range_text: "26 - 40 sec" } },
+            { label: "Control Time", key: "ptt_control", unit: "sec", input_type: "number", validation: { ref_range_text: "" } }
+        ]
+    },
+    {
+        profile_id: "PSA_001",
+        profile_name: "PSA (TOTAL)",
+        components: [
+            { label: "Total PSA", key: "psa_total", unit: "ng/mL", input_type: "number", validation: { min: 0, max: 100, ref_range_text: "< 4.0 ng/mL" } }
+        ]
+    },
+    {
+        profile_id: "URINE_MICROALBUMIN_001",
+        profile_name: "URINE MICROALBUMIN",
+        components: [
+            { label: "Urinary Microalbumin", key: "microalbumin", unit: "mg/L", input_type: "number", validation: { ref_range_text: "< 20 mg/L" } },
+            { label: "Urine Creatinine", key: "urine_creatinine", unit: "g/L", input_type: "number", validation: { ref_range_text: "0.3 - 3.0 g/L" } },
+            { label: "Albumin/Creatinine Ratio", key: "ac_ratio", unit: "mg/g", input_type: "calculated", formula: "{microalbumin} / {urine_creatinine}", validation: { ref_range_text: "< 30 mg/g" } }
+        ]
+    },
+    {
+        profile_id: "TRIPLE_H_001",
+        profile_name: "TRIPLE H MARKERS",
+        components: [
+            { label: "HIV I & II", key: "hiv_result", unit: "", input_type: "dropdown", options: ["Non-Reactive", "Reactive"], validation: { ref_range_text: "Non-Reactive" } },
+            { label: "HBsAg", key: "hbsag_result", unit: "", input_type: "dropdown", options: ["Non-Reactive", "Reactive"], validation: { ref_range_text: "Non-Reactive" } },
+            { label: "HCV", key: "hcv_result", unit: "", input_type: "dropdown", options: ["Non-Reactive", "Reactive"], validation: { ref_range_text: "Non-Reactive" } }
+        ],
+        ui_actions: [
+            { trigger: "if {hiv_result} == 'Reactive'", action: "toast_alert", message: "CRITICAL: HIV Reactive" },
+            { trigger: "if {hbsag_result} == 'Reactive'", action: "toast_alert", message: "CRITICAL: HBsAg Reactive" },
+            { trigger: "if {hcv_result} == 'Reactive'", action: "toast_alert", message: "CRITICAL: HCV Reactive" }
+        ]
+    },
+    {
+        profile_id: "BONE_METABOLIC_001",
+        profile_name: "BONE METABOLIC PROFILE",
+        components: [
+            { label: "S. Calcium", key: "calcium", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "8.5 - 10.5 mg/dL" } },
+            { label: "S. Phosphorous", key: "phosphorus", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "2.5 - 4.5 mg/dL" } },
+            { label: "S. Uric Acid", key: "uric_acid", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "3.5 - 7.2 mg/dL" } },
+            { label: "S. Creatinine", key: "creatinine", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "0.6 - 1.2 mg/dL" } }
         ]
     }
 ];

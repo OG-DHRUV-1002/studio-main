@@ -160,7 +160,11 @@ export function DashboardClient({ inHouseOrders, outsideOrders }: DashboardClien
             <TableCell>{format(new Date(order.orderDate), 'dd/MM/yyyy')}</TableCell>
             <TableCell>{order.referredBy || 'Self'}</TableCell>
             <TableCell>
-              <Badge variant={order.status === 'Completed' ? 'secondary' : 'default'} className={order.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>
+              <Badge variant="outline" className={`
+                ${order.status === 'Completed' ? 'bg-green-100 text-green-800 border-green-200' :
+                  order.status === 'Payment Pending' ? 'bg-red-100 text-red-800 border-red-200' :
+                    'bg-yellow-100 text-yellow-800 border-yellow-200'}
+              `}>
                 {order.status}
               </Badge>
             </TableCell>

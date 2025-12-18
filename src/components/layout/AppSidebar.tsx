@@ -18,6 +18,7 @@ const menuItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/orders/new", label: "New Order", icon: FilePlus2 },
   { href: "/patients", label: "Patients", icon: Users },
+  { href: "/billing", label: "Billing & Transaction", icon: FlaskConical },
   { href: "/data-entry", label: "Data Entry", icon: FlaskConical },
 ]
 

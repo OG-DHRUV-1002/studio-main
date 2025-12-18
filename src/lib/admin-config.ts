@@ -14,6 +14,13 @@ export interface UserContext {
         display_name: string;
         theme: string;
         db_root: string;
+        // Extended details for Receipt
+        subtitle?: string;
+        address?: string[]; // Array for multi-line address
+        email?: string;
+        phone?: string;
+        whatsapp?: string;
+        license_no?: string;
     };
     access_control: {
         is_admin: boolean;
@@ -23,10 +30,41 @@ export interface UserContext {
     };
 }
 
-export const LAB_REGISTRY: Record<LabId, { name: string; theme: string }> = {
-    lab_001_bhonsle: { name: "Dr. Bhonsle Laboratory", theme: "blue" },
-    lab_002_megascan: { name: "MegaScan Imaging", theme: "red" },
-    lab_003_general: { name: "Niriksha Pathology", theme: "green" },
+export const LAB_REGISTRY: Record<LabId, {
+    name: string;
+    theme: string;
+    subtitle?: string;
+    address?: string[];
+    email?: string;
+    phone?: string;
+    whatsapp?: string;
+    license_no?: string;
+}> = {
+    lab_001_bhonsle: {
+        name: "Dr. Bhonsle Laboratory",
+        theme: "blue",
+        address: ["Main Street, City Center", "Mumbai - 400001"],
+        phone: "9876543210"
+    },
+    lab_002_megascan: {
+        name: "MegaScan Imaging",
+        theme: "red",
+        address: ["Imaging Plaza, 2nd Floor", "Sector 5, Navi Mumbai"],
+        phone: "022-12345678"
+    },
+    lab_003_general: {
+        name: "Niriksha Pathology",
+        theme: "green",
+        subtitle: "Day & Night Pathology Lab & Blood Bank",
+        address: [
+            "1, Paras Darshan, M.G. Road, Ghatkopar (E)",
+            "M - 77"
+        ],
+        email: "anvikshalab@gmail.com",
+        phone: "35134351/2/3/4",
+        whatsapp: "8591265830",
+        license_no: "L123456789"
+    },
     lab_004_path: { name: "Lab-4", theme: "purple" },
     lab_005_clinic: { name: "Lab-5", theme: "orange" },
 };
@@ -53,6 +91,12 @@ export function getUserContext(uid: string): UserContext | null {
             display_name: lab.name,
             theme: lab.theme,
             db_root: `/laboratories/${user.lab_id}`,
+            subtitle: lab.subtitle,
+            address: lab.address,
+            email: lab.email,
+            phone: lab.phone,
+            whatsapp: lab.whatsapp,
+            license_no: lab.license_no,
         },
         access_control: {
             is_admin: isAdmin,
