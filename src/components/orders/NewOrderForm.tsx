@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -13,29 +12,47 @@ import type { Patient } from '@/lib/types';
 import { Switch } from '@/components/ui/switch';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { createTestOrder } from '@/lib/actions';
+import { createWalkInOrder } from '@/lib/actions'; // CHANGED: Use new action
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { PatientCombobox } from './PatientCombobox';
+// import { PatientCombobox } from './PatientCombobox'; // REMOVED
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { allTests, testProfiles } from '@/lib/tests';
 import { Input } from '../ui/input';
+import { useAuth } from '@/lib/auth-context';
 
+
+const LAB_STAFF = {
+  'lab_001_bhonsle': ["Receptionist 1", "Receptionist 2", "Sr. Receptionist"],
+  'lab_002_megascan': ["Desk Staff A", "Desk Staff B", "Manager"],
+  'default': ["Receptionist 1", "Receptionist 2"]
+}
 
 const testSchema = z.object({
   testName: z.string().min(1, 'Test name is required.'),
   testPrice: z.coerce.number().min(0.01, 'Price must be greater than 0.'),
 });
 
+// CHANGED: Walk-In Schema (Unified)
 const formSchema = z.object({
   orderId: z.string().min(1, 'Lab number is required.'),
-  patientId: z.string().min(1, 'Patient is required.'),
+  // Patient Fields
+  fullName: z.string().min(3, 'Full name is required.'),
+  title: z.enum(['Mr.', 'Mrs.', 'Ms.', 'Master', 'Baby of', 'Dr.']),
+  age: z.coerce.number().min(0, 'Age is required.'),
+  gender: z.enum(['Male', 'Female', 'Other']),
+  email: z.string().email().optional().or(z.literal('')),
+  contactNumber: z.string().min(10, 'Contact number is required (10 digits).').max(15, 'Invalid number'),
+  address: z.string().optional(),
+  registeredBy: z.string().min(1, 'Registered By is required'),
+
   labType: z.enum(['in-house', 'outside']),
   manualDiscount: z.coerce.number().min(0).max(80),
   tests: z.array(testSchema).min(1, 'At least one test is required.'),
   referredBy: z.string().optional(),
   specimen: z.string().optional(),
+  remarks: z.string().optional(),
 });
 
 type NewOrderFormValues = z.infer<typeof formSchema>;
@@ -104,23 +121,45 @@ const TestCombobox = ({ value, onSelect, onPriceChange }: { value: string, onSel
 export function NewOrderForm({ patients }: NewOrderFormProps) {
   const { toast } = useToast();
   const router = useRouter();
+  const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const currentLabId = user?.lab_context?.id || 'default';
+  const staffOptions = LAB_STAFF[currentLabId as keyof typeof LAB_STAFF] || LAB_STAFF['default'];
 
   const form = useForm<NewOrderFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       orderId: '',
-      patientId: '',
+      title: 'Mr.',
+      fullName: '',
+      age: 0,
+      gender: 'Male',
+      email: '',
+      contactNumber: '',
+      address: '',
+      registeredBy: '',
       labType: 'in-house',
       manualDiscount: 0,
       tests: [{ testName: '', testPrice: 0 }],
       referredBy: '',
       specimen: '',
+      remarks: '',
     },
   });
 
   const labType = form.watch('labType');
   const tests = form.watch('tests');
+  const title = form.watch('title');
+
+  // Auto-set gender based on title
+  useEffect(() => {
+    if (title === 'Mr.' || title === 'Master') {
+      form.setValue('gender', 'Male');
+    } else if (title === 'Mrs.' || title === 'Ms.') {
+      form.setValue('gender', 'Female');
+    }
+  }, [title, form]);
 
   useEffect(() => {
     document.body.classList.remove('theme-outside');
@@ -154,7 +193,8 @@ export function NewOrderForm({ patients }: NewOrderFormProps) {
 
   async function onSubmit(values: NewOrderFormValues) {
     setIsSubmitting(true);
-    const result = await createTestOrder(values);
+    // CHANGED: Use createWalkInOrder
+    const result = await createWalkInOrder(values);
     setIsSubmitting(false);
 
     if (result.success) {
@@ -169,9 +209,6 @@ export function NewOrderForm({ patients }: NewOrderFormProps) {
         description: result.message || 'An unknown error occurred.',
         variant: 'destructive',
       });
-      if (result.errors) {
-        console.log(result.errors);
-      }
     }
   }
 
@@ -180,56 +217,208 @@ export function NewOrderForm({ patients }: NewOrderFormProps) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Patient &amp; Order Details</CardTitle>
-            <CardDescription>Select a patient and specify the order type.</CardDescription>
+            <CardTitle>Walk-In Registration</CardTitle>
+            <CardDescription>Enter patient details. Patient ID will be same as Lab No.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
+
+            {/* Lab No Generator */}
+            {/* Lab No Generator & Registered By */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="orderId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Lab No. / Patient ID</FormLabel>
+                    <FormControl>
+                      <div className="flex rounded-md border border-input shadow-sm focus-within:ring-1 focus-within:ring-ring">
+                        <div className="flex h-9 items-center rounded-l-md border-r bg-muted px-3 text-sm text-muted-foreground">
+                          {new Date().toLocaleString('default', { month: 'long' }).slice(0, 4) + '_'}
+                        </div>
+                        <Input
+                          placeholder="1234"
+                          className="flex-1 border-0 focus-visible:ring-0 rounded-l-none"
+                          value={field.value ? field.value.split('_')[1] || '' : ''}
+                          onChange={(e) => {
+                            const prefix = new Date().toLocaleString('default', { month: 'long' }).slice(0, 4) + '_';
+                            field.onChange(prefix + e.target.value);
+                          }}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="registeredBy"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Registered By</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Staff" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {staffOptions.map(staff => (
+                          <SelectItem key={staff} value={staff}>{staff}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Patient Details - Row 1 */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+              {/* Title */}
+              <div className="md:col-span-2">
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Mr.">Mr.</SelectItem>
+                          <SelectItem value="Mrs.">Mrs.</SelectItem>
+                          <SelectItem value="Ms.">Ms.</SelectItem>
+                          <SelectItem value="Master">Master</SelectItem>
+                          <SelectItem value="Baby of">Baby of</SelectItem>
+                          <SelectItem value="Dr.">Dr.</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Full Name */}
+              <div className="md:col-span-4">
+                <FormField
+                  control={form.control}
+                  name="fullName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Patient Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Full Name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Mobile */}
+              <div className="md:col-span-3">
+                <FormField
+                  control={form.control}
+                  name="contactNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Contact Number</FormLabel>
+                      <FormControl>
+                        <Input placeholder="10-digit Mobile" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Email (New) - Fits in remaining column space or new row? Let's give it 3 cols */}
+              <div className="md:col-span-3">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email ID</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Optional" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Row 2: Demographics */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="age"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Age (Years)</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="e.g. 35" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="gender"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Gender</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value} disabled={title === 'Mr.' || title === 'Mrs.' || title === 'Ms.' || title === 'Master'}>
+                      <FormControl>
+                        <SelectTrigger className={(title === 'Mr.' || title === 'Mrs.' || title === 'Ms.' || title === 'Master') ? 'bg-gray-100' : ''}>
+                          <SelectValue placeholder="Select Gender" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Male">Male</SelectItem>
+                        <SelectItem value="Female">Female</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Row 3: Address (New) */}
             <FormField
               control={form.control}
-              name="orderId"
+              name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Lab No.</FormLabel>
+                  <FormLabel>Address</FormLabel>
                   <FormControl>
-                    <div className="flex rounded-md border border-input shadow-sm focus-within:ring-1 focus-within:ring-ring">
-                      <div className="flex h-9 items-center rounded-l-md border-r bg-muted px-3 text-sm text-muted-foreground">
-                        {new Date().toLocaleString('default', { month: 'long' }).slice(0, 4) + '_'}
-                      </div>
-                      <Input
-                        placeholder="1234"
-                        className="flex-1 border-0 focus-visible:ring-0 rounded-l-none"
-                        value={field.value ? field.value.split('_')[1] || '' : ''}
-                        onChange={(e) => {
-                          const prefix = new Date().toLocaleString('default', { month: 'long' }).slice(0, 4) + '_';
-                          field.onChange(prefix + e.target.value);
-                        }}
-                      />
-                    </div>
+                    <Input placeholder="Flat/House No, Area, City" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="patientId"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Patient</FormLabel>
-                  <PatientCombobox
-                    patients={patients}
-                    value={field.value}
-                    onChange={field.onChange}
-                  />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
+            {/* Rest of Form (Referral, Specimen, Lab Type) */}
             <FormField
               control={form.control}
               name="labType"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-4">
                   <div className="space-y-0.5">
                     <FormLabel>Lab Type</FormLabel>
                     <FormMessage />
@@ -247,27 +436,44 @@ export function NewOrderForm({ patients }: NewOrderFormProps) {
                 </FormItem>
               )}
             />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="referredBy"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Referred By</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., Dr. Smith" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="specimen"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Specimen</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., Blood, Urine" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Remarks (New) */}
             <FormField
               control={form.control}
-              name="referredBy"
+              name="remarks"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Referred By</FormLabel>
+                  <FormLabel>Remarks / Clinical History</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Dr. Smith" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="specimen"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Specimen</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., Blood, Urine" {...field} />
+                    <Input placeholder="Optional" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

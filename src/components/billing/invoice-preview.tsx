@@ -16,10 +16,10 @@ export default function InvoicePreview({ transaction }: InvoicePreviewProps) {
     // Default fallback if no lab context
     const labName = lab?.display_name || "ANVIKSHA";
 
-    const labAddress = lab?.address || ["1, Paras Darshan, M.G. Road, Ghatkopar (E)", "M - 77"];
-    const labEmail = lab?.email || "anvikshalab@gmail.com";
-    const labPhone = lab?.phone || "35134351/2/3/4";
-    const labWhatsapp = lab?.whatsapp || "8591265830";
+    const labAddress = lab?.address || ["NL-5/11/03, Sector 11, Nerul (E), Nerul", "Navi Mumbai - 400706."];
+    const labEmail = lab?.email || "nirikshapathology.nerul@gmail.com";
+    const labPhone = lab?.phone || "98206 40452 / 022-27702853";
+    const labWhatsapp = lab?.whatsapp;
 
     const totalAmount = transaction.amount;
     const paidAmount = transaction.status === 'SUCCESS' ? totalAmount : 0;
@@ -38,7 +38,7 @@ export default function InvoicePreview({ transaction }: InvoicePreviewProps) {
                         <p key={i}>{line}</p>
                     ))}
                     <p>Email: {labEmail}</p>
-                    <p>Tel.: {labPhone} Whatsapp: {labWhatsapp}</p>
+                    <p>Tel.: {labPhone} {labWhatsapp && `Whatsapp: ${labWhatsapp}`}</p>
                 </div>
             </div>
 

@@ -43,27 +43,30 @@ export const LAB_REGISTRY: Record<LabId, {
     lab_001_bhonsle: {
         name: "Dr. Bhonsle Laboratory",
         theme: "blue",
-        address: ["Main Street, City Center", "Mumbai - 400001"],
-        phone: "9876543210"
+        address: ["27, Shanti Center, 3 Floor, Sector 17", "Vashi, Navi mumbai - 400705"],
+        email: "drbhonsleslab@gmail.com",
+        phone: "79771 73732 / 87795 08920"
     },
     lab_002_megascan: {
-        name: "MegaScan Imaging",
+        name: "Megascan Imaging",
         theme: "red",
-        address: ["Imaging Plaza, 2nd Floor", "Sector 5, Navi Mumbai"],
-        phone: "022-12345678"
+        address: [
+            "Shop No. 29 & 30, Daffodils CHS Ltd.,",
+            "Sudhakar Vishnu Londe Marg,",
+            "Sector-14, Vashi, Navi Mumbai - 400703"
+        ],
+        email: "megascanimaging@gmail.com",
+        phone: "88793 47488 / 98671 96788"
     },
     lab_003_general: {
         name: "Niriksha Pathology",
         theme: "green",
-        subtitle: "Day & Night Pathology Lab & Blood Bank",
         address: [
-            "1, Paras Darshan, M.G. Road, Ghatkopar (E)",
-            "M - 77"
+            "NL-5/11/03, Sector 11, Nerul (E), Nerul,",
+            "Navi Mumbai - 400706."
         ],
-        email: "anvikshalab@gmail.com",
-        phone: "35134351/2/3/4",
-        whatsapp: "8591265830",
-        license_no: "L123456789"
+        email: "nirikshapathology.nerul@gmail.com",
+        phone: "98206 40452 / 022-27702853"
     },
     lab_004_path: { name: "Lab-4", theme: "purple" },
     lab_005_clinic: { name: "Lab-5", theme: "orange" },

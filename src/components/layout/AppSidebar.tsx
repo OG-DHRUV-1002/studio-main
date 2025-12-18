@@ -10,16 +10,15 @@ import {
   SidebarMenuButton,
   SidebarFooter
 } from "@/components/ui/sidebar"
-import { LayoutDashboard, FilePlus2, Users, FlaskConical } from "lucide-react";
+import { LayoutDashboard, FilePlus2, Users, FlaskConical, Banknote } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 
 const menuItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/orders/new", label: "New Order", icon: FilePlus2 },
-  { href: "/patients", label: "Patients", icon: Users },
-  { href: "/billing", label: "Billing & Transaction", icon: FlaskConical },
   { href: "/data-entry", label: "Data Entry", icon: FlaskConical },
+  { href: "/billing", label: "Billing & Transaction", icon: Banknote },
 ]
 
 export function AppSidebar() {

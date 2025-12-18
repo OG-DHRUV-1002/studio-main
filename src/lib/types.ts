@@ -3,10 +3,15 @@ import { z } from 'zod';
 
 export const PatientSchema = z.object({
   patientId: z.string(),
+  title: z.string().optional(),
   fullName: z.string(),
   dateOfBirth: z.date(),
   gender: z.enum(['Male', 'Female', 'Other']),
+  email: z.string().optional(),
   contactNumber: z.string(),
+  address: z.string().optional(),
+  remarks: z.string().optional(),
+  registeredBy: z.string().optional(),
   createdAt: z.date(),
 });
 export type Patient = z.infer<typeof PatientSchema>;

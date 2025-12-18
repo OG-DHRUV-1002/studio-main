@@ -100,13 +100,24 @@ export function ReportClient({ order }: ReportClientProps) {
                 if (profile && test.resultValue && test.resultValue.startsWith('{')) {
                     try {
                         const results = JSON.parse(test.resultValue);
-                        const rows = profile.components.map(comp => `
-                                            <tr>
-                                                <td style="padding-left: 0;">${comp.label}</td>
-                                                <td>${results[comp.key] || '-'} ${comp.unit}</td>
-                                                <td>${comp.validation?.ref_range_text || ''}</td>
-                                            </tr>
-                                        `).join('');
+                        const rows = profile.components.map(comp => {
+                            if (comp.input_type === 'header') {
+                                return `
+                                    <tr>
+                                        <td colspan="3" style="font-weight: bold; padding-top: 10px; padding-bottom: 5px; text-transform: uppercase;">
+                                            ${comp.label}
+                                        </td>
+                                    </tr>
+                                `;
+                            }
+                            return `
+                                <tr>
+                                    <td style="padding-left: 0;">${comp.label}</td>
+                                    <td>${results[comp.key] || '-'} ${comp.unit}</td>
+                                    <td>${comp.validation?.ref_range_text || ''}</td>
+                                </tr>
+                            `;
+                        }).join('');
 
                         return `
                                             <tr>
@@ -199,13 +210,22 @@ export function ReportClient({ order }: ReportClientProps) {
                                 return (
                                     <div key={index} className="space-y-1 mt-4">
                                         <div className="font-bold underline">{test.testName}</div>
-                                        {profile.components.map(comp => (
-                                            <div key={comp.key} className="grid grid-cols-3">
-                                                <div>{comp.label}</div>
-                                                <div>{results[comp.key] || '-'} {comp.unit}</div>
-                                                <div>{comp.validation?.ref_range_text || ''}</div>
-                                            </div>
-                                        ))}
+                                        {profile.components.map(comp => {
+                                            if (comp.input_type === 'header') {
+                                                return (
+                                                    <div key={comp.key} className="font-bold underline mt-4 mb-2 text-sm uppercase">
+                                                        {comp.label}
+                                                    </div>
+                                                );
+                                            }
+                                            return (
+                                                <div key={comp.key} className="grid grid-cols-3">
+                                                    <div>{comp.label}</div>
+                                                    <div>{results[comp.key] || '-'} {comp.unit}</div>
+                                                    <div>{comp.validation?.ref_range_text || ''}</div>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 );
                             } catch (e) { }

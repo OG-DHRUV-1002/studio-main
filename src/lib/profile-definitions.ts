@@ -32,21 +32,21 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
         profile_name: "HEPATIC / LFT",
         components: [
             {
-                label: "Bilirubin Total",
+                label: "S Total Bilirubin",
                 key: "bil_total",
                 unit: "mg/dL",
                 input_type: "number",
                 validation: { min: 0, max: 20, ref_range_text: "0.2 - 1.2 mg/dL", panic_high: 15 }
             },
             {
-                label: "Bilirubin Direct",
+                label: "Direct Bilirubin",
                 key: "bil_direct",
                 unit: "mg/dL",
                 input_type: "number",
                 validation: { min: 0, max: 10, ref_range_text: "0.0 - 0.3 mg/dL" }
             },
             {
-                label: "Bilirubin Indirect",
+                label: "Indirect Bilirubin",
                 key: "bil_indirect",
                 unit: "mg/dL",
                 input_type: "calculated",
@@ -54,55 +54,47 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
                 validation: { ref_range_text: "Calculated" }
             },
             {
-                label: "SGOT / AST",
-                key: "sgot",
-                unit: "U/L",
-                input_type: "number",
-                validation: { min: 0, max: 2000, ref_range_text: "< 40 U/L", panic_high: 500 }
-            },
-            {
-                label: "SGPT / ALT",
-                key: "sgpt",
-                unit: "U/L",
-                input_type: "number",
-                validation: { min: 0, max: 2000, ref_range_text: "< 40 U/L", panic_high: 500 }
-            },
-            {
-                label: "S. Alkaline Phosphatase",
-                key: "alk_phos",
-                unit: "U/L",
-                input_type: "number",
-                validation: { min: 0, max: 2000, ref_range_text: "80 - 290 U/L" }
-            },
-            {
-                label: "S. Total Proteins",
+                label: "S Proteins Total",
                 key: "total_protein",
                 unit: "g/dL",
                 input_type: "number",
                 validation: { min: 0, max: 15, ref_range_text: "6.0 - 8.0 g/dL" }
             },
             {
-                label: "S. Albumin",
+                label: "S Albumin",
                 key: "albumin",
                 unit: "g/dL",
                 input_type: "number",
                 validation: { min: 0, max: 10, ref_range_text: "3.5 - 5.5 g/dL" }
             },
             {
-                label: "S. Globulin",
-                key: "globulin",
-                unit: "g/dL",
-                input_type: "calculated",
-                formula: "{total_protein} - {albumin}",
-                validation: { ref_range_text: "Calculated" }
-            },
-            {
                 label: "A/G Ratio",
                 key: "ag_ratio",
                 unit: "",
                 input_type: "calculated",
-                formula: "{albumin} / {globulin}",
+                formula: "{albumin} / ({total_protein} - {albumin})",
                 validation: { ref_range_text: "Calculated" }
+            },
+            {
+                label: "SGOT",
+                key: "sgot",
+                unit: "U/L",
+                input_type: "number",
+                validation: { min: 0, max: 2000, ref_range_text: "< 40 U/L", panic_high: 500 }
+            },
+            {
+                label: "SGP",
+                key: "sgpt",
+                unit: "U/L",
+                input_type: "number",
+                validation: { min: 0, max: 2000, ref_range_text: "< 40 U/L", panic_high: 500 }
+            },
+            {
+                label: "S Alkaline Phosphatase",
+                key: "alk_phos",
+                unit: "U/L",
+                input_type: "number",
+                validation: { min: 0, max: 2000, ref_range_text: "80 - 290 U/L" }
             }
         ],
         ui_actions: [
@@ -261,15 +253,17 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     },
     {
         profile_id: "COAG_001",
-        profile_name: "BT.CT.PT.PTT", // Matches tests.ts
+        profile_name: "BT.CT.PT.PTT",
         components: [
-            { label: "Bleeding Time (BT)", key: "bt", unit: "Min:Sec", input_type: "number", validation: { ref_range_text: "1:00 - 5:00" } }, // Ideally time input, treating as text or number for MVP
-            { label: "Clotting Time (CT)", key: "ct", unit: "Min:Sec", input_type: "number", validation: { ref_range_text: "3:00 - 10:00" } },
-            { label: "PT (Test Value)", key: "pt_test", unit: "Sec", input_type: "number", validation: { ref_range_text: "11-13.5 Sec" } },
-            { label: "PT (Control Value)", key: "pt_control", unit: "Sec", input_type: "number", validation: { ref_range_text: "11-13.5 Sec" } },
-            { label: "INR", key: "inr", unit: "", input_type: "calculated", formula: "{pt_test} / {pt_control}", validation: { ref_range_text: "0.8 - 1.1" } },
-            { label: "APTT (Test Value)", key: "aptt_test", unit: "Sec", input_type: "number", validation: { ref_range_text: "30-40 Sec" } },
-            { label: "APTT (Control Value)", key: "aptt_control", unit: "Sec", input_type: "number", validation: { ref_range_text: "30-40 Sec" } }
+            { label: "Bleeding Time", key: "bt", unit: "min", input_type: "text", validation: { ref_range_text: "1-5 min" } },
+            { label: "Clotting Time", key: "ct", unit: "min", input_type: "text", validation: { ref_range_text: "5-10 min" } },
+            { label: "Prothrombin Time", key: "pt_time", unit: "sec", input_type: "number", validation: { ref_range_text: "11-16 sec" } },
+            { label: "Normal Control", key: "pt_control", unit: "sec", input_type: "number", validation: { ref_range_text: "" } },
+            { label: "Ratio", key: "pt_ratio", unit: "", input_type: "number", validation: { ref_range_text: "" } },
+            { label: "INR Value", key: "pt_inr", unit: "", input_type: "number", validation: { ref_range_text: "0.9 - 1.2" } },
+            { label: "ISI Value", key: "pt_isi", unit: "", input_type: "number", validation: { ref_range_text: "" } },
+            { label: "Partial Thromboplastin time", key: "aptt_time", unit: "sec", input_type: "number", validation: { ref_range_text: "26 - 40 sec" } },
+            { label: "Normal- Control", key: "aptt_control", unit: "sec", input_type: "number", validation: { ref_range_text: "" } }
         ]
     },
     {
@@ -1178,24 +1172,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
             { label: "Antibiotic Sensitivity", key: "sensitivity", unit: "", input_type: "text_area", validation: { ref_range_text: "" } }
         ]
     },
-    {
-        profile_id: "COAG_001",
-        profile_name: "COAGULATION PROFILE",
-        components: [
-            { label: "Bleeding Time (BT)", key: "bt", unit: "min", input_type: "text", validation: { ref_range_text: "1-5 min" } },
-            { label: "Clotting Time (CT)", key: "ct", unit: "min", input_type: "text", validation: { ref_range_text: "5-10 min" } },
-            { label: "PROTHROMBIN TIME (PT)", key: "header_pt", unit: "", input_type: "header", validation: { ref_range_text: "" } },
-            { label: "Patient Time", key: "pt_patient", unit: "sec", input_type: "number", validation: { ref_range_text: "11-16 sec" } },
-            { label: "Control Time", key: "pt_control", unit: "sec", input_type: "number", validation: { ref_range_text: "" } },
-            { label: "Index", key: "pt_index", unit: "", input_type: "number", validation: { ref_range_text: "0.8 - 1.2" } },
-            { label: "Ratio", key: "pt_ratio", unit: "", input_type: "number", validation: { ref_range_text: "" } },
-            { label: "INR", key: "pt_inr", unit: "", input_type: "number", validation: { ref_range_text: "0.9 - 1.2" } },
-            { label: "ISI", key: "pt_isi", unit: "", input_type: "number", validation: { ref_range_text: "" } },
-            { label: "APTT / PTT", key: "header_ptt", unit: "", input_type: "header", validation: { ref_range_text: "" } },
-            { label: "Patient Time", key: "ptt_patient", unit: "sec", input_type: "number", validation: { ref_range_text: "26 - 40 sec" } },
-            { label: "Control Time", key: "ptt_control", unit: "sec", input_type: "number", validation: { ref_range_text: "" } }
-        ]
-    },
+
     {
         profile_id: "PSA_001",
         profile_name: "PSA (TOTAL)",

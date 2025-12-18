@@ -10,10 +10,15 @@ import { getCurrentLabId } from './auth-server';
 // --- PATIENT ACTIONS ---
 
 const PatientFormSchema = z.object({
+  title: z.string().optional(),
   fullName: z.string().min(3, 'Full name must be at least 3 characters.'),
   dateOfBirth: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Invalid date format." }),
   gender: z.enum(['Male', 'Female', 'Other']),
+  email: z.string().optional(),
   contactNumber: z.string().length(10, 'Contact number must be exactly 10 digits.'),
+  address: z.string().optional(),
+  remarks: z.string().optional(),
+  registeredBy: z.string().optional(),
 });
 
 export async function createPatient(formData: FormData) {
@@ -321,5 +326,102 @@ export async function updateLabSettings(formData: FormData) {
   } catch (error) {
     console.error('Update Settings Error:', error);
     return { success: false, message: 'An error occurred while updating settings.' };
+  }
+}
+
+// --- UNIFIED ORDER ACTIONS ---
+
+const WalkInOrderSchema = z.object({
+  orderId: z.string().min(1, 'Lab number is required.'),
+  title: z.string().optional(),
+  fullName: z.string().min(3, 'Full name is required.'),
+  age: z.coerce.number().min(0, 'Age is required.'),
+  gender: z.enum(['Male', 'Female', 'Other']),
+  email: z.string().email().optional().or(z.literal('')),
+  contactNumber: z.string().min(10, 'Contact number is required (10 digits).').max(15, 'Invalid contact/mobile number'),
+  address: z.string().optional(),
+  remarks: z.string().optional(),
+  registeredBy: z.string().optional(),
+
+  labType: z.enum(['in-house', 'outside']),
+  manualDiscount: z.coerce.number().min(0).max(80),
+  tests: z.array(z.object({
+    testName: z.string().min(1, 'Test name is required.'),
+    testPrice: z.coerce.number().min(0.01, 'Price must be greater than 0.'),
+  })).min(1, 'At least one test is required.'),
+  referredBy: z.string().optional(),
+  specimen: z.string().optional(),
+});
+
+export async function createWalkInOrder(data: unknown) {
+  try {
+    const labId = await getCurrentLabId();
+    const parsed = WalkInOrderSchema.safeParse(data);
+
+    if (!parsed.success) {
+      console.error('Validation errors:', parsed.error.flatten().fieldErrors);
+      return { success: false, message: 'Invalid form data.', errors: parsed.error.flatten().fieldErrors };
+    }
+
+    const {
+      orderId, title, fullName, age, gender, email, contactNumber, address, remarks, registeredBy,
+      labType, manualDiscount, tests, referredBy, specimen
+    } = parsed.data;
+
+    // 1. Create Patient (ID = OrderID)
+    // Approximate DOB from Age
+    const birthYear = new Date().getFullYear() - age;
+    const dateOfBirth = new Date(birthYear, 0, 1);
+
+    const newPatient: Patient = {
+      patientId: orderId, // Unified ID
+      title,
+      fullName,
+      dateOfBirth,
+      gender,
+      email,
+      contactNumber,
+      address,
+      remarks,
+      registeredBy,
+      createdAt: new Date(),
+    };
+
+    // Insert Patient (Overwrite if exists? Or Fail? User implied "re-enter" -> Overwrite/Update logic safer)
+    // db.insertPatient uses 'set', so it overwrites. This matches the "fresh visit" logic.
+    await db.insertPatient(labId, newPatient);
+
+    // 2. Create Order (ID = OrderID)
+    const subtotal = tests.reduce((acc, test) => acc + test.testPrice, 0);
+    const totalAmount = subtotal;
+    const discountAmount = (totalAmount * manualDiscount) / 100;
+    const finalAmount = totalAmount - discountAmount;
+
+    const newOrder: TestOrder = {
+      orderId, // Unified ID
+      patientId: orderId, // Link to same ID
+      orderDate: new Date(),
+      status: 'Pending',
+      labType,
+      tests,
+      totalAmount: subtotal,
+      discountApplied: manualDiscount,
+      finalAmount: finalAmount,
+      referredBy: referredBy || 'Self',
+      specimen: specimen || 'N/A',
+      patient: newPatient, // Optional embedding
+    };
+
+    await db.insertOrder(labId, newOrder);
+
+    revalidatePath('/');
+    revalidatePath('/data-entry');
+    revalidatePath('/patients');
+
+    return { success: true, message: 'Order created successfully.' };
+
+  } catch (error) {
+    console.error('Create WalkIn Order Error:', error);
+    return { success: false, message: 'An error occurred while creating the order.' };
   }
 }
