@@ -5,7 +5,14 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { ProfileDefinition, ProfileComponent } from '@/lib/profile-definitions';
-// import { evaluate } from 'mathjs'; // We might need this, or use simple eval/function
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
 
 interface ProfileDataEntryProps {
     profile: ProfileDefinition;
@@ -35,6 +42,7 @@ export function ProfileDataEntry({ profile, initialValues, onChange }: ProfileDa
                         matches.forEach(match => {
                             const key = match.slice(1, -1);
                             const val = values[key];
+                            // Allow calculation if value is 0, but not if undefined or empty string
                             if (val === undefined || val === '' || isNaN(Number(val))) {
                                 readyToCalc = false;
                             } else {
@@ -45,11 +53,7 @@ export function ProfileDataEntry({ profile, initialValues, onChange }: ProfileDa
 
                     if (readyToCalc) {
                         try {
-                            // Safe eval using Function constructor or simple logic
-                            // For simplicity in this env, we'll use a basic evaluator or Function
-                            // NOTE: 'eval' is dangerous in general, but here inputs are numbers
-                            // Better to use a small math parser if possible, but for LIMS MVP we limit scope.
-                            // We will use Function() for strict math evaluation.
+                            // Safe eval using Function constructor
                             const calculated = new Function(`return ${formula}`)();
 
                             // Round to 2 decimals
@@ -82,55 +86,81 @@ export function ProfileDataEntry({ profile, initialValues, onChange }: ProfileDa
     };
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-md bg-slate-50">
-            <div className="col-span-1 md:col-span-2">
-                <h4 className="font-semibold text-lg text-primary">{profile.profile_name}</h4>
-                <p className="text-xs text-muted-foreground mb-4">Enter parameters below. Auto-calculations will trigger automatically.</p>
+        <div className="rounded-md border bg-white shadow-sm overflow-hidden">
+            <div className="bg-slate-50 px-4 py-2 border-b">
+                <h4 className="font-semibold text-primary">{profile.profile_name}</h4>
+                <p className="text-xs text-muted-foreground">Enter results below.</p>
             </div>
-            {profile.components.map(comp => (
-                <div key={comp.key} className="space-y-2">
-                    <Label htmlFor={comp.key} className="text-xs font-medium">
-                        {comp.label} {comp.unit ? `(${comp.unit})` : ''}
-                    </Label>
 
-                    {comp.input_type === 'dropdown' ? (
-                        <Select
-                            value={String(values[comp.key] || '')}
-                            onValueChange={(v) => handleChange(comp.key, v)}
-                        >
-                            <SelectTrigger id={comp.key}>
-                                <SelectValue placeholder="Select..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {comp.options?.map(opt => (
-                                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    ) : comp.input_type === 'text_area' ? (
-                        <textarea
-                            id={comp.key}
-                            value={values[comp.key] || ''}
-                            onChange={(e) => handleChange(comp.key, e.target.value)}
-                            className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                            placeholder={comp.validation?.ref_range_text || ''}
-                        />
-                    ) : (
-                        <Input
-                            id={comp.key}
-                            type={comp.input_type === 'number' || comp.input_type === 'calculated' ? 'number' : 'text'}
-                            value={values[comp.key] || ''}
-                            onChange={(e) => handleChange(comp.key, e.target.value)}
-                            readOnly={comp.input_type === 'calculated'}
-                            placeholder={comp.validation?.ref_range_text || ''}
-                            className={comp.input_type === 'calculated' ? 'bg-gray-100 font-semibold' : ''}
-                        />
-                    )}
-                    {comp.validation?.ref_range_text && (
-                        <p className="text-[10px] text-muted-foreground">Range: {comp.validation.ref_range_text}</p>
-                    )}
-                </div>
-            ))}
+            <Table>
+                <TableHeader>
+                    <TableRow className="bg-slate-50 hover:bg-slate-50">
+                        <TableHead className="w-[40%] text-black font-semibold">Test Parameter</TableHead>
+                        <TableHead className="w-[30%] text-black font-semibold">Result</TableHead>
+                        <TableHead className="w-[30%] text-black font-semibold">Reference Range</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {profile.components.map(comp => {
+                        // Handle Header Type
+                        if (comp.input_type === 'header') {
+                            return (
+                                <TableRow key={comp.key} className="bg-gray-100 hover:bg-gray-100">
+                                    <TableCell colSpan={3} className="font-bold text-gray-800 py-2">
+                                        {comp.label}
+                                    </TableCell>
+                                </TableRow>
+                            );
+                        }
+
+                        // Normal Input logic
+                        return (
+                            <TableRow key={comp.key} className="hover:bg-gray-50/50">
+                                <TableCell className="font-medium align-middle py-2">
+                                    {comp.label}
+                                    {comp.unit && <span className="text-xs text-muted-foreground ml-1">({comp.unit})</span>}
+                                </TableCell>
+                                <TableCell className="py-2">
+                                    {comp.input_type === 'dropdown' ? (
+                                        <Select
+                                            value={String(values[comp.key] || '')}
+                                            onValueChange={(v) => handleChange(comp.key, v)}
+                                        >
+                                            <SelectTrigger id={comp.key} className="h-9">
+                                                <SelectValue placeholder="Select..." />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {comp.options?.map(opt => (
+                                                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    ) : comp.input_type === 'text_area' ? (
+                                        <textarea
+                                            id={comp.key}
+                                            value={values[comp.key] || ''}
+                                            onChange={(e) => handleChange(comp.key, e.target.value)}
+                                            className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y"
+                                        />
+                                    ) : (
+                                        <Input
+                                            id={comp.key}
+                                            type={comp.input_type === 'number' || comp.input_type === 'calculated' ? 'number' : 'text'}
+                                            value={values[comp.key] || ''}
+                                            onChange={(e) => handleChange(comp.key, e.target.value)}
+                                            readOnly={comp.input_type === 'calculated'}
+                                            className={`h-9 ${comp.input_type === 'calculated' ? 'bg-gray-100 font-semibold text-blue-600' : ''}`}
+                                        />
+                                    )}
+                                </TableCell>
+                                <TableCell className="text-sm text-gray-500 py-2">
+                                    {comp.validation?.ref_range_text || '-'}
+                                </TableCell>
+                            </TableRow>
+                        );
+                    })}
+                </TableBody>
+            </Table>
         </div>
     );
 }
