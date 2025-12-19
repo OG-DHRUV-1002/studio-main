@@ -64,7 +64,7 @@ export default function TransactionTerminal() {
                 try {
                     // Dynamic Import to avoid server-side issues
                     const { getOrder } = await import('@/lib/db');
-                    const orderData = await getOrder(labId, orderId as string);
+                    const orderData = await getOrder(labId as string, orderId as string);
 
                     if (orderData) {
                         const age = orderData.patient?.dateOfBirth ?
@@ -89,7 +89,8 @@ export default function TransactionTerminal() {
                                 test_name: t.testName,
                                 price: t.testPrice || 0
                             })),
-                            qr_string: `upi://pay?pa=${user?.lab_context.phone || '9876543210'}@upi&pn=${user?.lab_context.display_name}&am=${orderData.finalAmount}&tr=${orderData.orderId}`
+                            // Use lab_context.upiId if available, else phone, else default
+                            qr_string: `upi://pay?pa=${user?.lab_context.upiId || user?.lab_context.phone || '9876543210@upi'}&pn=${user?.lab_context.display_name}&am=${orderData.finalAmount}&tr=${orderData.orderId}`
                         });
                     }
                 } catch (error) {

@@ -23,7 +23,8 @@ export const testProfiles = {
         { name: "MALARIAL PARASITE", price: 300 },
         { name: "MICROFILARIA", price: 400 },
         { name: "URINE", price: 200 },
-        { name: "STOOL", price: 250 }
+        { name: "STOOL", price: 250 },
+        { name: "G6-PD TEST", price: 400 }
     ],
     "SEROLOGY": [
         { name: "GROUP", price: 100 },
@@ -70,7 +71,9 @@ export const testProfiles = {
         { name: "S. BICARBONATE", price: 300 },
         { name: "PLASMA AMMONIA", price: 400 },
         { name: "S. IRON, TIBC, % SAT", price: 600 },
-        { name: "RENAL FUNCTIONAL TEST (RFT)", price: 1100 }
+        { name: "RENAL FUNCTIONAL TEST (RFT)", price: 1100 },
+        { name: "ASCITIC TEST", price: 700 },
+        { name: "24 HOURS URINARY VOLUME", price: 800 }
     ],
     "BACTERIOLOGY": [
         { name: "CULTURE URINE", price: 600 },

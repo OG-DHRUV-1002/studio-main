@@ -1296,5 +1296,54 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
             { label: "S Potassium", key: "potassium", unit: "mEq/L", input_type: "number", validation: { min: 0, max: 10, ref_range_text: "3.5 - 5.1 mEq/L" } },
             { label: "S Chlorides", key: "chloride", unit: "mEq/L", input_type: "number", validation: { min: 0, max: 200, ref_range_text: "96 - 106 mEq/L" } }
         ]
+    },
+    {
+        profile_id: "G6PD_001",
+        profile_name: "G6-PD TEST",
+        components: [
+            { label: "G6PD Test", key: "g6pd_val", unit: "U/g Hb", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "4.6 - 13.5 U/g Hb" } },
+            { label: "Method", key: "method", unit: "", input_type: "text", validation: { ref_range_text: "Kinetic" } },
+            { label: "Normal Range", key: "normal_range_txt", unit: "", input_type: "text", validation: { ref_range_text: "4.6 - 13.5 U/g Hb" } }
+        ]
+    },
+    {
+        profile_id: "ASCITIC_TEST_001",
+        profile_name: "ASCITIC TEST",
+        components: [
+            // PHYSICAL EXAMINATION
+            { label: "PHYSICAL EXAMINATION", key: "physical_header", unit: "", input_type: "header", validation: { ref_range_text: "" } },
+            { label: "Volume", key: "volume", unit: "ml", input_type: "text", validation: { ref_range_text: "" } },
+            { label: "Colour", key: "colour", unit: "", input_type: "text", validation: { ref_range_text: "Pale Yellow" } },
+            { label: "Appearance", key: "appearance", unit: "", input_type: "text", validation: { ref_range_text: "Clear" } },
+            { label: "Blood", key: "blood", unit: "", input_type: "dropdown", options: ["Absent", "Present"], validation: { ref_range_text: "Absent" } },
+            { label: "Clot", key: "clot", unit: "", input_type: "dropdown", options: ["Absent", "Present"], validation: { ref_range_text: "Absent" } },
+
+            // CHEMICAL EXAMINATION
+            { label: "CHEMICAL EXAMINATION", key: "chemical_header", unit: "", input_type: "header", validation: { ref_range_text: "" } },
+            { label: "Proteins", key: "proteins", unit: "g/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "" } },
+            { label: "Sugar", key: "sugar", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 500, ref_range_text: "" } },
+            { label: "Albumin", key: "albumin", unit: "g/dL", input_type: "number", validation: { min: 0, max: 10, ref_range_text: "" } },
+
+            // MICROSCOPIC EXAMINATION
+            { label: "MICROSCOPIC EXAMINATION", key: "microscopic_header", unit: "", input_type: "header", validation: { ref_range_text: "" } },
+            { label: "Total RBC's count", key: "rbc_count", unit: "/cmm", input_type: "text", validation: { ref_range_text: "Nil" } },
+            { label: "Total WBC's count", key: "wbc_count", unit: "/cmm", input_type: "text", validation: { ref_range_text: "" } },
+            { label: "Differential Count", key: "diff_count", unit: "", input_type: "text", validation: { ref_range_text: "" } },
+
+            // BACTERIOLOGICAL EXAMINATION
+            { label: "BACTERIOLOGICAL EXAMINATION", key: "bacterio_header", unit: "", input_type: "header", validation: { ref_range_text: "" } },
+            { label: "Gram's Stain", key: "gram_stain", unit: "", input_type: "text", validation: { ref_range_text: "No Organisms detected" } },
+            { label: "Ziehl Neelsen Stain", key: "zn_stain", unit: "", input_type: "text", validation: { ref_range_text: "No AFB seen" } }
+        ]
+    },
+    {
+        profile_id: "URINARY_VOL_24H_001",
+        profile_name: "24 HOURS URINARY VOLUME",
+        components: [
+            { label: "24 hour Urinary Volume", key: "vol_24h", unit: "ml/24hr", input_type: "number", validation: { min: 0, max: 5000, ref_range_text: "800 - 2000 ml/24hr" } },
+            { label: "Urinary MicroAlbumin", key: "micro_alb", unit: "mg/L", input_type: "number", validation: { min: 0, max: 500, ref_range_text: "< 20 mg/L" } },
+            { label: "24 hours Urinary Microalbumin", key: "micro_alb_24h", unit: "mg/24hr", input_type: "calculated", formula: "({micro_alb} * {vol_24h}) / 1000", validation: { ref_range_text: "< 30 mg/24hr" } },
+            { label: "Normal Range", key: "normal_range_txt", unit: "", input_type: "text", validation: { ref_range_text: "< 30 mg/24hr" } }
+        ]
     }
 ];

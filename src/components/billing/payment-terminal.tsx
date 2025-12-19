@@ -88,8 +88,8 @@ export default function PaymentTerminal({ transaction, onPaymentModeChange, onSi
                                 </div>
                                 <p className="text-xs text-gray-400">Scan using any UPI App</p>
 
-                                <Button size="sm" variant="outline" className="mt-2 text-xs" onClick={onSimulateSuccess}>
-                                    Simulate Received (Dev)
+                                <Button size="sm" variant="outline" className="mt-2 text-xs bg-green-50 text-green-700 border-green-200 hover:bg-green-100" onClick={onSimulateSuccess}>
+                                    Payment Received
                                 </Button>
                             </div>
                         </>

@@ -21,6 +21,7 @@ export interface UserContext {
         phone?: string;
         whatsapp?: string;
         license_no?: string;
+        upiId?: string;
     };
     access_control: {
         is_admin: boolean;
@@ -39,13 +40,15 @@ export const LAB_REGISTRY: Record<LabId, {
     phone?: string;
     whatsapp?: string;
     license_no?: string;
+    upiId?: string;
 }> = {
     lab_001_bhonsle: {
         name: "Dr. Bhonsle Laboratory",
         theme: "blue",
         address: ["27, Shanti Center, 3 Floor, Sector 17", "Vashi, Navi mumbai - 400705"],
         email: "drbhonsleslab@gmail.com",
-        phone: "79771 73732 / 87795 08920"
+        phone: "79771 73732 / 87795 08920",
+        upiId: "q321887537@ybl"
     },
     lab_002_megascan: {
         name: "Megascan Imaging",
@@ -56,7 +59,8 @@ export const LAB_REGISTRY: Record<LabId, {
             "Sector-14, Vashi, Navi Mumbai - 400703"
         ],
         email: "megascanimaging@gmail.com",
-        phone: "88793 47488 / 98671 96788"
+        phone: "88793 47488 / 98671 96788",
+        upiId: "yogesh.dongre-googlemail.com@oksbi"
     },
     lab_003_general: {
         name: "Niriksha Pathology",
@@ -66,7 +70,8 @@ export const LAB_REGISTRY: Record<LabId, {
             "Navi Mumbai - 400706."
         ],
         email: "nirikshapathology.nerul@gmail.com",
-        phone: "98206 40452 / 022-27702853"
+        phone: "98206 40452 / 022-27702853",
+        upiId: "paytmqr2810050501011eiwoccwvdbu@paytm"
     },
     lab_004_path: { name: "Lab-4", theme: "purple" },
     lab_005_clinic: { name: "Lab-5", theme: "orange" },
@@ -100,6 +105,7 @@ export function getUserContext(uid: string): UserContext | null {
             phone: lab.phone,
             whatsapp: lab.whatsapp,
             license_no: lab.license_no,
+            upiId: lab.upiId,
         },
         access_control: {
             is_admin: isAdmin,
