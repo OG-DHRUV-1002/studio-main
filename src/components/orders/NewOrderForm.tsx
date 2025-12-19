@@ -48,7 +48,7 @@ const formSchema = z.object({
   registeredBy: z.string().optional(),
 
   labType: z.enum(['in-house', 'outside']),
-  manualDiscount: z.coerce.number().min(0).max(80),
+  manualDiscount: z.coerce.number().min(0).max(100),
   tests: z.array(testSchema).min(1, 'At least one test is required.'),
   referredBy: z.string().optional(),
   specimen: z.string().optional(),
@@ -583,7 +583,7 @@ export function NewOrderForm({ patients, initialData, isEditMode = false }: NewO
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {[0, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80].map(d => (
+                        {[0, 5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100].map(d => (
                           <SelectItem key={d} value={String(d)}>{d}%</SelectItem>
                         ))}
                       </SelectContent>

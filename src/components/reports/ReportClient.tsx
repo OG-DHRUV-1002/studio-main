@@ -30,6 +30,42 @@ export function ReportClient({ order }: ReportClientProps) {
         return Math.abs(ageDate.getUTCFullYear() - 1970);
     };
 
+    const getReportTitle = () => {
+        // 1. Check explicit specimen field first if available (common in clinical orders)
+        if (order.specimen) {
+            const spec = order.specimen.toLowerCase();
+            if (spec.includes('blood') || spec.includes('serum') || spec.includes('plasma')) return "EXAMINATION OF BLOOD";
+            if (spec.includes('urine')) return "EXAMINATION OF URINE";
+            if (spec.includes('stool') || spec.includes('faeces')) return "EXAMINATION OF STOOL";
+            if (spec.includes('sputum')) return "EXAMINATION OF SPUTUM";
+            if (spec.includes('semen')) return "SEMEN ANALYSIS REPORT";
+        }
+
+        // 2. Inference from Test Names (Fallback or if specimen is blank)
+        const testNames = order.tests.map(t => t.testName.toUpperCase()).join(' ');
+
+        // Keywords for Sputum
+        if (testNames.includes('SPUTUM')) return "EXAMINATION OF SPUTUM";
+
+        // Keywords for Stool
+        if (testNames.includes('STOOL')) return "EXAMINATION OF STOOL";
+
+        // Keywords for Urine
+        if (testNames.includes('URINE')) return "EXAMINATION OF URINE";
+
+        // Keywords for Semen
+        if (testNames.includes('SEMEN')) return "SEMEN ANALYSIS REPORT";
+
+        // Keywords for Blood/Serum (Most common, so checked last as default-ish)
+        if (testNames.includes('BLOOD') || testNames.includes('SERUM') || testNames.includes('HEMOGRAM') || testNames.includes('CBC') || testNames.includes('LIPID') || testNames.includes('LIVER') || testNames.includes('RENAL') || testNames.includes('THYROID') || testNames.includes('BIOCHEMISTRY')) {
+            return "EXAMINATION OF BLOOD";
+        }
+
+        return "LABORATORY REPORT";
+    };
+
+    const reportTitle = getReportTitle();
+
     const handleDownloadDoc = async () => {
         setIsGenerating(true);
         const result = await generateReportAction(order.orderId);
@@ -46,14 +82,14 @@ export function ReportClient({ order }: ReportClientProps) {
                     .header-spacer { height: 100px; } /* Approx 5 lines space */
                     .footer-spacer { height: 80px; } /* Approx 4 lines space */
                     @page {
-                        margin-top: 2.0in; /* Leave space for pre-printed header */
+                        margin-top: 1.0in; /* Leave space for pre-printed header */
                         margin-bottom: 1.0in;
                     }
                 </style>
                 </head>
                 <body>
-                    <!-- 5 Lines Empty Space for Header -->
-                    <p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>
+                    <!-- 1 Line Empty Space for Header -->
+                    <p>&nbsp;</p>
 
                     <table style="width: 100%; margin-bottom: 20px;">
                         <tr>
@@ -82,9 +118,7 @@ export function ReportClient({ order }: ReportClientProps) {
                         ` : ''}
                     </table>
 
-                    <br />
-
-                    <h3 style="text-align: center; text-transform: uppercase;">LABORATORY REPORT</h3>
+                    <h3 style="text-align: center; text-transform: uppercase; text-decoration: underline;">${reportTitle}</h3>
 
                     <table style="width: 100%; margin-top: 10px;">
                         <thead>
@@ -119,14 +153,8 @@ export function ReportClient({ order }: ReportClientProps) {
                             `;
                         }).join('');
 
-                        return `
-                                            <tr>
-                                                <td colspan="3" style="padding-top: 10px;">
-                                                    <div style="font-weight: bold; text-decoration: underline;">${test.testName}</div>
-                                                </td>
-                                            </tr>
-                                            ${rows}
-                                        `;
+                        /* Removed Test Name Sub-header as per user request */
+                        return rows;
                     } catch (e) { }
                 }
                 return `
@@ -190,8 +218,8 @@ export function ReportClient({ order }: ReportClientProps) {
                     )}
                 </div>
 
-                <div className="text-center font-bold text-xl uppercase mt-8 mb-4">
-                    LABORATORY REPORT
+                <div className="text-center font-bold text-xl uppercase mt-4 mb-4 underline">
+                    {reportTitle}
                 </div>
 
                 <div className="space-y-4">
@@ -209,7 +237,7 @@ export function ReportClient({ order }: ReportClientProps) {
                                 const results = JSON.parse(test.resultValue);
                                 return (
                                     <div key={index} className="space-y-1 mt-4">
-                                        <div className="font-bold underline">{test.testName}</div>
+                                        {/* Removed Test Name Sub-header as per user request */}
                                         {profile.components.map(comp => {
                                             if (comp.input_type === 'header') {
                                                 return (

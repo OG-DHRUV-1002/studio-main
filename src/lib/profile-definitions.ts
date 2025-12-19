@@ -1257,10 +1257,12 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
         profile_name: "BIOCHEMISTRY",
         components: [
             { label: "Fasting Blood Sugar", key: "bs_fasting", unit: "mg/dL", input_type: "number", validation: { min: 20, max: 1000, ref_range_text: "70 - 100 mg/dL" } },
-            { label: "F Urine Sugar", key: "urine_sugar_f", unit: "", input_type: "dropdown", options: ["Nil", "Trace", "+", "++", "+++", "++++"], validation: { ref_range_text: "Nil" } },
+            { label: "Fasting Urine Sugar", key: "urine_sugar_f", unit: "", input_type: "dropdown", options: ["Nil", "Trace", "+", "++", "+++", "++++"], validation: { ref_range_text: "Nil" } },
+            { label: "Fasting Urine Ketones", key: "urine_ketone_f", unit: "", input_type: "dropdown", options: ["Nil", "Trace", "+", "++", "+++"], validation: { ref_range_text: "Nil" } },
 
             { label: "PP/PG/R Blood Sugar", key: "bs_pp", unit: "mg/dL", input_type: "number", validation: { min: 20, max: 1000, ref_range_text: "< 140 mg/dL" } },
-            { label: "PP Urine Sugar", key: "urine_sugar_pp", unit: "", input_type: "dropdown", options: ["Nil", "Trace", "+", "++", "+++", "++++"], validation: { ref_range_text: "Nil" } },
+            { label: "Urine Sugar", key: "urine_sugar_pp", unit: "", input_type: "dropdown", options: ["Nil", "Trace", "+", "++", "+++", "++++"], validation: { ref_range_text: "Nil" } },
+            { label: "Urine Ketones", key: "urine_ketone_pp", unit: "", input_type: "dropdown", options: ["Nil", "Trace", "+", "++", "+++"], validation: { ref_range_text: "Nil" } },
 
             { label: "Blood Urea Nitrogen", key: "bun", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 100, ref_range_text: "7 - 20 mg/dL" } },
             { label: "Blood Urea", key: "blood_urea", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 300, ref_range_text: "15 - 40 mg/dL" } },
@@ -1274,7 +1276,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
             { label: "SGOT", key: "sgot", unit: "U/L", input_type: "number", validation: { min: 0, max: 2000, ref_range_text: "< 40 U/L" } },
             { label: "S Alkaline Phosphatase", key: "alk_phos", unit: "U/L", input_type: "number", validation: { min: 0, max: 2000, ref_range_text: "80 - 290 U/L" } },
 
-            { label: "S Total Proteins", key: "total_protein", unit: "g/dL", input_type: "number", validation: { min: 0, max: 15, ref_range_text: "6.0 - 8.0 g/dL" } },
+            { label: "S Proteins Total", key: "total_protein", unit: "g/dL", input_type: "number", validation: { min: 0, max: 15, ref_range_text: "6.0 - 8.0 g/dL" } },
             { label: "S Albumin", key: "albumin", unit: "g/dL", input_type: "number", validation: { min: 0, max: 10, ref_range_text: "3.5 - 5.5 g/dL" } },
             { label: "A/G Ratio", key: "ag_ratio", unit: "", input_type: "calculated", formula: "{albumin} / ({total_protein} - {albumin})", validation: { ref_range_text: "Calculated" } },
 
@@ -1283,6 +1285,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
             { label: "LDL Cholesterol", key: "ldl", unit: "mg/dL", input_type: "calculated", formula: "({cholesterol} - {hdl}) - ({triglycerides} / 5)", validation: { ref_range_text: "< 100 mg/dL" } },
             { label: "S Triglycerides", key: "triglycerides", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 2000, ref_range_text: "< 150 mg/dL" } },
 
+            { label: "S GGT", key: "ggt", unit: "U/L", input_type: "number", validation: { min: 0, max: 1000, ref_range_text: "9 - 48 U/L" } },
             { label: "S LDH", key: "ldh", unit: "U/L", input_type: "number", validation: { min: 0, max: 3000, ref_range_text: "140 - 280 U/L" } },
             { label: "S CPK", key: "cpk_total", unit: "U/L", input_type: "number", validation: { min: 0, max: 5000, ref_range_text: "25 - 170 U/L" } },
             { label: "S CK-mb", key: "ck_mb", unit: "IU/L", input_type: "number", validation: { min: 0, max: 500, ref_range_text: "0 - 25 IU/L" } },
@@ -1294,7 +1297,8 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
 
             { label: "S Sodium", key: "sodium", unit: "mEq/L", input_type: "number", validation: { min: 0, max: 200, ref_range_text: "135 - 145 mEq/L" } },
             { label: "S Potassium", key: "potassium", unit: "mEq/L", input_type: "number", validation: { min: 0, max: 10, ref_range_text: "3.5 - 5.1 mEq/L" } },
-            { label: "S Chlorides", key: "chloride", unit: "mEq/L", input_type: "number", validation: { min: 0, max: 200, ref_range_text: "96 - 106 mEq/L" } }
+            { label: "S.Chloride", key: "chloride", unit: "mEq/L", input_type: "number", validation: { min: 0, max: 200, ref_range_text: "96 - 106 mEq/L" } },
+            { label: "S. Lipase", key: "lipase", unit: "U/L", input_type: "number", validation: { min: 0, max: 500, ref_range_text: "13 - 60 U/L" } }
         ]
     },
     {
@@ -1344,6 +1348,27 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
             { label: "Urinary MicroAlbumin", key: "micro_alb", unit: "mg/L", input_type: "number", validation: { min: 0, max: 500, ref_range_text: "< 20 mg/L" } },
             { label: "24 hours Urinary Microalbumin", key: "micro_alb_24h", unit: "mg/24hr", input_type: "calculated", formula: "({micro_alb} * {vol_24h}) / 1000", validation: { ref_range_text: "< 30 mg/24hr" } },
             { label: "Normal Range", key: "normal_range_txt", unit: "", input_type: "text", validation: { ref_range_text: "< 30 mg/24hr" } }
+        ]
+    },
+    {
+        profile_id: "AEC_001",
+        profile_name: "ABSOLUTE EOSINOPHIL COUNT",
+        components: [
+            { label: "Absolute Eosinophil Count", key: "aec", unit: "/cmm", input_type: "number", validation: { min: 0, max: 2000, ref_range_text: "20 - 500 /cmm" } }
+        ]
+    },
+    {
+        profile_id: "CREATININE_001",
+        profile_name: "S. CREATININE",
+        components: [
+            { label: "S. Creatinine", key: "creatinine", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "0.6 - 1.2 mg/dL" } },
+            { label: "Method", key: "method", unit: "", input_type: "text", validation: { ref_range_text: "Jaffe's" } },
+
+            // Header or Info Section for eGFR
+            { label: "Role of eGFR in chronic kidney disease", key: "egfr_header", unit: "", input_type: "header", validation: { ref_range_text: "" } },
+
+            { label: "eGFR", key: "egfr", unit: "mL/min", input_type: "number", validation: { min: 0, max: 200, ref_range_text: "> 90 mL/min" } },
+            { label: "Stage", key: "ckd_stage", unit: "", input_type: "text", validation: { ref_range_text: "" } }
         ]
     }
 ];

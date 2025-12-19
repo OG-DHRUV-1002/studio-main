@@ -121,7 +121,7 @@ const OrderSchema = z.object({
   orderId: z.string().min(1, 'Lab number is required.'),
   patientId: z.string().min(1, 'Patient is required.'),
   labType: z.enum(['in-house', 'outside']),
-  manualDiscount: z.coerce.number().min(0).max(80),
+  manualDiscount: z.coerce.number().min(0).max(100),
   tests: z.array(z.object({
     testName: z.string().min(1, 'Test name is required.'),
     testPrice: z.coerce.number().min(0.01, 'Price must be greater than 0.'),
@@ -344,7 +344,7 @@ const WalkInOrderSchema = z.object({
   registeredBy: z.string().optional(),
 
   labType: z.enum(['in-house', 'outside']),
-  manualDiscount: z.coerce.number().min(0).max(80),
+  manualDiscount: z.coerce.number().min(0).max(100),
   tests: z.array(z.object({
     testName: z.string().min(1, 'Test name is required.'),
     testPrice: z.coerce.number().min(0.01, 'Price must be greater than 0.'),
@@ -443,7 +443,7 @@ export async function updateOrder(data: unknown) {
       registeredBy: z.string().optional(),
 
       labType: z.enum(['in-house', 'outside']),
-      manualDiscount: z.coerce.number().min(0).max(80),
+      manualDiscount: z.coerce.number().min(0).max(100),
       tests: z.array(z.object({
         testName: z.string().min(1, 'Test name is required.'),
         testPrice: z.coerce.number().min(0.01, 'Price must be greater than 0.'),

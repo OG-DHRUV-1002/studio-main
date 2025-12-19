@@ -24,7 +24,8 @@ export const testProfiles = {
         { name: "MICROFILARIA", price: 400 },
         { name: "URINE", price: 200 },
         { name: "STOOL", price: 250 },
-        { name: "G6-PD TEST", price: 400 }
+        { name: "G6-PD TEST", price: 400 },
+        { name: "ABSOLUTE EOSINOPHIL COUNT", price: 200 }
     ],
     "SEROLOGY": [
         { name: "GROUP", price: 100 },
@@ -56,6 +57,7 @@ export const testProfiles = {
         { name: "S. URIC ACID", price: 250 },
         { name: "CALCIUM", price: 200 },
         { name: "S. PHOSPHORUS", price: 200 },
+        { name: "S. CREATININE", price: 250 },
         { name: "BLOOD UREA", price: 250 },
         { name: "S. AMYLASE", price: 300 },
         { name: "S. PROTEINS", price: 300 },

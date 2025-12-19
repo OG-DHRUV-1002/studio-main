@@ -38,10 +38,19 @@ export default function LoginPage() {
             return;
         }
 
-        // Simulated Check (for visual "Security" feeling)
-        if (password.length < 3) {
-            setError("Invalid password.");
-            return;
+
+        // Lab-1 Specific Security
+        if (selectedUid === 'uid_bhonsle_main') {
+            if (password !== '27Shanti_s.t_2002@') {
+                setError("Invalid password for Dr. Bhonsle Laboratory.");
+                return;
+            }
+        } else {
+            // Simulated Check for others (or keep default low security for demo)
+            if (password.length < 3) {
+                setError("Invalid password.");
+                return;
+            }
         }
 
         setLoading(true);
