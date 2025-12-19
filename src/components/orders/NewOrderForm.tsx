@@ -12,7 +12,7 @@ import type { Patient } from '@/lib/types';
 import { Switch } from '@/components/ui/switch';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { createWalkInOrder } from '@/lib/actions'; // CHANGED: Use new action
+import { createWalkInOrder, updateOrder } from '@/lib/actions'; // CHANGED: Use new action
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 // import { PatientCombobox } from './PatientCombobox'; // REMOVED
@@ -45,7 +45,7 @@ const formSchema = z.object({
   email: z.string().email().optional().or(z.literal('')),
   contactNumber: z.string().min(10, 'Contact number is required (10 digits).').max(15, 'Invalid number'),
   address: z.string().optional(),
-  registeredBy: z.string().min(1, 'Registered By is required'),
+  registeredBy: z.string().optional(),
 
   labType: z.enum(['in-house', 'outside']),
   manualDiscount: z.coerce.number().min(0).max(80),
@@ -59,9 +59,12 @@ type NewOrderFormValues = z.infer<typeof formSchema>;
 
 interface NewOrderFormProps {
   patients: Patient[];
+  initialData?: NewOrderFormValues;
+  isEditMode?: boolean;
 }
 
 const TestCombobox = ({ value, onSelect, onPriceChange }: { value: string, onSelect: (value: string) => void, onPriceChange: (price: number) => void }) => {
+  // ... existing TestCombobox code ...
   const [open, setOpen] = useState(false);
 
   const handleSelect = (testName: string) => {
@@ -118,7 +121,7 @@ const TestCombobox = ({ value, onSelect, onPriceChange }: { value: string, onSel
 };
 
 
-export function NewOrderForm({ patients }: NewOrderFormProps) {
+export function NewOrderForm({ patients, initialData, isEditMode = false }: NewOrderFormProps) {
   const { toast } = useToast();
   const router = useRouter();
   const { user } = useAuth();
@@ -129,7 +132,7 @@ export function NewOrderForm({ patients }: NewOrderFormProps) {
 
   const form = useForm<NewOrderFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       orderId: '',
       title: 'Mr.',
       fullName: '',
@@ -193,8 +196,14 @@ export function NewOrderForm({ patients }: NewOrderFormProps) {
 
   async function onSubmit(values: NewOrderFormValues) {
     setIsSubmitting(true);
-    // CHANGED: Use createWalkInOrder
-    const result = await createWalkInOrder(values);
+    let result;
+
+    if (isEditMode) {
+      result = await updateOrder(values);
+    } else {
+      result = await createWalkInOrder(values);
+    }
+
     setIsSubmitting(false);
 
     if (result.success) {
@@ -202,10 +211,14 @@ export function NewOrderForm({ patients }: NewOrderFormProps) {
         title: 'Success!',
         description: result.message,
       });
-      router.push('/');
+      if (isEditMode) {
+        router.push('/data-entry');
+      } else {
+        router.push('/');
+      }
     } else {
       toast({
-        title: 'Error creating order',
+        title: 'Error processing order',
         description: result.message || 'An unknown error occurred.',
         variant: 'destructive',
       });
@@ -485,7 +498,7 @@ export function NewOrderForm({ patients }: NewOrderFormProps) {
         <Card>
           <CardHeader>
             <CardTitle>Tests</CardTitle>
-            <CardDescription>Add one or more tests to this order. Prices are entered manually.</CardDescription>
+            <CardDescription>Add one or more tests to this order. Prices are fixed.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {fields.map((field, index) => (
@@ -518,7 +531,7 @@ export function NewOrderForm({ patients }: NewOrderFormProps) {
                       <FormControl>
                         <div className="relative">
                           <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">₹</span>
-                          <Input type="number" placeholder="0.00" className="pl-7" {...field} />
+                          <Input type="number" placeholder="0.00" className="pl-7 bg-gray-100 text-gray-500 cursor-not-allowed" readOnly tabIndex={-1} {...field} />
                         </div>
                       </FormControl>
                       <FormMessage />

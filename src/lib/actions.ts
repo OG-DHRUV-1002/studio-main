@@ -425,3 +425,90 @@ export async function createWalkInOrder(data: unknown) {
     return { success: false, message: 'An error occurred while creating the order.' };
   }
 }
+
+export async function updateOrder(data: unknown) {
+  try {
+    const labId = await getCurrentLabId();
+    // Re-use WalkInOrderSchema as it covers the same fields
+    const ParseSchema = z.object({
+      orderId: z.string().min(1, 'Lab number is required.'),
+      title: z.string().optional(),
+      fullName: z.string().min(3, 'Full name is required.'),
+      age: z.coerce.number().min(0, 'Age is required.'),
+      gender: z.enum(['Male', 'Female', 'Other']),
+      email: z.string().email().optional().or(z.literal('')),
+      contactNumber: z.string().min(10, 'Contact number is required (10 digits).').max(15, 'Invalid number'),
+      address: z.string().optional(),
+      remarks: z.string().optional(),
+      registeredBy: z.string().optional(),
+
+      labType: z.enum(['in-house', 'outside']),
+      manualDiscount: z.coerce.number().min(0).max(80),
+      tests: z.array(z.object({
+        testName: z.string().min(1, 'Test name is required.'),
+        testPrice: z.coerce.number().min(0.01, 'Price must be greater than 0.'),
+      })).min(1, 'At least one test is required.'),
+      referredBy: z.string().optional(),
+      specimen: z.string().optional(),
+    });
+
+    const parsed = ParseSchema.safeParse(data);
+
+    if (!parsed.success) {
+      console.error('Validation errors:', parsed.error.flatten().fieldErrors);
+      return { success: false, message: 'Invalid form data.', errors: parsed.error.flatten().fieldErrors };
+    }
+
+    const {
+      orderId, title, fullName, age, gender, email, contactNumber, address, remarks, registeredBy,
+      labType, manualDiscount, tests, referredBy, specimen
+    } = parsed.data;
+
+    // 1. Update Patient
+    const birthYear = new Date().getFullYear() - age;
+    const dateOfBirth = new Date(birthYear, 0, 1);
+
+    const updatedPatient: Partial<Patient> = {
+      title,
+      fullName,
+      dateOfBirth,
+      gender,
+      email,
+      contactNumber,
+      address,
+      remarks,
+      registeredBy
+    };
+
+    await db.updatePatientRecord(labId, orderId, updatedPatient);
+
+    // 2. Update Order
+    const subtotal = tests.reduce((acc, test) => acc + test.testPrice, 0);
+    const totalAmount = subtotal;
+    const discountAmount = (totalAmount * manualDiscount) / 100;
+    const finalAmount = totalAmount - discountAmount;
+
+    const updatedOrder: Partial<TestOrder> = {
+      labType,
+      tests,
+      totalAmount: subtotal,
+      discountApplied: manualDiscount,
+      finalAmount: finalAmount,
+      referredBy: referredBy || 'Self',
+      specimen: specimen || 'N/A',
+      patient: { ...updatedPatient, patientId: orderId } as Patient
+    };
+
+    await db.updateOrderRecord(labId, orderId, updatedOrder);
+
+    revalidatePath('/');
+    revalidatePath('/data-entry');
+    revalidatePath('/orders');
+
+    return { success: true, message: 'Order updated successfully.' };
+
+  } catch (error) {
+    console.error('Update Order Error:', error);
+    return { success: false, message: 'An error occurred while updating the order.' };
+  }
+}

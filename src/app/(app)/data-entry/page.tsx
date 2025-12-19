@@ -3,6 +3,8 @@ import { AppHeader } from "@/components/layout/AppHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getOrders } from "@/lib/actions";
 import Link from 'next/link';
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Pencil } from "lucide-react";
 
 export default async function DataEntryPage() {
     const allOrders = await getOrders();
@@ -24,18 +26,23 @@ export default async function DataEntryPage() {
                             <ul className="space-y-2">
                                 {pendingOrders.map(order => (
                                     <li key={order.orderId}>
-                                        <Link href={`/orders/${order.orderId}/entry`} className="block p-4 border rounded-lg hover:bg-muted transition-colors">
-                                            <div className="flex justify-between items-center">
-                                                <div>
-                                                    <p className="font-semibold">{order.orderId} - {order.patient?.fullName}</p>
-                                                    <p className="text-sm text-muted-foreground">{new Date(order.orderDate).toLocaleDateString()}</p>
+                                        <div className="flex items-center gap-2 p-4 border rounded-lg hover:bg-muted transition-colors">
+                                            <Link href={`/orders/${order.orderId}/entry`} className="flex-1">
+                                                <div className="flex justify-between items-center">
+                                                    <div>
+                                                        <p className="font-semibold">{order.orderId} - {order.patient?.fullName}</p>
+                                                        <p className="text-sm text-muted-foreground">{new Date(order.orderDate).toLocaleDateString()}</p>
+                                                    </div>
+                                                    <div className="text-right mr-4">
+                                                        <p className="font-medium">₹{order.finalAmount.toFixed(2)}</p>
+                                                        <p className="text-sm text-muted-foreground capitalize">{order.labType}</p>
+                                                    </div>
                                                 </div>
-                                                <div className="text-right">
-                                                    <p className="font-medium">₹{order.finalAmount.toFixed(2)}</p>
-                                                    <p className="text-sm text-muted-foreground capitalize">{order.labType}</p>
-                                                </div>
-                                            </div>
-                                        </Link>
+                                            </Link>
+                                            <Link href={`/orders/${order.orderId}/edit`} className={buttonVariants({ variant: "ghost", size: "icon" })} title="Edit Order Details">
+                                                <Pencil className="h-4 w-4" />
+                                            </Link>
+                                        </div>
                                     </li>
                                 ))}
                             </ul>
