@@ -8,7 +8,10 @@ export const testProfiles = {
         { name: "SMA – 12", price: 1400 },
         { name: "CORONARY / CARDIAC ENZYMES", price: 1800 },
         { name: "HYPERTENSION", price: 1100 },
-        { name: "DIABETIC", price: 950 }
+        { name: "DIABETIC", price: 950 },
+        { name: "TRIPLE-H", price: 1200 },
+        { name: "A.N.C PROFILE", price: 1500 },
+        { name: "BIOCHEMISTRY", price: 2500 }
     ],
     "ROUTINE": [
         { name: "CBC/HAEMOGRAM", price: 500 },
@@ -33,15 +36,16 @@ export const testProfiles = {
         { name: "R A TEST", price: 300 },
         { name: "A S O", price: 300 },
         { name: "CRP", price: 300 },
-        { name: "AUSTRALIA ANTIGEN", price: 450 },
+        { name: "HBsAg", price: 450 },
+        { name: "HCV", price: 500 },
         { name: "SEMEN", price: 800 },
         { name: "SPUTUM", price: 300 },
         { name: "MANTOUX’S TEST", price: 250 },
         { name: "URINE PREGNANCY TEST", price: 300 }
     ],
     "BIOCHEMISTRY": [
-        { name: "BLOOD SUGAR F", price: 150 },
-        { name: "BLOOD SUGAR PP", price: 150 },
+        { name: "FASTING BLOOD SUGAR(FBS)", price: 150 },
+        { name: "PP/PG/R BLOOD SUGAR", price: 150 },
         { name: "BLOOD SUGAR R", price: 150 },
         { name: "S. BILIRUBIN", price: 250 },
         { name: "S. G. O. T", price: 250 },
@@ -65,7 +69,8 @@ export const testProfiles = {
         { name: "GLYCOSYLATED HB", price: 600 },
         { name: "S. BICARBONATE", price: 300 },
         { name: "PLASMA AMMONIA", price: 400 },
-        { name: "S. IRON, TIBC, % SAT", price: 600 }
+        { name: "S. IRON, TIBC, % SAT", price: 600 },
+        { name: "RENAL FUNCTIONAL TEST (RFT)", price: 1100 }
     ],
     "BACTERIOLOGY": [
         { name: "CULTURE URINE", price: 600 },

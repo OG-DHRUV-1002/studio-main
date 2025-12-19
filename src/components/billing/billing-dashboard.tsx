@@ -71,8 +71,8 @@ export default function BillingDashboard({ initialOrders }: BillingDashboardProp
                                     <TableCell className="text-gray-600 whitespace-nowrap">{formattedDate}</TableCell>
                                     <TableCell>
                                         <span className={`px-2 py-1 rounded text-xs font-semibold ${order.status === 'Completed' ? 'bg-green-100 text-green-700' :
-                                                order.status === 'Payment Pending' ? 'bg-red-100 text-red-700' :
-                                                    'bg-yellow-100 text-yellow-700'
+                                            order.status === 'Payment Pending' ? 'bg-red-100 text-red-700' :
+                                                'bg-yellow-100 text-yellow-700'
                                             }`}>
                                             {order.status}
                                         </span>
@@ -81,28 +81,6 @@ export default function BillingDashboard({ initialOrders }: BillingDashboardProp
                                     <TableCell className="text-gray-500 italic">Not Printed</TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-1">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="default" size="sm" className="bg-[#1f5f5f] hover:bg-[#164242] text-white h-8 w-8 p-0 rounded-sm">
-                                                        <ChevronDown className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem onClick={() => handleAction('edit', order.orderId)}>
-                                                        <Pencil className="mr-2 h-4 w-4" /> Edit Order
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleAction('bill', order.orderId)}>
-                                                        <FileText className="mr-2 h-4 w-4" /> Generate Bill
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-500" title="Edit">
-                                                <Pencil className="h-4 w-4" />
-                                            </Button>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-teal-600" title="Accession">
-                                                <CloudFog className="h-4 w-4" />
-                                            </Button>
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
@@ -111,12 +89,6 @@ export default function BillingDashboard({ initialOrders }: BillingDashboardProp
                                                 onClick={() => handleAction('bill', order.orderId)}
                                             >
                                                 <FileText className="h-4 w-4" />
-                                            </Button>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-orange-500" title="Info">
-                                                <Info className="h-4 w-4" />
-                                            </Button>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-red-600" title="Alert">
-                                                <AlertTriangle className="h-4 w-4" />
                                             </Button>
                                         </div>
                                     </TableCell>
