@@ -45,6 +45,11 @@ export default function LoginPage() {
                 setError("Invalid password for Dr. Bhonsle Laboratory.");
                 return;
             }
+        } else if (selectedUid === 'uid_megascan_main') {
+            if (password !== '29/30_Daffodil_y.d_2004@') {
+                setError("Invalid password for Megascan Imaging.");
+                return;
+            }
         } else {
             // Simulated Check for others (or keep default low security for demo)
             if (password.length < 3) {
