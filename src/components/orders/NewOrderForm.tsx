@@ -16,9 +16,9 @@ import { createWalkInOrder, updateOrder } from '@/lib/actions'; // CHANGED: Use 
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 // import { PatientCombobox } from './PatientCombobox'; // REMOVED
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command';
+import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { allTests, testProfiles } from '@/lib/tests';
+import { allTests } from '@/lib/tests';
 import { Input } from '../ui/input';
 import { useAuth } from '@/lib/auth-context';
 
@@ -94,24 +94,20 @@ const TestCombobox = ({ value, onSelect, onPriceChange }: { value: string, onSel
           <CommandInput placeholder="Search test..." />
           <CommandList>
             <CommandEmpty>No test found.</CommandEmpty>
-            {Object.entries(testProfiles).map(([category, tests]) => (
-              <CommandGroup key={category} heading={category}>
-                {tests.map((test) => (
-                  <CommandItem
-                    key={test.name}
-                    value={test.name}
-                    onSelect={() => handleSelect(test.name)}
-                  >
-                    <Check
-                      className={cn(
-                        'mr-2 h-4 w-4',
-                        value === test.name ? 'opacity-100' : 'opacity-0'
-                      )}
-                    />
-                    {test.name}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
+            {[...allTests].sort((a, b) => a.name.localeCompare(b.name)).map((test) => (
+              <CommandItem
+                key={test.name}
+                value={test.name}
+                onSelect={() => handleSelect(test.name)}
+              >
+                <Check
+                  className={cn(
+                    'mr-2 h-4 w-4',
+                    value === test.name ? 'opacity-100' : 'opacity-0'
+                  )}
+                />
+                {test.name}
+              </CommandItem>
             ))}
           </CommandList>
         </Command>
