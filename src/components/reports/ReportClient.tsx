@@ -31,7 +31,30 @@ export function ReportClient({ order }: ReportClientProps) {
     };
 
     const getReportTitle = (testSubset: typeof order.tests) => {
-        // 1. Check explicit specimen field first if available (common in clinical orders)
+        // 1. Check Hardcoded Specimen from Profile Definitions (Highest Priority)
+        const hardcodedSpecimens = new Set<string>();
+        testSubset.forEach(t => {
+            const profile = PROFILE_DEFINITIONS.find(p => p.profile_name === t.testName || p.profile_name.toLowerCase() === t.testName.toLowerCase());
+            if (profile?.specimen) {
+                hardcodedSpecimens.add(profile.specimen);
+            }
+        });
+
+        if (hardcodedSpecimens.size > 0) {
+            const specs = Array.from(hardcodedSpecimens).sort();
+
+            // Special Override for Semen to maintain specific title format
+            if (specs.length === 1 && specs[0].toLowerCase() === 'semen') {
+                return "SEMEN ANALYSIS REPORT";
+            }
+
+            // General case: Join specimens
+            // Replace commas with & for better readability in title (e.g. "Blood, Urine") -> "BLOOD & URINE"
+            const titleSpecs = specs.map(s => s.replace(/,/g, ' &')).join(" & ").toUpperCase();
+            return `EXAMINATION OF ${titleSpecs}`;
+        }
+
+        // 2. Check explicit specimen field first if available (common in clinical orders)
         if (order.specimen) {
             const spec = order.specimen.toLowerCase();
             if (spec.includes('blood') || spec.includes('serum') || spec.includes('plasma')) return "EXAMINATION OF BLOOD";
@@ -39,9 +62,11 @@ export function ReportClient({ order }: ReportClientProps) {
             if (spec.includes('stool') || spec.includes('faeces')) return "EXAMINATION OF STOOL";
             if (spec.includes('sputum')) return "EXAMINATION OF SPUTUM";
             if (spec.includes('semen')) return "SEMEN ANALYSIS REPORT";
+            // Generic fallback for manual entry
+            return `EXAMINATION OF ${order.specimen.toUpperCase()}`;
         }
 
-        // 2. Inference from Test Names (Fallback or if specimen is blank)
+        // 3. Inference from Test Names (Fallback or if specimen is blank)
         const testNames = testSubset.map(t => t.testName.toUpperCase()).join(' ');
 
         // Keywords for Sputum

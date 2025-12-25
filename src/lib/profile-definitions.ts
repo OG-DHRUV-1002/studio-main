@@ -18,6 +18,7 @@ export interface ProfileComponent {
 export interface ProfileDefinition {
     profile_id: string;
     profile_name: string;
+    specimen?: string;
     components: ProfileComponent[];
     ui_actions?: {
         trigger: string;
@@ -30,6 +31,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "LFT_001",
         profile_name: "HEPATIC / LFT",
+        specimen: "Blood",
         components: [
             {
                 label: "S Total Bilirubin",
@@ -108,6 +110,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "LIPID_001",
         profile_name: "LIPID",
+        specimen: "Blood",
         components: [
             {
                 label: "S. Cholesterol",
@@ -181,6 +184,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "CARDIAC_001",
         profile_name: "CORONARY / CARDIAC ENZYMES",
+        specimen: "Blood",
         components: [
             { label: "CPK Total", key: "cpk_total", unit: "U/L", input_type: "number", validation: { min: 0, max: 5000, ref_range_text: "25 - 170 U/L" } },
             { label: "CK-MB", key: "ck_mb", unit: "IU/L", input_type: "number", validation: { min: 0, max: 500, ref_range_text: "0 - 25 IU/L" } },
@@ -193,6 +197,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "DIABETIC_001",
         profile_name: "DIABETIC",
+        specimen: "Blood",
         components: [
             { label: "Blood Sugar Fasting", key: "bs_fasting", unit: "mg/dL", input_type: "number", validation: { min: 20, max: 1000, ref_range_text: "70 - 100 mg/dL" } },
             { label: "Blood Sugar PP", key: "bs_pp", unit: "mg/dL", input_type: "number", validation: { min: 20, max: 1000, ref_range_text: "< 140 mg/dL" } },
@@ -205,6 +210,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "CBC_001",
         profile_name: "CBC/HAEMOGRAM",
+        specimen: "Blood",
         components: [
             { label: "Red Blood Cells", key: "rbc", unit: "Million/cmm", input_type: "number", validation: { min: 0, max: 10, ref_range_text: "4.5 - 5.5 Million/cmm" } },
             { label: "Haemoglobin", key: "hb", unit: "g/dL", input_type: "number", validation: { min: 0, max: 25, ref_range_text: "M: 13-17, F: 12-15 g/dL", panic_low: 7.0 } },
@@ -233,6 +239,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "ESR_001",
         profile_name: "ESR",
+        specimen: "Blood",
         components: [
             { label: "ESR @ 1st Hour", key: "esr", unit: "mm", input_type: "number", validation: { min: 0, max: 150, ref_range_text: "M: 0-15, F: 0-20 mm" } }
         ]
@@ -240,6 +247,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "HB_001",
         profile_name: "HB",
+        specimen: "Blood",
         components: [
             { label: "Hemoglobin", key: "hb", unit: "g/dL", input_type: "number", validation: { min: 0, max: 25, ref_range_text: "M: 13-17, F: 12-15 g/dL" } }
         ]
@@ -247,6 +255,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "PCV_001",
         profile_name: "PCV",
+        specimen: "Blood",
         components: [
             { label: "PCV", key: "pcv", unit: "%", input_type: "number", validation: { min: 0, max: 100, ref_range_text: "M: 40-50, F: 36-46 %" } }
         ]
@@ -254,6 +263,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "COAG_001",
         profile_name: "BT.CT.PT.PTT",
+        specimen: "Blood",
         components: [
             { label: "Bleeding Time", key: "bt", unit: "min", input_type: "text", validation: { ref_range_text: "1-5 min" } },
             { label: "Clotting Time", key: "ct", unit: "min", input_type: "text", validation: { ref_range_text: "5-10 min" } },
@@ -269,6 +279,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "PLATELET_001",
         profile_name: "PLATELET COUNT",
+        specimen: "Blood",
         components: [
             { label: "Platelet Count", key: "platelet", unit: "Lakh/cmm", input_type: "number", validation: { min: 0, max: 10, ref_range_text: "1.5 - 4.5 Lakh/cmm", panic_low: 0.5 } }
         ],
@@ -279,6 +290,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "MP_001",
         profile_name: "MALARIAL PARASITE",
+        specimen: "Blood",
         components: [
             { label: "Malarial Parasite", key: "mp_result", unit: "", input_type: "dropdown", options: ["Not Seen", "Plasmodium Vivax Detected", "Plasmodium Falciparum Detected", "Mixed Infection"], validation: { ref_range_text: "Not Seen" } }
         ],
@@ -289,6 +301,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "MF_001",
         profile_name: "MICROFILARIA",
+        specimen: "Blood",
         components: [
             { label: "Microfilaria", key: "mf_result", unit: "", input_type: "dropdown", options: ["Not Seen", "Microfilaria Detected"], validation: { ref_range_text: "Not Seen" } }
         ]
@@ -296,6 +309,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "URINE_001",
         profile_name: "URINE",
+        specimen: "Urine",
         components: [
             { label: "PHYSICAL EXAMINATION", key: "header_phys", unit: "", input_type: "header", validation: { ref_range_text: "" } },
             { label: "Quantity", key: "quantity", unit: "mL", input_type: "text", validation: { ref_range_text: "" } },
@@ -324,6 +338,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "STOOL_001",
         profile_name: "STOOL",
+        specimen: "Stool",
         components: [
             { label: "PHYSICAL EXAMINATION:", key: "header_phys", unit: "", input_type: "header", validation: { ref_range_text: "" } },
             { label: "Colour", key: "stool_color", unit: "", input_type: "dropdown", options: ["Brown", "Black", "Clay Colored", "Red"], validation: { ref_range_text: "Brown" } },
@@ -350,6 +365,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "BLOOD_GROUP_001",
         profile_name: "BLOOD GROUPING & RH",
+        specimen: "Blood",
         components: [
             { label: "ABO Group", key: "abo_group", unit: "", input_type: "dropdown", options: ["A", "B", "AB", "O", "Oh (Bombay)"], validation: { ref_range_text: "" } },
             { label: "Rh Factor", key: "rh_factor", unit: "", input_type: "dropdown", options: ["Positive", "Negative"], validation: { ref_range_text: "" } }
@@ -358,6 +374,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "WIDAL_001",
         profile_name: "WIDAL",
+        specimen: "Blood",
         components: [
             { label: "'O' Antigen", key: "widal_o", unit: "", input_type: "dropdown", options: ["< 1:20", "1:20", "1:40", "1:80", "1:160", "1:320", "> 1:320"], validation: { ref_range_text: "< 1:80" } },
             { label: "'H' Antigen", key: "widal_h", unit: "", input_type: "dropdown", options: ["< 1:20", "1:20", "1:40", "1:80", "1:160", "1:320", "> 1:320"], validation: { ref_range_text: "< 1:80" } },
@@ -370,6 +387,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "HIV_001",
         profile_name: "HIV",
+        specimen: "Blood",
         components: [
             { label: "Test", key: "hiv_test", unit: "", input_type: "dropdown", options: ["Non-Reactive", "Reactive"], validation: { ref_range_text: "Non-Reactive" } },
             { label: "Method", key: "method", unit: "", input_type: "text", validation: { ref_range_text: "Immunochromatography" } },
@@ -382,6 +400,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "HBSAG_001",
         profile_name: "HBsAg",
+        specimen: "Blood",
         components: [
             { label: "Australia Antigen", key: "hbsag_result", unit: "", input_type: "dropdown", options: ["Non-Reactive", "Reactive"], validation: { ref_range_text: "Non-Reactive" } },
             { label: "Method", key: "method", unit: "", input_type: "text", validation: { ref_range_text: "Immunochromatography" } }
@@ -393,6 +412,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "HCV_001",
         profile_name: "HCV",
+        specimen: "Blood",
         components: [
             { label: "Hepatic C virus", key: "hcv_result", unit: "", input_type: "dropdown", options: ["Non-Reactive", "Reactive"], validation: { ref_range_text: "Non-Reactive" } },
             { label: "Method", key: "method", unit: "", input_type: "text", validation: { ref_range_text: "Immunochromatography" } }
@@ -404,6 +424,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "VDRL_001",
         profile_name: "VDRL / RPR",
+        specimen: "Blood",
         components: [
             { label: "VDLR Test", key: "vdrl_result", unit: "", input_type: "dropdown", options: ["Non-Reactive", "Reactive", "Borderline"], validation: { ref_range_text: "Non-Reactive" } },
             { label: "Method", key: "method", unit: "", input_type: "text", validation: { ref_range_text: "Slide Flocculation" } }
@@ -415,6 +436,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "RA_001",
         profile_name: "RA FACTOR",
+        specimen: "Blood",
         components: [
             { label: "RA Factor", key: "ra_result", unit: "IU/mL", input_type: "number", validation: { min: 0, max: 200, ref_range_text: "< 20 IU/mL" } },
             { label: "Qualitative", key: "ra_qual", unit: "", input_type: "dropdown", options: ["Negative", "Positive"], validation: { ref_range_text: "Negative" } }
@@ -423,6 +445,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "ASO_001",
         profile_name: "A S O",
+        specimen: "Blood",
         components: [
             { label: "ASO Titre", key: "aso_result", unit: "IU/mL", input_type: "number", validation: { min: 0, max: 1000, ref_range_text: "< 200 IU/mL" } },
             { label: "Qualitative", key: "aso_qual", unit: "", input_type: "dropdown", options: ["Negative", "Positive"], validation: { ref_range_text: "Negative" } }
@@ -431,6 +454,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "CRP_001",
         profile_name: "C-REACTIVE PROTEIN (CRP)",
+        specimen: "Blood",
         components: [
             { label: "Result", key: "crp_result", unit: "mg/L", input_type: "number", validation: { min: 0, max: 200, ref_range_text: "< 6 mg/L" } },
             { label: "Qualitative", key: "crp_qual", unit: "", input_type: "dropdown", options: ["Negative", "Positive"], validation: { ref_range_text: "Negative" } },
@@ -440,6 +464,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "UPT_001",
         profile_name: "URINE PREGNANCY TEST",
+        specimen: "Urine",
         components: [
             { label: "Test", key: "upt_result", unit: "", input_type: "dropdown", options: ["Negative", "Positive", "Invalid"], validation: { ref_range_text: "Negative" } },
             { label: "Method", key: "method", unit: "", input_type: "text", validation: { ref_range_text: "Immuno-Chromatography" } }
@@ -448,6 +473,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "DCT_001",
         profile_name: "DIRECT COOMB’S TEST",
+        specimen: "Blood",
         components: [
             { label: "Result", key: "dct_result", unit: "", input_type: "dropdown", options: ["Negative", "Positive (1+)", "Positive (2+)", "Positive (3+)"], validation: { ref_range_text: "Negative" } }
         ]
@@ -455,6 +481,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "SEMEN_001",
         profile_name: "SEMEN",
+        specimen: "Semen",
         components: [
             { label: "PHYSICAL EXAMINATION:", key: "header_phys", unit: "", input_type: "header", validation: { ref_range_text: "" } },
             { label: "Volume", key: "volume", unit: "mL", input_type: "number", validation: { ref_range_text: "2.0 - 5.0 mL" } },
@@ -487,6 +514,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "SPUTUM_001",
         profile_name: "SPUTUM",
+        specimen: "Sputum",
         components: [
             { label: "PHYSICAL EXAMINATION:", key: "header_phys", unit: "", input_type: "header", validation: { ref_range_text: "" } },
             { label: "Quantity", key: "quantity", unit: "mL", input_type: "text", validation: { ref_range_text: "" } },
@@ -521,6 +549,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "MANTOUX_001",
         profile_name: "MANTOUX TEST",
+        specimen: "Skin",
         components: [
             { label: "Date of Inoculation", key: "date_given", unit: "", input_type: "text", validation: { ref_range_text: "" } },
             { label: "Date of Reporting", key: "date_read", unit: "", input_type: "text", validation: { ref_range_text: "" } },
@@ -531,6 +560,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "RD_TITRE_001",
         profile_name: "RD ANTIBODY TITRE",
+        specimen: "Blood",
         components: [
             { label: "Titre Ratio", key: "rd_titre", unit: "", input_type: "text", validation: { ref_range_text: "" } }
         ]
@@ -538,6 +568,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "BS_FASTING_001",
         profile_name: "FASTING BLOOD SUGAR(FBS)",
+        specimen: "Blood",
         components: [
             { label: "Fasting Blood Sugar(Glucose)", key: "bs_fasting", unit: "mg/dL", input_type: "number", validation: { min: 20, max: 1000, ref_range_text: "70 - 100 mg/dL" } },
             { label: "Urine Sugar Fasting", key: "urine_sugar_f", unit: "", input_type: "dropdown", options: ["Nil", "Trace", "+", "++", "+++", "++++"], validation: { ref_range_text: "Nil" } },
@@ -547,6 +578,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "BS_PP_001",
         profile_name: "PP/PG/R BLOOD SUGAR",
+        specimen: "Blood",
         components: [
             { label: "PP/PG/R Blood Sugar", key: "bs_pp", unit: "mg/dL", input_type: "number", validation: { min: 20, max: 1000, ref_range_text: "< 140 mg/dL" } },
             { label: "Urine Sugar PP/PG/R", key: "urine_sugar_pp", unit: "", input_type: "dropdown", options: ["Nil", "Trace", "+", "++", "+++", "++++"], validation: { ref_range_text: "Nil" } },
@@ -556,6 +588,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "BS_RANDOM_001",
         profile_name: "BLOOD SUGAR R",
+        specimen: "Blood",
         components: [
             { label: "Blood Sugar Random", key: "bs_random", unit: "mg/dL", input_type: "number", validation: { min: 20, max: 1000, ref_range_text: "70 - 140 mg/dL" } }
         ]
@@ -563,6 +596,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "HBA1C_001",
         profile_name: "GLYCOSYLATED HB",
+        specimen: "Blood",
         components: [
             { label: "Glycosylated Hemoglobin (HbA1c)", key: "hba1c", unit: "%", input_type: "number", validation: { min: 3, max: 20, ref_range_text: "< 5.7% Non-Diabetic" } },
             { label: "Normal Range in Non Diabetics", key: "info_normal", unit: "", input_type: "text", validation: { ref_range_text: "4.0 - 6.0 %" } },
@@ -575,6 +609,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "IRON_001",
         profile_name: "S. IRON, TIBC, % SAT",
+        specimen: "Blood",
         components: [
             { label: "S. Iron", key: "iron", unit: "mcg/dL", input_type: "number", validation: { min: 0, max: 500, ref_range_text: "60 - 170 mcg/dL" } },
             { label: "TIBC", key: "tibc", unit: "mcg/dL", input_type: "number", validation: { min: 0, max: 800, ref_range_text: "240 - 450 mcg/dL" } },
@@ -584,6 +619,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "KIDNEY_001",
         profile_name: "RENAL FUNCTIONAL TEST (RFT)",
+        specimen: "Blood",
         components: [
             { label: "Blood Urea Nitrogen", key: "bun", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 100, ref_range_text: "7 - 20 mg/dL" } },
             { label: "Creatinine", key: "creatinine", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "0.6 - 1.2 mg/dL" } },
@@ -607,6 +643,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "ELECTROLYTES_001",
         profile_name: "S. ELECTROLYTES",
+        specimen: "Blood",
         components: [
             { label: "Sodium (Na+)", key: "sodium", unit: "mEq/L", input_type: "number", validation: { min: 0, max: 200, ref_range_text: "135 - 145 mEq/L" } },
             { label: "Potassium (K+)", key: "potassium", unit: "mEq/L", input_type: "number", validation: { min: 0, max: 10, ref_range_text: "3.5 - 5.1 mEq/L", panic_high: 6.0 } },
@@ -619,6 +656,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "AMYLASE_001",
         profile_name: "S. AMYLASE",
+        specimen: "Blood",
         components: [
             { label: "S. Amylase", key: "amylase", unit: "U/L", input_type: "number", validation: { min: 0, max: 2000, ref_range_text: "28 - 100 U/L" } }
         ]
@@ -626,6 +664,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "CALCIUM_001",
         profile_name: "S. CALCIUM",
+        specimen: "Blood",
         components: [
             { label: "S. Calcium (Total)", key: "calcium", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "8.5 - 10.5 mg/dL" } }
         ]
@@ -633,6 +672,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "PHOSPHORUS_001",
         profile_name: "S. PHOSPHORUS",
+        specimen: "Blood",
         components: [
             { label: "S. Phosphorus", key: "phosphorus", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "2.5 - 4.5 mg/dL" } }
         ]
@@ -640,6 +680,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "THYROID_001",
         profile_name: "THYROID PROFILE (T3, T4, TSH)",
+        specimen: "Blood",
         components: [
             { label: "T3 (Triiodothyronine)", key: "t3", unit: "ng/mL", input_type: "number", validation: { min: 0, max: 10, ref_range_text: "0.60 - 1.81 ng/mL" } },
             { label: "T4 (Thyroxine)", key: "t4", unit: "ug/dL", input_type: "number", validation: { min: 0, max: 30, ref_range_text: "5.01 - 12.45 ug/dL" } },
@@ -649,6 +690,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "INFERTILITY_001",
         profile_name: "INFERTILITY / HORMONAL ASSAY",
+        specimen: "Blood",
         components: [
             { label: "FSH", key: "fsh", unit: "mIU/mL", input_type: "number", validation: { ref_range_text: "Follicular: 3.5-12.5, Mid: 4.7-21.5, Luteal: 1.7-7.7" } },
             { label: "LH", key: "lh", unit: "mIU/mL", input_type: "number", validation: { ref_range_text: "Follicular: 2.4-12.6, Mid: 14-95.6, Luteal: 1.0-11.4" } },
@@ -659,6 +701,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "TORCH_001",
         profile_name: "TORCH PANEL (IgG & IgM)",
+        specimen: "Blood",
         components: [
             { label: "Toxoplasma IgG", key: "toxo_igg", unit: "IU/mL", input_type: "number", validation: { ref_range_text: "< 8.0 Negative" } },
             { label: "Toxoplasma IgM", key: "toxo_igm", unit: "Index", input_type: "number", validation: { ref_range_text: "< 0.8 Negative" } },
@@ -673,6 +716,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "CULTURE_URINE_001",
         profile_name: "CULTURE & SENSITIVITY - URINE",
+        specimen: "Urine",
         components: [
             { label: "Culture Status", key: "culture_status", unit: "", input_type: "dropdown", options: ["Sterile / No Growth", "Growth Detected", "Contaminated"], validation: { ref_range_text: "Sterile" } },
             { label: "Organism Name", key: "organism_name", unit: "", input_type: "text", validation: { ref_range_text: "" } },
@@ -686,6 +730,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "CULTURE_PUS_001",
         profile_name: "CULTURE & SENSITIVITY - PUS",
+        specimen: "Pus",
         components: [
             { label: "Culture Status", key: "culture_status", unit: "", input_type: "dropdown", options: ["Sterile / No Growth", "Growth Detected", "Contaminated"], validation: { ref_range_text: "Sterile" } },
             { label: "Organism Name", key: "organism_name", unit: "", input_type: "text", validation: { ref_range_text: "" } }
@@ -694,6 +739,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "HISTOPATH_001",
         profile_name: "HISTOPATHOLOGY REPORT",
+        specimen: "Tissue",
         components: [
             { label: "Specimen", key: "specimen_type", unit: "", input_type: "text", validation: { ref_range_text: "" } },
             { label: "Gross Appearance", key: "gross_appearance", unit: "", input_type: "text_area", validation: { ref_range_text: "" } },
@@ -704,6 +750,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "CYTOLOGY_001",
         profile_name: "CYTOLOGY / FNAC REPORT",
+        specimen: "Fluid, Tissue",
         components: [
             { label: "Site of Aspiration", key: "aspiration_site", unit: "", input_type: "text", validation: { ref_range_text: "" } },
             { label: "Microscopic Examination", key: "microscopy_text", unit: "", input_type: "text_area", validation: { ref_range_text: "" } },
@@ -713,6 +760,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "FLUID_ANALYSIS_001",
         profile_name: "BODY FLUID ANALYSIS (ASCITIC/PLEURAL/CSF)",
+        specimen: "Fluid",
         components: [
             { label: "Volume", key: "volume", unit: "mL", input_type: "number", validation: { ref_range_text: "" } },
             { label: "Appearance", key: "appearance", unit: "", input_type: "text", validation: { ref_range_text: "Clear" } },
@@ -728,6 +776,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "S_BILIRUBIN_001",
         profile_name: "S. BILIRUBIN",
+        specimen: "Blood",
         components: [
             { label: "Bilirubin Total", key: "bil_total", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "0.2 - 1.2 mg/dL" } },
             { label: "Bilirubin Direct", key: "bil_direct", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 10, ref_range_text: "0.0 - 0.3 mg/dL" } },
@@ -737,6 +786,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "SGOT_001",
         profile_name: "S. G. O. T",
+        specimen: "Blood",
         components: [
             { label: "SGOT / AST", key: "sgot", unit: "U/L", input_type: "number", validation: { min: 0, max: 2000, ref_range_text: "< 40 U/L", panic_high: 500 } }
         ]
@@ -744,6 +794,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "SGPT_001",
         profile_name: "S. G. P. T",
+        specimen: "Blood",
         components: [
             { label: "SGPT / ALT", key: "sgpt", unit: "U/L", input_type: "number", validation: { min: 0, max: 2000, ref_range_text: "< 40 U/L", panic_high: 500 } }
         ]
@@ -751,6 +802,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "ALK_PHOS_001",
         profile_name: "S. ALKALINE PHOSPHATASE",
+        specimen: "Blood",
         components: [
             { label: "S. Alkaline Phosphatase", key: "alk_phos", unit: "U/L", input_type: "number", validation: { min: 0, max: 2000, ref_range_text: "80 - 290 U/L" } }
         ]
@@ -758,6 +810,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "LDH_001",
         profile_name: "S. LDH",
+        specimen: "Blood",
         components: [
             { label: "LDH", key: "ldh", unit: "U/L", input_type: "number", validation: { min: 0, max: 3000, ref_range_text: "140 - 280 U/L" } }
         ]
@@ -765,6 +818,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "URIC_ACID_001",
         profile_name: "S. URIC ACID",
+        specimen: "Blood",
         components: [
             { label: "S. Uric Acid", key: "uric_acid", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "M: 3.5-7.2, F: 2.6-6.0 mg/dL" } }
         ]
@@ -772,6 +826,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "TOTAL_PROTEINS_001",
         profile_name: "S. PROTEINS",
+        specimen: "Blood",
         components: [
             { label: "S. Total Proteins", key: "total_protein", unit: "g/dL", input_type: "number", validation: { min: 0, max: 15, ref_range_text: "6.0 - 8.0 g/dL" } },
             { label: "S. Albumin", key: "albumin", unit: "g/dL", input_type: "number", validation: { min: 0, max: 10, ref_range_text: "3.5 - 5.5 g/dL" } },
@@ -782,6 +837,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "ACID_PHOS_001",
         profile_name: "S. ACID PHOSPHATASE",
+        specimen: "Blood",
         components: [
             { label: "Acid Phosphatase (Total)", key: "acid_phos_total", unit: "U/L", input_type: "number", validation: { ref_range_text: "0 - 9 U/L" } },
             { label: "Prostatic Fraction", key: "acid_phos_pros", unit: "U/L", input_type: "number", validation: { ref_range_text: "0 - 3 U/L" } }
@@ -790,6 +846,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "CHOLESTEROL_001",
         profile_name: "S. CHOLESTEROL",
+        specimen: "Blood",
         components: [
             { label: "S. Cholesterol", key: "cholesterol", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 800, ref_range_text: "< 200 mg/dL" } }
         ]
@@ -797,6 +854,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "HDL_001",
         profile_name: "S. HDL CHOL",
+        specimen: "Blood",
         components: [
             { label: "S. HDL Cholesterol", key: "hdl", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 200, ref_range_text: "> 40 mg/dL" } }
         ]
@@ -804,6 +862,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "LDL_001",
         profile_name: "S. LDL CHOL",
+        specimen: "Blood",
         components: [
             { label: "S. LDL Cholesterol", key: "ldl", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 500, ref_range_text: "< 100 mg/dL" } }
         ]
@@ -811,6 +870,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "TRIGLYCERIDES_001",
         profile_name: "S. TRIGLYCERIDES",
+        specimen: "Blood",
         components: [
             { label: "S. Triglycerides", key: "triglycerides", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 2000, ref_range_text: "< 150 mg/dL" } }
         ]
@@ -818,6 +878,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "CPK_TOTAL_001",
         profile_name: "S. CPK TOTAL",
+        specimen: "Blood",
         components: [
             { label: "CPK Total", key: "cpk_total", unit: "U/L", input_type: "number", validation: { min: 0, max: 5000, ref_range_text: "25 - 170 U/L" } }
         ]
@@ -825,6 +886,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "CK_MB_001",
         profile_name: "S. CK MB",
+        specimen: "Blood",
         components: [
             { label: "CK-MB", key: "ck_mb", unit: "IU/L", input_type: "number", validation: { min: 0, max: 500, ref_range_text: "0 - 25 IU/L" } }
         ]
@@ -832,6 +894,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "GLYCO_HB_001",
         profile_name: "GLYCOSYLATED HB",
+        specimen: "Blood",
         components: [
             { label: "HbA1c", key: "hba1c", unit: "%", input_type: "number", validation: { min: 3, max: 20, ref_range_text: "< 5.7% Non-Diabetic" } },
             { label: "Mean Est. Glucose", key: "eag", unit: "mg/dL", input_type: "calculated", formula: "(28.7 * {hba1c}) - 46.7", validation: { ref_range_text: "Calculated" } }
@@ -840,6 +903,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "BICARB_001",
         profile_name: "S. BICARBONATE",
+        specimen: "Blood",
         components: [
             { label: "Bicarbonate", key: "bicarb", unit: "mEq/L", input_type: "number", validation: { min: 0, max: 100, ref_range_text: "22 - 29 mEq/L" } }
         ]
@@ -847,6 +911,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "AMMONIA_001",
         profile_name: "PLASMA AMMONIA",
+        specimen: "Blood",
         components: [
             { label: "Plasma Ammonia", key: "ammonia", unit: "mcg/dL", input_type: "number", validation: { min: 0, max: 500, ref_range_text: "15 - 45 mcg/dL" } }
         ]
@@ -854,6 +919,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "CALCIUM_SINGLE_001",
         profile_name: "CALCIUM", // Matches tests.ts Name
+        specimen: "Blood",
         components: [
             { label: "S. Calcium", key: "calcium", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "8.5 - 10.5 mg/dL" } }
         ]
@@ -861,6 +927,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "BLOOD_UREA_001",
         profile_name: "BLOOD UREA",
+        specimen: "Blood",
         components: [
             { label: "Blood Urea", key: "blood_urea", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 300, ref_range_text: "15 - 40 mg/dL" } }
         ]
@@ -869,6 +936,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "GROUP_001",
         profile_name: "GROUP", // Matches tests.ts "GROUP"
+        specimen: "Blood",
         components: [
             { label: "ABO Group", key: "abo_group", unit: "", input_type: "dropdown", options: ["A", "B", "AB", "O", "Oh (Bombay)"], validation: { ref_range_text: "" } },
             { label: "Rh Factor", key: "rh_factor", unit: "", input_type: "dropdown", options: ["Positive", "Negative"], validation: { ref_range_text: "" } }
@@ -877,6 +945,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "PROTHROMBIN_001",
         profile_name: "PROTHROMBIN TIME",
+        specimen: "Blood",
         components: [
             { label: "Prothrombin time", key: "pt_time", unit: "Seconds", input_type: "number", validation: { ref_range_text: "11-16 Seconds" } },
             { label: "Normal control", key: "pt_control", unit: "Seconds", input_type: "number", validation: { ref_range_text: "" } },
@@ -887,6 +956,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "RA_TEST_001",
         profile_name: "R A TEST",
+        specimen: "Blood",
         components: [
             { label: "RA Factor", key: "ra_result", unit: "IU/mL", input_type: "number", validation: { min: 0, max: 200, ref_range_text: "< 20 IU/mL" } },
             { label: "Qualitative", key: "ra_qual", unit: "", input_type: "dropdown", options: ["Negative", "Positive"], validation: { ref_range_text: "Negative" } }
@@ -895,6 +965,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "ASO_TEST_001",
         profile_name: "A S O",
+        specimen: "Blood",
         components: [
             { label: "ASO Titre", key: "aso_result", unit: "IU/mL", input_type: "number", validation: { min: 0, max: 1000, ref_range_text: "< 200 IU/mL" } },
             { label: "Qualitative", key: "aso_qual", unit: "", input_type: "dropdown", options: ["Negative", "Positive"], validation: { ref_range_text: "Negative" } }
@@ -903,6 +974,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "AUSTRALIA_AG_001",
         profile_name: "AUSTRALIA ANTIGEN",
+        specimen: "Blood",
         components: [
             { label: "HBsAg Result", key: "hbsag_result", unit: "", input_type: "dropdown", options: ["Non-Reactive", "Reactive", "Borderline"], validation: { ref_range_text: "Non-Reactive" } }
         ],
@@ -913,6 +985,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "VDRL_TEST_001",
         profile_name: "VDRL",
+        specimen: "Blood",
         components: [
             { label: "VDRL Result", key: "vdrl_result", unit: "", input_type: "dropdown", options: ["Non-Reactive", "Reactive", "Borderline"], validation: { ref_range_text: "Non-Reactive" } }
         ]
@@ -920,6 +993,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "HIV_TEST_001",
         profile_name: "HIV",
+        specimen: "Blood",
         components: [
             { label: "HIV Result", key: "hiv_result", unit: "", input_type: "dropdown", options: ["Non-Reactive", "Reactive", "Borderline"], validation: { ref_range_text: "Non-Reactive" } }
         ]
@@ -928,6 +1002,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "CUL_THROAT_001",
         profile_name: "CUL. THROAT SWAB",
+        specimen: "Swab",
         components: [
             { label: "Culture Status", key: "culture_status", unit: "", input_type: "dropdown", options: ["Sterile / No Growth", "Growth Detected", "Contaminated"], validation: { ref_range_text: "Sterile" } },
             { label: "Organism Name", key: "organism_name", unit: "", input_type: "text", validation: { ref_range_text: "" } }
@@ -936,6 +1011,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "CUL_BLOOD_001",
         profile_name: "CULTURE BLOOD",
+        specimen: "Blood",
         components: [
             { label: "Culture Status", key: "culture_status", unit: "", input_type: "dropdown", options: ["Sterile / No Growth", "Growth Detected", "Contaminated"], validation: { ref_range_text: "Sterile" } },
             { label: "Organism Name", key: "organism_name", unit: "", input_type: "text", validation: { ref_range_text: "" } }
@@ -944,6 +1020,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "CUL_CSF_001",
         profile_name: "CULTURE CSF",
+        specimen: "Fluids",
         components: [
             { label: "Culture Status", key: "culture_status", unit: "", input_type: "dropdown", options: ["Sterile / No Growth", "Growth Detected", "Contaminated"], validation: { ref_range_text: "Sterile" } },
             { label: "Organism Name", key: "organism_name", unit: "", input_type: "text", validation: { ref_range_text: "" } }
@@ -952,6 +1029,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "CSF_PERI_001",
         profile_name: "CSF/PERICARDIAL FL",
+        specimen: "Fluid",
         components: [
             { label: "Fluid Type", key: "fluid_type", unit: "", input_type: "dropdown", options: ["CSF", "Pericardial Fluid"], validation: { ref_range_text: "" } },
             { label: "Appearance", key: "appearance", unit: "", input_type: "text", validation: { ref_range_text: "Clear" } },
@@ -963,6 +1041,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "ASCITIC_PLEURAL_001",
         profile_name: "ASCITIC /PLEURAL FL",
+        specimen: "Fluid",
         components: [
             { label: "Fluid Type", key: "fluid_type", unit: "", input_type: "dropdown", options: ["Ascitic Fluid", "Pleural Fluid"], validation: { ref_range_text: "" } },
             { label: "Appearance", key: "appearance", unit: "", input_type: "text", validation: { ref_range_text: "Clear" } },
@@ -974,6 +1053,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "THYROID_TESTS_001",
         profile_name: "T3 T4 TSH",
+        specimen: "Blood",
         components: [
             { label: "T3", key: "t3", unit: "ng/mL", input_type: "number", validation: { min: 0, max: 10, ref_range_text: "0.60 - 1.81 ng/mL" } },
             { label: "T4", key: "t4", unit: "ug/dL", input_type: "number", validation: { min: 0, max: 30, ref_range_text: "5.01 - 12.45 ug/dL" } },
@@ -983,6 +1063,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "LH_FSH_001",
         profile_name: "LH FSH",
+        specimen: "Blood",
         components: [
             { label: "LH", key: "lh", unit: "mIU/mL", input_type: "number", validation: { ref_range_text: "Cycle Dependent" } },
             { label: "FSH", key: "fsh", unit: "mIU/mL", input_type: "number", validation: { ref_range_text: "Cycle Dependent" } }
@@ -991,6 +1072,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "PROLACTIN_001",
         profile_name: "PROLACTIN",
+        specimen: "Blood",
         components: [
             { label: "Prolactin", key: "prolactin", unit: "ng/mL", input_type: "number", validation: { ref_range_text: "4.8 - 23.3 ng/mL" } }
         ]
@@ -998,6 +1080,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "BETA_HCG_001",
         profile_name: "BETA HCG",
+        specimen: "Blood",
         components: [
             { label: "Beta HCG", key: "beta_hcg", unit: "mIU/mL", input_type: "number", validation: { ref_range_text: "< 5.0 mIU/mL (Non-pregnant)" } }
         ]
@@ -1005,6 +1088,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "TORCH_PANEL_001",
         profile_name: "TORCH",
+        specimen: "Blood",
         components: [
             { label: "Toxo IgG", key: "toxo_igg", unit: "IU/mL", input_type: "number", validation: { ref_range_text: "Negative" } },
             { label: "Toxo IgM", key: "toxo_igm", unit: "Index", input_type: "number", validation: { ref_range_text: "Negative" } },
@@ -1019,6 +1103,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "CYTOLOGY_001",
         profile_name: "CYTOLOGY",
+        specimen: "Fluid, Tissue",
         components: [
             { label: "Site", key: "site", unit: "", input_type: "text", validation: { ref_range_text: "" } },
             { label: "Microscopy", key: "microscopy", unit: "", input_type: "text_area", validation: { ref_range_text: "" } },
@@ -1028,6 +1113,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "HISTOPATHOLOGY_001",
         profile_name: "HISTOPATHOLOGY",
+        specimen: "Tissue",
         components: [
             { label: "Specimen", key: "specimen", unit: "", input_type: "text", validation: { ref_range_text: "" } },
             { label: "Gross Appearance", key: "gross", unit: "", input_type: "text_area", validation: { ref_range_text: "" } },
@@ -1038,6 +1124,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "WESTERN_BLOT_001",
         profile_name: "WESTERN BLOT TEST",
+        specimen: "Blood",
         components: [
             { label: "gp160", key: "gp160", unit: "", input_type: "dropdown", options: ["Absent", "Present"], validation: { ref_range_text: "Absent" } },
             { label: "gp120", key: "gp120", unit: "", input_type: "dropdown", options: ["Absent", "Present"], validation: { ref_range_text: "Absent" } },
@@ -1054,6 +1141,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "ANY_OTHER_001",
         profile_name: "ANY OTHER TEST",
+        specimen: "Unknown",
         components: [
             { label: "Test Parameter", key: "parameter", unit: "", input_type: "text", validation: { ref_range_text: "" } },
             { label: "Result", key: "result", unit: "", input_type: "text", validation: { ref_range_text: "" } },
@@ -1065,6 +1153,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "SMA_12_001",
         profile_name: "SMA – 12",
+        specimen: "Blood",
         components: [
             { label: "S. Albumin", key: "albumin", unit: "g/dL", input_type: "number", validation: { ref_range_text: "3.5 - 5.5 g/dL" } },
             { label: "S. Alkaline Phosphatase", key: "alk_phos", unit: "U/L", input_type: "number", validation: { ref_range_text: "80 - 290 U/L" } },
@@ -1083,6 +1172,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "TOTAL_BODY_001",
         profile_name: "TOTAL BODY",
+        specimen: "Blood",
         components: [
             // CBC
             { label: "Haemoglobin (Hb)", key: "hb", unit: "g/dL", input_type: "number", validation: { ref_range_text: "M: 13-17, F: 12-15" } },
@@ -1112,6 +1202,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "HYPERTENSION_001",
         profile_name: "HYPERTENSION",
+        specimen: "Blood",
         components: [
             // LIPID
             { label: "S. Cholesterol", key: "cholesterol", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "< 200" } },
@@ -1129,6 +1220,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "CARDIAC_CHECKUP_001",
         profile_name: "CARDIAC", // Distinct from ENZYMES
+        specimen: "Blood",
         components: [
             { label: "ECG Findings", key: "ecg_findings", unit: "", input_type: "text_area", validation: { ref_range_text: "Normal Sinus Rhythm" } },
             { label: "S. Cholesterol", key: "cholesterol", unit: "mg/dL", input_type: "number", validation: { ref_range_text: "< 200" } },
@@ -1143,6 +1235,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "CULTURE_URINE_001",
         profile_name: "CULTURE URINE",
+        specimen: "Urine",
         components: [
             { label: "Microscopy", key: "microscopy", unit: "", input_type: "text_area", validation: { ref_range_text: "Pus Cells: 0-2 /hpf, RBCs: Nil, Epith: Nil" } },
             { label: "Organism Isolated", key: "organism", unit: "", input_type: "text", validation: { ref_range_text: "Sterile / No Growth" } },
@@ -1153,6 +1246,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "CULTURE_STOOL_001",
         profile_name: "CULTURE STOOL",
+        specimen: "Stool",
         components: [
             { label: "Consistency", key: "consistency", unit: "", input_type: "dropdown", options: ["Solid", "Semi-Solid", "Soft", "Loose", "Watery"], validation: { ref_range_text: "Semi-Solid" } },
             { label: "Color", key: "color", unit: "", input_type: "text", validation: { ref_range_text: "Brown" } },
@@ -1166,6 +1260,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "CULTURE_PUS_001",
         profile_name: "CULTURE PUS",
+        specimen: "Pus",
         components: [
             { label: "Specimen Source", key: "source", unit: "", input_type: "text", validation: { ref_range_text: "" } },
             { label: "Gram Stain", key: "gram_stain", unit: "", input_type: "text_area", validation: { ref_range_text: "No Organisms Seen" } },
@@ -1177,6 +1272,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "PSA_001",
         profile_name: "PSA (TOTAL)",
+        specimen: "Blood",
         components: [
             { label: "Total PSA", key: "psa_total", unit: "ng/mL", input_type: "number", validation: { min: 0, max: 100, ref_range_text: "< 4.0 ng/mL" } }
         ]
@@ -1184,6 +1280,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "URINE_MICROALBUMIN_001",
         profile_name: "URINE MICROALBUMIN",
+        specimen: "Urine",
         components: [
             { label: "Urinary Microalbumin", key: "microalbumin", unit: "mg/L", input_type: "number", validation: { ref_range_text: "< 20 mg/L" } },
             { label: "Urine Creatinine", key: "urine_creatinine", unit: "g/L", input_type: "number", validation: { ref_range_text: "0.3 - 3.0 g/L" } },
@@ -1193,6 +1290,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "TRIPLE_H_001",
         profile_name: "TRIPLE H MARKERS",
+        specimen: "Blood",
         components: [
             { label: "HIV I & II", key: "hiv_result", unit: "", input_type: "dropdown", options: ["Non-Reactive", "Reactive"], validation: { ref_range_text: "Non-Reactive" } },
             { label: "HBsAg", key: "hbsag_result", unit: "", input_type: "dropdown", options: ["Non-Reactive", "Reactive"], validation: { ref_range_text: "Non-Reactive" } },
@@ -1207,6 +1305,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "BONE_METABOLIC_001",
         profile_name: "BONE METABOLIC PROFILE",
+        specimen: "Blood",
         components: [
             { label: "S. Calcium", key: "calcium", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "8.5 - 10.5 mg/dL" } },
             { label: "S. Phosphorous", key: "phosphorus", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "2.5 - 4.5 mg/dL" } },
@@ -1217,6 +1316,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "TRIPLE_H_001",
         profile_name: "TRIPLE-H",
+        specimen: "Blood",
         components: [
             { label: "HUMAN IMMUNODEFICIENCY VIRUS (HIV)", key: "hiv_result", unit: "", input_type: "dropdown", options: ["Non-Reactive", "Reactive"], validation: { ref_range_text: "Non-Reactive" } },
             { label: "HEPATITIS B SURFACE ANTIGEN (HBsAg)", key: "hbsag_result", unit: "", input_type: "dropdown", options: ["Non-Reactive", "Reactive"], validation: { ref_range_text: "Non-Reactive" } },
@@ -1226,6 +1326,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "ANC_PROFILE_001",
         profile_name: "A.N.C PROFILE",
+        specimen: "Blood, Urine(routine)",
         components: [
             { label: "HAEMOGRAM", key: "header_cbc", unit: "", input_type: "header", validation: { ref_range_text: "" } },
             { label: "Haemoglobin", key: "hb", unit: "g/dL", input_type: "number", validation: { min: 0, max: 25, ref_range_text: "12 - 15 g/dL" } },
@@ -1255,6 +1356,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "BIOCHEMISTRY_PROFILE_001",
         profile_name: "BIOCHEMISTRY",
+        specimen: "Blood",
         components: [
             { label: "Fasting Blood Sugar", key: "bs_fasting", unit: "mg/dL", input_type: "number", validation: { min: 20, max: 1000, ref_range_text: "70 - 100 mg/dL" } },
             { label: "Fasting Urine Sugar", key: "urine_sugar_f", unit: "", input_type: "dropdown", options: ["Nil", "Trace", "+", "++", "+++", "++++"], validation: { ref_range_text: "Nil" } },
@@ -1304,6 +1406,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "G6PD_001",
         profile_name: "G6-PD TEST",
+        specimen: "Blood",
         components: [
             { label: "G6PD Test", key: "g6pd_val", unit: "U/g Hb", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "4.6 - 13.5 U/g Hb" } },
             { label: "Method", key: "method", unit: "", input_type: "text", validation: { ref_range_text: "Kinetic" } },
@@ -1313,6 +1416,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "ASCITIC_TEST_001",
         profile_name: "ASCITIC TEST",
+        specimen: "Fluid",
         components: [
             // PHYSICAL EXAMINATION
             { label: "PHYSICAL EXAMINATION", key: "physical_header", unit: "", input_type: "header", validation: { ref_range_text: "" } },
@@ -1343,6 +1447,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "URINARY_VOL_24H_001",
         profile_name: "24 HOURS URINARY VOLUME",
+        specimen: "Urine",
         components: [
             { label: "24 hour Urinary Volume", key: "vol_24h", unit: "ml/24hr", input_type: "number", validation: { min: 0, max: 5000, ref_range_text: "800 - 2000 ml/24hr" } },
             { label: "Urinary MicroAlbumin", key: "micro_alb", unit: "mg/L", input_type: "number", validation: { min: 0, max: 500, ref_range_text: "< 20 mg/L" } },
@@ -1353,6 +1458,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "AEC_001",
         profile_name: "ABSOLUTE EOSINOPHIL COUNT",
+        specimen: "Blood",
         components: [
             { label: "Absolute Eosinophil Count", key: "aec", unit: "/cmm", input_type: "number", validation: { min: 0, max: 2000, ref_range_text: "20 - 500 /cmm" } }
         ]
@@ -1360,6 +1466,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
     {
         profile_id: "CREATININE_001",
         profile_name: "S. CREATININE",
+        specimen: "Blood",
         components: [
             { label: "S. Creatinine", key: "creatinine", unit: "mg/dL", input_type: "number", validation: { min: 0, max: 20, ref_range_text: "0.6 - 1.2 mg/dL" } },
             { label: "Method", key: "method", unit: "", input_type: "text", validation: { ref_range_text: "Jaffe's" } },
