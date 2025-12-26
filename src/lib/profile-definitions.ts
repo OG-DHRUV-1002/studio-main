@@ -241,7 +241,7 @@ export const PROFILE_DEFINITIONS: ProfileDefinition[] = [
         profile_name: "ESR",
         specimen: "Blood",
         components: [
-            { label: "ESR @ 1st Hour", key: "esr", unit: "mm", input_type: "number", validation: { min: 0, max: 150, ref_range_text: "M: 0-15, F: 0-20 mm" } }
+            { label: "Erythrocyte Sedimentation Rate (ESR)", key: "esr", unit: "mm", input_type: "number", validation: { min: 0, max: 150, ref_range_text: "M: 0-15, F: 0-20 mm" } }
         ]
     },
     {

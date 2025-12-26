@@ -33,7 +33,7 @@ export async function createPatient(formData: FormData) {
 
     const allPatients = await db.getAllPatients(labId);
     const nextIdNum = allPatients.length + 1;
-    const prefix = new Date().toLocaleString('default', { month: 'long' }).slice(0, 4) + '_';
+    const prefix = new Date().toLocaleString('default', { month: 'long' }).slice(0, 3) + '_';
     const patientId = `${prefix}${nextIdNum}`;
 
     const newPatientData: Patient = {

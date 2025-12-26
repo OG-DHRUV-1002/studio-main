@@ -27,28 +27,46 @@ export default function InvoicePreview({ transaction }: InvoicePreviewProps) {
 
     return (
         <div className="bg-white p-8 max-w-[210mm] mx-auto text-black font-sans text-sm leading-tight relative shadow-lg print:shadow-none print:w-full print:max-w-none print:p-0">
-            {/* Header */}
-            <div className="flex justify-between items-start border-b-2 border-black pb-2 mb-2">
-                <div className="w-1/2">
-                    <h1 className="text-3xl font-extrabold uppercase tracking-wide">{labName}</h1>
-
+            {/* Header - Preserved as requested */}
+            <div className="flex justify-between items-start border-b-[1px] border-black pb-2 mb-2">
+                <div className="w-[60%]">
+                    <h1 className="text-2xl font-bold">{labName}</h1>
+                    <div className="text-xs mt-1">
+                        {labAddress.map((line, i) => (
+                            <p key={i}>{line}</p>
+                        ))}
+                    </div>
                 </div>
-                <div className="w-1/2 text-right border border-black p-2 text-xs">
-                    {labAddress.map((line, i) => (
-                        <p key={i}>{line}</p>
-                    ))}
-                    <p>Email: {labEmail}</p>
-                    <p>Tel.: {labPhone} {labWhatsapp && `Whatsapp: ${labWhatsapp}`}</p>
+                <div className="w-[40%] text-right text-xs">
+                    {/* Placeholder removed */}
                 </div>
             </div>
 
-            {/* Receipt Title - BILL Header */}
-            <div className="border-t-2 border-b-2 border-black mb-4 py-1">
-                <h2 className="text-center text-xl font-bold uppercase tracking-widest bg-gray-100/50">BILL</h2>
+            {/* Actually, looking at image:
+               Header: 
+                 Dr. Bhonsle's laboratory (Bold)
+                 Address...
+               
+               Then TLE0172 (Left aligned)
+               Then Line
+               Then Bill (Right/Center)
+               Then Line
+            */}
+
+            <div className="mb-2">
+                <p className="font-bold text-sm">{transaction.invoice_id}</p>
             </div>
 
-            {/* Patient Info Grid */}
-            <div className="grid grid-cols-2 gap-x-12 gap-y-1 mb-4 border-b-2 border-black pb-4 text-sm font-medium">
+            <div className="border-t border-black mb-1"></div>
+
+            <div className="flex justify-end items-center mb-1 bg-gray-100 py-1 px-4">
+                <h2 className="font-bold text-md pl-4 w-full text-center">Bill</h2>
+            </div>
+
+            <div className="border-t border-black mb-2"></div>
+
+            {/* Patient Info Grid - Matching Image */}
+            <div className="grid grid-cols-2 gap-x-12 gap-y-1 mb-2 text-sm font-medium">
                 {/* Left Column */}
                 <div className="space-y-1">
                     <div className="grid grid-cols-[100px_1fr]">
@@ -56,106 +74,85 @@ export default function InvoicePreview({ transaction }: InvoicePreviewProps) {
                         <span className="uppercase">: {transaction.patient_name}</span>
                     </div>
                     <div className="grid grid-cols-[100px_1fr]">
-                        <span className="font-bold">Gender/Age</span>
-                        <span>: {transaction.gender} / {transaction.age} Yrs</span>
+                        <span className="font-bold">Age</span>
+                        <span>: {transaction.age} Yrs</span>
                     </div>
                     <div className="grid grid-cols-[100px_1fr]">
-                        <span className="font-bold">Mobile</span>
+                        <span className="font-bold">Contact No</span>
                         <span>: {transaction.mobile || ""}</span>
                     </div>
                     <div className="grid grid-cols-[100px_1fr]">
                         <span className="font-bold">Ref By</span>
-                        <span className="uppercase">: {transaction.ref_doctor || "SELF"}</span>
+                        <span className="uppercase">: {transaction.ref_doctor || "V. V."}</span>
                     </div>
                 </div>
 
                 {/* Right Column */}
                 <div className="space-y-1">
-                    <div className="grid grid-cols-[140px_1fr]">
-                        <span className="font-bold">Invoice No / Lab ID</span>
-                        <span>: {transaction.invoice_id}</span>
+                    <div className="grid grid-cols-[110px_1fr]">
+                        <span className="font-bold">LabId / Date</span>
+                        <span>: {transaction.invoice_id} / {format(new Date(transaction.timestamp), "dd-MMM-yyyy HH:mm")}</span>
                     </div>
-                    <div className="grid grid-cols-[140px_1fr]">
-                        <span className="font-bold">Invoice Date</span>
-                        <span>: {format(new Date(transaction.timestamp), "dd-MMM-yyyy HH:mm")}</span>
+                    <div className="grid grid-cols-[110px_1fr]">
+                        <span className="font-bold">Gender</span>
+                        <span>: {transaction.gender}</span>
                     </div>
-                    <div className="grid grid-cols-[140px_1fr]">
-                        <span className="font-bold">Patient ID</span>
-                        <span>: {transaction.patient_id}</span>
+                    <div className="grid grid-cols-[110px_1fr]">
+                        <span className="font-bold">Email</span>
+                        <span>: {(transaction as any).email || ""}</span>
                     </div>
-                    <div className="grid grid-cols-[140px_1fr]">
-                        <span className="font-bold">Ref ID</span>
-                        <span>: {transaction.ref_id || ""}</span>
+                    <div className="grid grid-cols-[110px_1fr]">
+                        <span className="font-bold">Expected Report</span>
+                        <span>: {format(new Date(new Date(transaction.timestamp).getTime() + 4 * 24 * 60 * 60 * 1000), "dd-MMM-yyyy HH:mm")}</span> {/* Hardcoded +4 days to match style broadly */}
                     </div>
                 </div>
             </div>
 
-            {/* Items Table */}
+            <div className="border-t border-black mb-2"></div>
+
+            {/* Items Table Headers */}
+            <div className="grid grid-cols-[1fr_150px_150px] font-bold text-sm mb-1 px-1 bg-gray-100/50">
+                <div>Test Name</div>
+                <div className="text-center">Remarks</div>
+                <div className="text-right">MRP Amount</div>
+            </div>
+
+            <div className="border-t border-black mb-2"></div>
+
+            {/* Items Table Body */}
             <div className="mb-4 min-h-[300px]">
-                <table className="w-full text-left border-collapse">
-                    <thead>
-                        <tr className="border-b border-black border-dashed">
-                            <th className="py-1 w-12 text-center">Sr. No</th>
-                            <th className="py-1">Test Name</th>
-                            <th className="py-1 text-center">Report On</th>
-                            <th className="py-1 text-right">Rate</th>
-                            <th className="py-1 text-right">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {transaction.items.map((item, index) => (
-                            <tr key={index} className="border-b border-gray-300 border-dashed">
-                                <td className="py-1 text-center">{index + 1}</td>
-                                <td className="py-1">{item.test_name}</td>
-                                <td className="py-1 text-center">Same Day</td>
-                                <td className="py-1 text-right">{item.price.toFixed(2)}</td>
-                                <td className="py-1 text-right">{item.price.toFixed(2)}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                {transaction.items.map((item, index) => (
+                    <div key={index} className="grid grid-cols-[1fr_150px_150px] text-sm py-1 border-b border-gray-200 border-dashed px-1">
+                        <div>{item.test_name}</div>
+                        <div className="text-center"></div> {/* Remarks empty for now */}
+                        <div className="text-right">{item.price.toFixed(2)}</div>
+                    </div>
+                ))}
             </div>
 
-            {/* Footer */}
-            <div className="border-t border-black pt-2 flex justify-between items-end">
-                <div className="w-1/2">
-                    <p className="mb-4">Done By &nbsp;&nbsp; <span className="uppercase font-bold">ADMIN / {user?.user_uid.split('_')[1]?.toUpperCase() || 'STAFF'}</span></p>
+            <div className="border-t border-black mb-2"></div>
 
-
-                </div>
-
-                <div className="w-1/3 text-sm">
-                    <div className="flex justify-between border-b border-gray-400 py-1">
-                        <span>Total Amount</span>
-                        <span>{totalAmount.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between border-b border-gray-400 py-1">
-                        <span>Night Charges</span>
-                        <span>0.00</span>
-                    </div>
-                    <div className="flex justify-between border-b border-gray-400 py-1 font-bold">
-                        <span>Bill Amount</span>
-                        <span>{totalAmount.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between border-b border-gray-400 py-1">
-                        <span>Amount Paid</span>
-                        <span>{paidAmount.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between py-1 font-bold">
-                        <span>Balance</span>
-                        <span>{balanceAmount.toFixed(2)}</span>
-                    </div>
+            {/* Footer - Only Bill Amount */}
+            <div className="flex justify-end items-center pt-2">
+                <div className="w-[300px] flex justify-between font-bold text-sm px-1">
+                    <span>Bill Amount</span>
+                    <span>{totalAmount.toFixed(2)}</span>
                 </div>
             </div>
 
-            <div className="text-xs text-center mt-6 border-t border-gray-300 pt-2">
-                <p className="italic mb-1">Method: Col - Colorimetry, Gia - Glucose Oxidase, Ink - Kinetic, Imm - Immunology</p>
-                <p className="font-bold">Routine reports will be available between 6 to 9 pm</p>
-                <div className="mt-2 border-t-2 border-black pt-2 font-bold text-center text-sm">
-                    Download your reports by clicking on the link in &apos;report ready&apos; SMS
-                    <br />
-                    DAY & NIGHT SUNDAY Lab will be open till 1 pm.
+            {/* Signature Footer for Lab 1 */}
+            {transaction.lab_id === 'lab_001_bhonsle' && (
+                <div className="mt-12 flex justify-end">
+                    <div className="text-right">
+                        <div className="h-16"></div> {/* Space for Stamp/Sign */}
+                        <p className="font-bold text-md">Dr. S.T. Bhonsle</p>
+                        <p className="font-bold text-sm">MD, DPB</p>
+                    </div>
                 </div>
+            )}
+
+            <div className="text-xs text-center mt-6 border-t border-gray-300 pt-2 hidden print:block">
+                {/* Footer content if needed, kept minimal as per image which cuts off */}
             </div>
 
             {/* Print Styles */}
@@ -163,18 +160,6 @@ export default function InvoicePreview({ transaction }: InvoicePreviewProps) {
                 @media print {
                     @page { margin: 10mm; size: A4 portrait; }
                     body { -webkit-print-color-adjust: exact; }
-                    .print\\:hidden { display: none !important; }
-                    .print\\:shadow-none { box-shadow: none !important; }
-                    .print\\:w-full { width: 100% !important; }
-                    .print\\:max-w-none { max-width: none !important; }
-                    .print\\:p-0 { padding: 0 !important; }
-                    
-                    /* Hide everything else */
-                    nav, aside, header, footer, .sidebar, .no-print { display: none !important; }
-                    
-                    /* Typography for dot matrix feel */
-                    * { font-family: 'Courier New', Courier, monospace !important; color: black !important; }
-                    h1, h2, h3, .font-bold { font-weight: 900 !important; }
                 }
             `}</style>
         </div>

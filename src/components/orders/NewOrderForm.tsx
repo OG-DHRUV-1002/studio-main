@@ -243,14 +243,14 @@ export function NewOrderForm({ patients, initialData, isEditMode = false }: NewO
                     <FormControl>
                       <div className="flex rounded-md border border-input shadow-sm focus-within:ring-1 focus-within:ring-ring">
                         <div className="flex h-9 items-center rounded-l-md border-r bg-muted px-3 text-sm text-muted-foreground">
-                          {new Date().toLocaleString('default', { month: 'long' }).slice(0, 4) + '_'}
+                          {new Date().toLocaleString('default', { month: 'long' }).slice(0, 3) + '_'}
                         </div>
                         <Input
                           placeholder="1234"
                           className="flex-1 border-0 focus-visible:ring-0 rounded-l-none"
                           value={field.value ? field.value.split('_')[1] || '' : ''}
                           onChange={(e) => {
-                            const prefix = new Date().toLocaleString('default', { month: 'long' }).slice(0, 4) + '_';
+                            const prefix = new Date().toLocaleString('default', { month: 'long' }).slice(0, 3) + '_';
                             field.onChange(prefix + e.target.value);
                           }}
                         />
