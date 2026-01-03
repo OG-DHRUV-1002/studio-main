@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Trash2, PlusCircle, Loader2, ChevronsUpDown, Check } from 'lucide-react';
 import type { Patient } from '@/lib/types';
 import { Switch } from '@/components/ui/switch';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { createWalkInOrder, updateOrder } from '@/lib/actions'; // CHANGED: Use new action
 import { useRouter } from 'next/navigation';
@@ -19,6 +19,7 @@ import { cn } from '@/lib/utils';
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { allTests } from '@/lib/tests';
+import { getCustomTests } from '@/lib/db';
 import { Input } from '../ui/input';
 import { useAuth } from '@/lib/auth-context';
 
@@ -63,12 +64,11 @@ interface NewOrderFormProps {
   isEditMode?: boolean;
 }
 
-const TestCombobox = ({ value, onSelect, onPriceChange }: { value: string, onSelect: (value: string) => void, onPriceChange: (price: number) => void }) => {
-  // ... existing TestCombobox code ...
+const TestCombobox = ({ value, onSelect, onPriceChange, tests = [] }: { value: string, onSelect: (value: string) => void, onPriceChange: (price: number) => void, tests: any[] }) => {
   const [open, setOpen] = useState(false);
 
   const handleSelect = (testName: string) => {
-    const test = allTests.find(t => t.name === testName);
+    const test = tests.find(t => t.name === testName);
     if (test) {
       onSelect(test.name);
       onPriceChange(test.price);
@@ -94,7 +94,7 @@ const TestCombobox = ({ value, onSelect, onPriceChange }: { value: string, onSel
           <CommandInput placeholder="Search test..." />
           <CommandList>
             <CommandEmpty>No test found.</CommandEmpty>
-            {[...allTests].sort((a, b) => a.name.localeCompare(b.name)).map((test) => (
+            {[...tests].sort((a, b) => a.name.localeCompare(b.name)).map((test) => (
               <CommandItem
                 key={test.name}
                 value={test.name}
@@ -122,9 +122,38 @@ export function NewOrderForm({ patients, initialData, isEditMode = false }: NewO
   const router = useRouter();
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [customTests, setCustomTests] = useState<any[]>([]);
 
   const currentLabId = user?.lab_context?.id || 'default';
   const staffOptions = LAB_STAFF[currentLabId as keyof typeof LAB_STAFF] || LAB_STAFF['default'];
+
+  // Fetch Custom Tests
+  useEffect(() => {
+    async function fetchCustom() {
+      if (user?.lab_context?.id) {
+        try {
+          const tests = await getCustomTests(user.lab_context.id);
+          setCustomTests(tests.map((t: any) => ({
+            name: t.test_name,
+            price: t.price,
+            code: t.test_code,
+            isCustom: true
+          })));
+        } catch (e) { console.error("Failed to fetch custom tests", e); }
+      }
+    }
+    fetchCustom();
+  }, [user]);
+
+  const combinedTests = useMemo(() => {
+    const uniqueMap = new Map();
+    // Add standard tests first
+    allTests.forEach(t => uniqueMap.set(t.name, t));
+    // Add custom tests (overwriting standard if same name)
+    customTests.forEach(t => uniqueMap.set(t.name, t));
+
+    return Array.from(uniqueMap.values());
+  }, [customTests]);
 
   const form = useForm<NewOrderFormValues>({
     resolver: zodResolver(formSchema),
@@ -180,14 +209,14 @@ export function NewOrderForm({ patients, initialData, isEditMode = false }: NewO
       if (type === 'change' && name?.startsWith('tests') && name.endsWith('testName')) {
         const index = parseInt(name.split('.')[1]);
         const testName = value.tests?.[index]?.testName;
-        const test = allTests.find(t => t.name === testName);
+        const test = combinedTests.find(t => t.name === testName);
         if (test) {
           form.setValue(`tests.${index}.testPrice`, test.price, { shouldValidate: true });
         }
       }
     });
     return () => subscription.unsubscribe();
-  }, [form.watch]);
+  }, [form.watch, customTests]);
 
 
   async function onSubmit(values: NewOrderFormValues) {
@@ -513,6 +542,7 @@ export function NewOrderForm({ patients, initialData, isEditMode = false }: NewO
                         onPriceChange={(price) => {
                           form.setValue(`tests.${index}.testPrice`, price, { shouldValidate: true });
                         }}
+                        tests={combinedTests}
                       />
                       <FormMessage />
                     </FormItem>

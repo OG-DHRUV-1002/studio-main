@@ -25,6 +25,12 @@ export interface ProfileDefinition {
         action: string;
         message: string;
     }[];
+    input_schema?: {
+        key: string;
+        label: string;
+        unit?: string;
+        type: 'text' | 'number' | 'richtext';
+    }[];
 }
 
 export const PROFILE_DEFINITIONS: ProfileDefinition[] = [

@@ -85,6 +85,33 @@ export function ProfileDataEntry({ profile, initialValues, onChange }: ProfileDa
         onChange(newValues);
     };
 
+    // WORD-LIKE TEMPLATE RENDERER
+    if (profile.input_schema && profile.input_schema.length > 0) {
+        return (
+            <div className="rounded-md border bg-white shadow-sm overflow-hidden">
+                <div className="bg-slate-50 px-4 py-2 border-b">
+                    <h4 className="font-semibold text-primary">{profile.profile_name}</h4>
+                    <p className="text-xs text-muted-foreground">Enter values for the document placeholders.</p>
+                </div>
+                <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {profile.input_schema.map((field) => (
+                        <div key={field.key} className="space-y-2">
+                            <Label>{field.label}</Label>
+                            <div className="relative">
+                                <Input
+                                    value={values[field.key] || ''}
+                                    onChange={(e) => handleChange(field.key, e.target.value)}
+                                    placeholder={`Enter ${field.label}`}
+                                />
+                                {field.unit && <div className="absolute right-3 top-2 text-xs text-muted-foreground">{field.unit}</div>}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="rounded-md border bg-white shadow-sm overflow-hidden">
             <div className="bg-slate-50 px-4 py-2 border-b">
@@ -122,19 +149,22 @@ export function ProfileDataEntry({ profile, initialValues, onChange }: ProfileDa
                                 </TableCell>
                                 <TableCell className="py-2">
                                     {comp.input_type === 'dropdown' ? (
-                                        <Select
-                                            value={String(values[comp.key] || '')}
-                                            onValueChange={(v) => handleChange(comp.key, v)}
-                                        >
-                                            <SelectTrigger id={comp.key} className="h-9">
-                                                <SelectValue placeholder="Select..." />
-                                            </SelectTrigger>
-                                            <SelectContent>
+                                        <div className="relative">
+                                            {/* Standard HTML datalist implementation for "Dropdown or Custom" */}
+                                            <Input
+                                                id={comp.key}
+                                                list={`list-${comp.key}`}
+                                                value={values[comp.key] || ''}
+                                                onChange={(e) => handleChange(comp.key, e.target.value)}
+                                                placeholder="Select or type..."
+                                                className="h-9"
+                                            />
+                                            <datalist id={`list-${comp.key}`}>
                                                 {comp.options?.map(opt => (
-                                                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                                                    <option key={opt} value={opt} />
                                                 ))}
-                                            </SelectContent>
-                                        </Select>
+                                            </datalist>
+                                        </div>
                                     ) : comp.input_type === 'text_area' ? (
                                         <textarea
                                             id={comp.key}

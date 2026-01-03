@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarFooter
 } from "@/components/ui/sidebar"
-import { LayoutDashboard, FilePlus2, Users, FlaskConical, Banknote } from "lucide-react";
+import { LayoutDashboard, FilePlus2, Settings2, FlaskConical, Banknote } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 
@@ -19,6 +19,7 @@ const menuItems = [
   { href: "/orders/new", label: "New Order", icon: FilePlus2 },
   { href: "/data-entry", label: "Data Entry", icon: FlaskConical },
   { href: "/billing", label: "Billing & Transaction", icon: Banknote },
+  { href: "/custom-tests", label: "Custom Profile", icon: Settings2 },
 ]
 
 export function AppSidebar() {

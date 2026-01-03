@@ -1,7 +1,9 @@
 
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getCustomTests } from "@/lib/db";
+import { CustomTestDefinition } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -23,8 +25,15 @@ interface ReportClientProps {
 
 export function ReportClient({ order }: ReportClientProps) {
     const [isGenerating, setIsGenerating] = useState(false);
+    const [customTestDefs, setCustomTestDefs] = useState<CustomTestDefinition[]>([]);
     const { toast } = useToast();
     const { user } = useAuth();
+
+    useEffect(() => {
+        if (user?.lab_context?.id) {
+            getCustomTests(user.lab_context.id).then(setCustomTestDefs);
+        }
+    }, [user]);
 
     const calculateAge = (dob: Date) => {
         const ageDifMs = Date.now() - new Date(dob).getTime();
@@ -210,7 +219,56 @@ export function ReportClient({ order }: ReportClientProps) {
 
             const renderTestContent = (test: typeof order.tests[0]) => {
                 const profile = PROFILE_DEFINITIONS.find(p => p.profile_name === test.testName);
+                const customDef = customTestDefs.find(t => t.test_name === test.testName || t.test_code === test.testName);
                 const category = getTestCategory(test.testName);
+
+                // GOD MODE RENDERER
+                if (customDef && test.resultValue && test.resultValue.startsWith('{') && customDef.report_config) {
+                    try {
+                        const results = JSON.parse(test.resultValue);
+                        return customDef.report_config.components.map(comp => {
+                            if (comp.type === 'HEADER') {
+                                return `
+                                    <tr>
+                                        <td colspan="4" style="font-weight:bold; text-decoration:underline; padding-top:10px; padding-bottom:5px; font-size:10pt;">
+                                            ${comp.label}
+                                        </td>
+                                    </tr>
+                                `;
+                            }
+                            if (comp.type === 'TEST_ROW') {
+                                const val = (comp.key && results[comp.key]) || '-';
+                                return `
+                                  <tr>
+                                    <td style="padding-left: 5px; padding-top: 5px; padding-bottom: 5px; width: 35%;">${comp.label}</td>
+                                    <td style="padding-top: 5px; padding-bottom: 5px; width: 25%; font-weight: bold;">${val}</td>
+                                    <td style="padding-top: 5px; padding-bottom: 5px; width: 15%;">${comp.unit || '-'}</td>
+                                    <td style="padding-top: 5px; padding-bottom: 5px; width: 25%;">${comp.default_range || ''}</td>
+                                  </tr>`;
+                            }
+                            if (comp.type === 'GRID' && comp.grid_config) {
+                                return `
+                                    <tr>
+                                        <td colspan="4" style="padding-top: 10px; padding-bottom: 10px;">
+                                            ${comp.label ? `<div style="font-weight: bold; margin-bottom: 5px;">${comp.label}</div>` : ''}
+                                            <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
+                                                <tbody>
+                                                    ${Array.from({ length: comp.grid_config!.rows }).map(() => `
+                                                        <tr>
+                                                            ${Array.from({ length: comp.grid_config!.cols }).map(() => `
+                                                                <td style="border: 1px solid #000; height: 25px;">&nbsp;</td>
+                                                            `).join('')}
+                                                        </tr>
+                                                    `).join('')}
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                `;
+                            }
+                        }).join('');
+                    } catch (e) { }
+                }
 
                 if (profile && test.resultValue && test.resultValue.startsWith('{')) {
                     try {
@@ -328,19 +386,60 @@ export function ReportClient({ order }: ReportClientProps) {
                         <div style="border: 1px solid #000; padding: 20px; margin-top: 10px;">
                             <h3 style="text-align: center; text-transform: uppercase; text-decoration: underline; margin-bottom: 20px; font-size: 14pt;">${title}</h3>
 
-                            <table style="width: 100%; border-collapse: collapse;">
-                                <thead>
-                                    <tr>
-                                        <th style="text-align: left; width: 35%; border-bottom: 1px solid #000; padding: 5px;">TEST</th>
-                                        <th style="text-align: left; width: 25%; border-bottom: 1px solid #000; padding: 5px;">RESULT</th>
-                                        <th style="text-align: left; width: 15%; border-bottom: 1px solid #000; padding: 5px;">UNIT</th>
-                                        <th style="text-align: left; width: 25%; border-bottom: 1px solid #000; padding: 5px;">REFERENCE RANGE</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${renderTestContent(test)}
-                                </tbody>
-                            </table>
+                                ${(() => {
+                        const customDef = customTestDefs.find(t => t.test_name === test.testName || t.test_code === test.testName);
+
+                        // GOD MODE TEMPLATE RENDERER
+                        if (customDef && customDef.html_template && test.resultValue && test.resultValue.startsWith('{')) {
+                            try {
+                                const results = JSON.parse(test.resultValue);
+                                let finalHtml = customDef.html_template;
+
+                                // Iterate over input_schema to replace placeholders
+                                if (customDef.input_schema) {
+                                    customDef.input_schema.forEach(field => {
+                                        const key = field.key;
+                                        const val = results[key] || '-';
+                                        // Replace {{Key}} globally
+                                        const regex = new RegExp(`{{${key}}}`, 'g');
+                                        finalHtml = finalHtml.replace(regex, val);
+                                    });
+                                }
+
+                                // Handle case where variables might be typed manually without schema
+                                // This fallback attempts to find any remaining {{Start}} patterns
+                                const remainingVars = finalHtml.match(/{{(.*?)}}/g);
+                                if (remainingVars) {
+                                    remainingVars.forEach(v => {
+                                        const key = v.replace('{{', '').replace('}}', '');
+                                        const val = results[key] || '-';
+                                        finalHtml = finalHtml.replace(v, val);
+                                    });
+                                }
+
+                                return finalHtml;
+                            } catch (e) {
+                                return `<p>Error rendering template: ${e}</p>`;
+                            }
+                        }
+
+                        // STANDARD RENDERER
+                        return `
+                                    <table style="width: 100%; border-collapse: collapse;">
+                                        <thead>
+                                            <tr>
+                                                <th style="text-align: left; width: 35%; border-bottom: 1px solid #000; padding: 5px;">TEST</th>
+                                                <th style="text-align: left; width: 25%; border-bottom: 1px solid #000; padding: 5px;">RESULT</th>
+                                                <th style="text-align: left; width: 15%; border-bottom: 1px solid #000; padding: 5px;">UNIT</th>
+                                                <th style="text-align: left; width: 25%; border-bottom: 1px solid #000; padding: 5px;">REFERENCE RANGE</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${renderTestContent(test)}
+                                        </tbody>
+                                    </table>
+                                    `;
+                    })()}
 
                             <!-- Dynamic Methodology Footer -->
                             <div style="font-size: 9pt; margin-top: 20px; border-top: 1px dotted #000; padding-top: 5px;">
@@ -446,20 +545,102 @@ export function ReportClient({ order }: ReportClientProps) {
                             </div>
 
                             <div className="space-y-4">
-                                {/* Table Header */}
-                                <div className="grid grid-cols-3 font-bold border-b border-black pb-2">
-                                    <div>TEST</div>
-                                    <div>RESULT</div>
-                                    <div>REFERENCE RANGE</div>
-                                </div>
-
                                 {(() => {
                                     const profile = PROFILE_DEFINITIONS.find(p => p.profile_name === test.testName);
+                                    const customDef = customTestDefs.find(t => t.test_name === test.testName);
+
+                                    // GOD MODE TEMPLATE RENDERER (PREVIEW)
+                                    if (customDef && customDef.html_template && test.resultValue && test.resultValue.startsWith('{')) {
+                                        try {
+                                            const results = JSON.parse(test.resultValue);
+                                            let finalHtml = customDef.html_template;
+
+                                            if (customDef.input_schema) {
+                                                customDef.input_schema.forEach(field => {
+                                                    const key = field.key;
+                                                    const val = results[key] || '-';
+                                                    const regex = new RegExp(`{{${key}}}`, 'g');
+                                                    finalHtml = finalHtml.replace(regex, val);
+                                                });
+                                            }
+
+                                            // Fallback regex for keys
+                                            const remainingVars = finalHtml.match(/{{(.*?)}}/g);
+                                            if (remainingVars) {
+                                                remainingVars.forEach(v => {
+                                                    const key = v.replace('{{', '').replace('}}', '');
+                                                    const val = results[key] || '-';
+                                                    finalHtml = finalHtml.replace(v, val);
+                                                });
+                                            }
+
+                                            return (
+                                                <div
+                                                    className="mt-6 prose prose-sm max-w-none"
+                                                    dangerouslySetInnerHTML={{ __html: finalHtml }}
+                                                />
+                                            );
+                                        } catch (e) { return <div>Error loading template</div>; }
+                                    }
+
+                                    if (customDef && test.resultValue && test.resultValue.startsWith('{') && customDef.report_config) {
+                                        try {
+                                            const results = JSON.parse(test.resultValue);
+                                            return (
+                                                <div className="space-y-1 mt-4">
+                                                    {customDef.report_config.components.map((comp, idx) => {
+                                                        if (comp.type === 'HEADER') {
+                                                            return (
+                                                                <div key={idx} className="font-bold underline mt-4 mb-2 text-sm uppercase">
+                                                                    {comp.label}
+                                                                </div>
+                                                            );
+                                                        }
+                                                        if (comp.type === 'GRID' && comp.grid_config) {
+                                                            return (
+                                                                <div key={idx} className="mt-4 mb-4">
+                                                                    {comp.label && <div className="font-bold text-sm mb-1">{comp.label}</div>}
+                                                                    <table className="w-full border-collapse border border-black">
+                                                                        <tbody>
+                                                                            {Array.from({ length: comp.grid_config!.rows }).map((_, r) => (
+                                                                                <tr key={r}>
+                                                                                    {Array.from({ length: comp.grid_config!.cols }).map((_, c) => (
+                                                                                        <td key={c} className="border border-black h-8">
+                                                                                            &nbsp;
+                                                                                        </td>
+                                                                                    ))}
+                                                                                </tr>
+                                                                            ))}
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            );
+                                                        }
+                                                        const val = (comp.key && results[comp.key]) || '-';
+                                                        return (
+                                                            <div key={idx} className="grid grid-cols-3">
+                                                                <div>{comp.label}</div>
+                                                                <div>{val} {comp.unit}</div>
+                                                                <div>{comp.default_range || ''}</div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            );
+                                        } catch (e) { }
+                                    }
                                     if (profile && test.resultValue && test.resultValue.startsWith('{')) {
                                         try {
                                             const results = JSON.parse(test.resultValue);
                                             return (
                                                 <div className="space-y-1 mt-4">
+                                                    {/* Standard Header Display */}
+                                                    <div className="grid grid-cols-3 font-bold border-b border-black pb-2 mb-2">
+                                                        <div>TEST</div>
+                                                        <div>RESULT</div>
+                                                        <div>REFERENCE RANGE</div>
+                                                    </div>
+
                                                     {profile.components.map(comp => {
                                                         if (comp.input_type === 'header') {
                                                             return (
@@ -481,7 +662,7 @@ export function ReportClient({ order }: ReportClientProps) {
                                         } catch (e) { }
                                     }
                                     return (
-                                        <div className="grid grid-cols-3 mt-2">
+                                        <div className="grid grid-cols-3 mt-4">
                                             <div>{test.testName}</div>
                                             <div>{test.resultValue || '-'}</div>
                                             <div>{test.normalRange || '-'}</div>

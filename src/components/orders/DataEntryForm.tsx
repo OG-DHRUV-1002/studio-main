@@ -9,7 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import type { TestOrder } from '@/lib/types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/lib/auth-context';
 import { useToast } from '@/hooks/use-toast';
 import { updateTestResults } from '@/lib/actions';
 import { useRouter } from 'next/navigation';
@@ -40,6 +41,44 @@ export function DataEntryForm({ order }: DataEntryFormProps) {
   const { toast } = useToast();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth();
+  const [customTestDefs, setCustomTestDefs] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchCustom() {
+      if (user?.lab_context?.id) {
+        try {
+          const { getCustomTests } = await import('@/lib/db');
+          const tests = await getCustomTests(user.lab_context.id);
+          setCustomTestDefs(tests);
+        } catch (e) { console.error(e); }
+      }
+    }
+    fetchCustom();
+  }, [user]);
+
+  const getProfile = (testName: string) => {
+    const standard = PROFILE_DEFINITIONS.find(p => p.profile_name === testName);
+    if (standard) return standard;
+
+    const custom = customTestDefs.find(t => t.test_name === testName || t.test_code === testName);
+    if (custom && custom.report_config) {
+      return {
+        profile_id: custom.test_code,
+        profile_name: custom.test_name,
+        components: custom.report_config.components.map((c: any) => ({
+          key: c.key || `key_${Math.random().toString(36).substr(2, 9)}`,
+          label: c.label,
+          unit: c.unit || '',
+          input_type: c.type === 'HEADER' ? 'header' : (c.input_type || 'text'),
+          options: c.options, // Pass options
+          validation: { ref_range_text: c.default_range || '' }
+        })),
+        input_schema: custom.input_schema // Pass the new schema if it exists
+      } as any;
+    }
+    return null;
+  };
 
   const form = useForm<DataEntryFormValues>({
     resolver: zodResolver(formSchema),
@@ -102,8 +141,9 @@ export function DataEntryForm({ order }: DataEntryFormProps) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
+
                   {fields.map((field, index) => {
-                    const profile = PROFILE_DEFINITIONS.find(p => p.profile_name === field.testName);
+                    const profile = getProfile(field.testName);
 
                     if (profile) {
                       const initialValues = field.resultValue && field.resultValue.startsWith('{')

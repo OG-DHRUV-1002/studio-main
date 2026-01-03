@@ -1,6 +1,6 @@
 import { db } from './firebase';
 import { ref, get, set, remove, update, query, orderByChild } from 'firebase/database';
-import { Patient, TestOrder } from './types';
+import { Patient, TestOrder, CustomTestDefinition } from './types';
 
 
 
@@ -183,4 +183,29 @@ export async function updateOrderRecord(labId: string, orderId: string, data: Pa
     await update(dbRef, serializedUpdates);
 
     return updated;
+}
+// --- CUSTOM TEST (GOD MODE) HELPERS ---
+
+export async function getCustomTests(labId: string): Promise<CustomTestDefinition[]> {
+    const dbRef = ref(db, getDbPath(labId, 'test_master'));
+    const snapshot = await get(dbRef);
+
+    if (!snapshot.exists()) {
+        return [];
+    }
+
+    const data = snapshot.val();
+    return Object.values(data) as CustomTestDefinition[];
+}
+
+export async function insertCustomTest(labId: string, testDef: CustomTestDefinition): Promise<CustomTestDefinition> {
+    const dbRef = ref(db, getDbPath(labId, `test_master/${testDef.test_code}`));
+    await set(dbRef, testDef);
+    return testDef;
+}
+
+export async function removeCustomTest(labId: string, testCode: string): Promise<boolean> {
+    const dbRef = ref(db, getDbPath(labId, `test_master/${testCode}`));
+    await remove(dbRef);
+    return true;
 }
