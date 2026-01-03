@@ -73,7 +73,7 @@ export const LAB_REGISTRY: Record<LabId, {
         phone: "98206 40452 / 022-27702853",
         upiId: "paytmqr2810050501011eiwoccwvdbu@paytm"
     },
-    lab_004_path: { name: "Lab-4", theme: "purple" },
+    lab_004_path: { name: "Seema Bhonsle", theme: "purple" },
     lab_005_clinic: { name: "Lab-5", theme: "orange" },
 };
 

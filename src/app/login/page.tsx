@@ -50,6 +50,11 @@ export default function LoginPage() {
                 setError("Invalid password for Megascan Imaging.");
                 return;
             }
+        } else if (selectedUid === 'uid_lab4_main') {
+            if (password !== 'seema@123') {
+                setError("Invalid password for Seema Bhonsle.");
+                return;
+            }
         } else {
             // Simulated Check for others (or keep default low security for demo)
             if (password.length < 3) {
