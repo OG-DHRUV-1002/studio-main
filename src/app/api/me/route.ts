@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { getUserContext } from '@/lib/admin-config';
-import { getLabConfig } from '@/lib/db';
+import { getLabConfig } from '@/lib/server-db';
 
 // Force dynamic to ensure we don't cache this too aggressively during dev
 export const dynamic = 'force-dynamic';

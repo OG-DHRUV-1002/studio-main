@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers';
-import { getAllOrders } from '@/lib/db';
+import { getAllOrders } from '@/lib/server-db';
 import { getUserContext } from '@/lib/admin-config';
 import BillingDashboard from '@/components/billing/billing-dashboard';
 

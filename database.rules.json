@@ -1,29 +1,30 @@
 {
     "rules": {
-        "user_directory": {
-            // Only admins can read the full directory? Or maybe just themselves.
-            // For now, let's say authenticated users can read their own entry.
-            "$uid": {
-                ".read": "auth.uid === $uid",
-                ".write": false // Only updated by super-admin scripts or initial logic
+        "laboratories": {
+            "lab_001_bhonsle": {
+                ".read": "auth.token.email === 'drbhonsleslab@gmail.com'",
+                ".write": "auth.token.email === 'drbhonsleslab@gmail.com'"
+            },
+            "lab_002_megascan": {
+                ".read": "auth.token.email === 'megascanimaging@gmail.com'",
+                ".write": "auth.token.email === 'megascanimaging@gmail.com'"
+            },
+            "lab_003_general": {
+                ".read": "auth.token.email === 'nirikshapathology.nerul@gmail.com'",
+                ".write": "auth.token.email === 'nirikshapathology.nerul@gmail.com'"
+            },
+            "lab_004_path": {
+                ".read": "auth.token.email === 'seema.bhonsle@labwise.local'",
+                ".write": "auth.token.email === 'seema.bhonsle@labwise.local'"
+            },
+            "lab_005_clinic": {
+                ".read": "auth.token.email === 'lab5.admin@labwise.local'",
+                ".write": "auth.token.email === 'lab5.admin@labwise.local'"
             }
         },
-        "laboratories": {
-            "$lab_id": {
-                // Enforce that the user belongs to this lab
-                ".read": "root.child('user_directory').child(auth.uid).child('lab_id').val() === $lab_id",
-                // CONFIG: Only Admins of this lab can write
-                "config": {
-                    ".write": "root.child('user_directory').child(auth.uid).child('role').val() === 'admin' && root.child('user_directory').child(auth.uid).child('lab_id').val() === $lab_id"
-                },
-                // REPORTS: Staff and Admins can write
-                "reports": {
-                    ".write": "root.child('user_directory').child(auth.uid).child('lab_id').val() === $lab_id"
-                },
-                // Default write rule for other nodes in the lab (orders, patients, etc.) if not specified above
-                // Assuming strict isolation: must be in the lab to write
-                ".write": "root.child('user_directory').child(auth.uid).child('lab_id').val() === $lab_id"
-            }
+        "user_directory": {
+            ".read": false,
+            ".write": false
         }
     }
 }

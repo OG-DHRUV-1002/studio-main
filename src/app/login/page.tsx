@@ -4,33 +4,27 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { simulateLogin } from '@/lib/auth-server';
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { USER_DIRECTORY, LAB_REGISTRY } from "@/lib/admin-config";
+import { USER_DIRECTORY } from "@/lib/admin-config";
 
 export default function LoginPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-    const [selectedUid, setSelectedUid] = useState<string>('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-
-    // Prepare demo users list
-    const demoUsers = Object.entries(USER_DIRECTORY).map(([uid, config]) => ({
-        uid,
-        labName: LAB_REGISTRY[config.lab_id].name,
-        role: config.role,
-        labId: config.lab_id
-    }));
 
     async function handleLogin(e: React.FormEvent) {
         e.preventDefault();
         setError('');
-        if (!selectedUid) {
-            setError("Please select a lab identity.");
+
+        if (!email) {
+            setError("Email address is required.");
             return;
         }
         if (!password) {
@@ -38,38 +32,32 @@ export default function LoginPage() {
             return;
         }
 
-
-        // Lab-1 Specific Security
-        if (selectedUid === 'uid_bhonsle_main') {
-            if (password !== '27Shanti_s.t_2002@') {
-                setError("Invalid password for Dr. Bhonsle Laboratory.");
-                return;
-            }
-        } else if (selectedUid === 'uid_megascan_main') {
-            if (password !== '29/30_Daffodil_y.d_2004@') {
-                setError("Invalid password for Megascan Imaging.");
-                return;
-            }
-        } else if (selectedUid === 'uid_lab4_main') {
-            if (password !== 'seema@123') {
-                setError("Invalid password for Seema Bhonsle.");
-                return;
-            }
-        } else {
-            // Simulated Check for others (or keep default low security for demo)
-            if (password.length < 3) {
-                setError("Invalid password.");
-                return;
-            }
-        }
-
         setLoading(true);
         try {
-            await simulateLogin(selectedUid);
+            // 1. Authenticate with Firebase (Google)
+            await signInWithEmailAndPassword(auth, email, password);
+
+            // 2. Find the UID map for this email to set the context cookie
+            const foundEntry = Object.entries(USER_DIRECTORY).find(([_, config]) => config.email === email);
+
+            let targetUid = '';
+            if (foundEntry) {
+                targetUid = foundEntry[0];
+            } else {
+                throw new Error("Account authorized but not configured in Lab Registry.");
+            }
+
+            // 3. Create Session (Cookie)
+            await simulateLogin(targetUid);
+
             router.push('/');
-        } catch (error) {
+        } catch (error: any) {
             console.error("Login failed", error);
-            setError("Authentication failed.");
+            if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                setError("Invalid Email or Password.");
+            } else {
+                setError("Authentication Failed. Please check your credentials.");
+            }
             setLoading(false);
         }
     }
@@ -101,21 +89,16 @@ export default function LoginPage() {
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleLogin} className="space-y-6">
+
                         <div className="space-y-2">
-                            <Label className="text-xs uppercase tracking-wider text-zinc-500">Select Identity (Demo)</Label>
-                            <Select onValueChange={setSelectedUid} value={selectedUid}>
-                                <SelectTrigger className="bg-zinc-800/50 border-zinc-700 text-white focus:ring-blue-500/50">
-                                    <SelectValue placeholder="Choose a lab admin..." />
-                                </SelectTrigger>
-                                <SelectContent className="bg-zinc-900 border-zinc-800 text-white">
-                                    {demoUsers.map((u) => (
-                                        <SelectItem key={u.uid} value={u.uid} className="focus:bg-zinc-800 cursor-pointer">
-                                            <span className="font-medium text-blue-400">{u.labName}</span>
-                                            <span className="ml-2 text-zinc-500 text-xs">({u.role === 'admin' ? 'Primary' : 'Staff'})</span>
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                            <Label className="text-xs uppercase tracking-wider text-zinc-500">Email Address</Label>
+                            <Input
+                                type="email"
+                                placeholder="name@laboratory.com"
+                                className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-600 focus:ring-blue-500/50"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
                         </div>
 
                         <div className="space-y-2">

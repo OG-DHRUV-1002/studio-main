@@ -2,7 +2,7 @@
 
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
-import * as db from './db';
+import * as db from './server-db';
 import type { Patient, TestOrder } from './types';
 import { UpdatablePatientSchema } from './types';
 import { getCurrentLabId } from './auth-server';
