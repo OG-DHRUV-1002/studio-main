@@ -74,7 +74,7 @@ export const LAB_REGISTRY: Record<LabId, {
         upiId: "paytmqr2810050501011eiwoccwvdbu@paytm"
     },
     lab_004_path: { name: "Seema Bhonsle", theme: "purple" },
-    lab_005_clinic: { name: "Lab-5", theme: "orange" },
+    lab_005_clinic: { name: "MSD-LIMS", theme: "orange" },
 };
 
 export const USER_DIRECTORY: Record<string, { lab_id: LabId; role: UserRole; email: string }> = {
@@ -82,7 +82,7 @@ export const USER_DIRECTORY: Record<string, { lab_id: LabId; role: UserRole; ema
     uid_megascan_main: { lab_id: 'lab_002_megascan', role: 'admin', email: 'megascanimaging@gmail.com' },
     uid_lab3_main: { lab_id: 'lab_003_general', role: 'admin', email: 'nirikshapathology.nerul@gmail.com' },
     uid_lab4_main: { lab_id: 'lab_004_path', role: 'admin', email: 'seema.bhonsle@labwise.local' }, // Tester Mode
-    uid_lab5_main: { lab_id: 'lab_005_clinic', role: 'admin', email: 'lab5.admin@labwise.local' },
+    uid_lab5_main: { lab_id: 'lab_005_clinic', role: 'admin', email: 'msd.3.devops@gmail.com' },
 };
 
 export function getUserContext(uid: string): UserContext | null {

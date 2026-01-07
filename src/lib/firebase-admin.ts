@@ -13,13 +13,18 @@ if (!admin.apps.length) {
         let credential;
 
         // 1. Try loading from Environment Variable (Best for Vercel/Production)
-        if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+        const envVar = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+        if (envVar) {
+            console.log("DEBUG: Found FIREBASE_SERVICE_ACCOUNT_KEY. Length:", envVar.length);
             try {
-                const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+                const serviceAccount = JSON.parse(envVar);
+                console.log("DEBUG: Successfully parsed service account JSON.");
                 credential = admin.credential.cert(serviceAccount);
             } catch (e) {
-                console.error("Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY env var", e);
+                console.error("CRITICAL: Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY env var", e);
             }
+        } else {
+            console.log("DEBUG: FIREBASE_SERVICE_ACCOUNT_KEY env var is NOT present.");
         }
 
         // 2. Try loading from local file system (Fallback for Localhost)
@@ -27,12 +32,15 @@ if (!admin.apps.length) {
             try {
                 const localKeyPath = path.join(process.cwd(), 'service-account.json');
                 if (fs.existsSync(localKeyPath)) {
+                    console.log("DEBUG: Loading from local file:", localKeyPath);
                     const fileContent = fs.readFileSync(localKeyPath, 'utf8');
                     const serviceAccount = JSON.parse(fileContent);
                     credential = admin.credential.cert(serviceAccount);
+                } else {
+                    console.log("DEBUG: Local service-account.json not found.");
                 }
             } catch (fileError) {
-                console.warn("Failed to load local service-account.json");
+                console.warn("DEBUG: Failed to read local service-account.json", fileError);
             }
         }
 
@@ -43,7 +51,7 @@ if (!admin.apps.length) {
             });
             console.log("Firebase Admin Initialized Successfully");
         } else {
-            console.error("FIREBASE WARNING: Admin SDK could not initialize. Missing credentials.");
+            console.error("FIREBASE WARNING: Admin SDK could not initialize. Mocking DB.");
         }
 
     } catch (error) {

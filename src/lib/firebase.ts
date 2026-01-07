@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
-import { getAuth } from "firebase/auth";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 // Fallback configuration if environment variables are missing
 // using the values provided by the user.
@@ -25,5 +25,6 @@ console.log("DEBUG: Firebase Config Values:", {
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const db = getDatabase(app);
 const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
 
-export { db, auth };
+export { db, auth, googleProvider };
